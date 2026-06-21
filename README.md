@@ -1,6 +1,6 @@
 # Infographics
 
-A small, growing collection of self-contained infographics and field guides. Each guide is
+A collection of self-contained infographics. Each guide is
 a single HTML page with **no external dependencies** — no CDN links, no web fonts (system
 font stack only), no trackers, and all CSS inline. Every page works offline and stands on
 its own.
