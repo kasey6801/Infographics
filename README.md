@@ -14,6 +14,18 @@ its own.
 - `gemini-onboarding-dashboard.html` — *Your Gemini Starter Dashboard (Marketing & Sales)*
 - `about.html` — about the collection and its design principle
 
+## "Explained" files
+
+Each infographic ships with a companion `*explained*.md` file that documents how it was
+built. These files lay out the step-by-step process used to create the guide, plus a
+**one-shot prompt** you can use to re-create the infographic from scratch.
+
+- `Cloudflare Warp Field Guide Explained.md` — accompanies `warp-isp-overview.html`
+- `Gemini-dashboard-explained.md` — accompanies `gemini-onboarding-dashboard.html`
+
+On the landing page, each guide's card links to its explained file via the
+"How this was made (.md) →" link (which opens GitHub's rendered view).
+
 ## Local preview
 
 ```bash
