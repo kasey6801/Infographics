@@ -48,11 +48,13 @@
   }
 
   .grid{
-    display:grid;gap:18px;
+    display:grid;gap:18px;align-items:stretch;
     grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
     margin:0 0 40px;padding:0;list-style:none
   }
+  .grid > li{display:flex}
   .card{
+    flex:1;
     display:flex;flex-direction:column;
     background:var(--card);border:1.5px solid var(--line);border-radius:10px;
     box-shadow:var(--shadow);text-decoration:none;color:inherit;
@@ -66,11 +68,16 @@
   }
   .card h2{font-size:1.22rem;margin:0 0 8px;line-height:1.2}
   .card p{margin:0;color:var(--ink-soft);font-size:.96rem}
-  .card .go{margin-top:14px;font-family:var(--mono);font-size:.82rem;color:var(--stamp-red)}
+  /* descriptions: identical font size, capped at 4 lines so cards stay uniform */
+  .card .desc{
+    display:-webkit-box;-webkit-box-orient:vertical;
+    -webkit-line-clamp:4;line-clamp:4;overflow:hidden
+  }
+  .card .go{margin-top:auto;padding-top:14px;font-family:var(--mono);font-size:.82rem;color:var(--stamp-red)}
 
   /* card with multiple action links grouped together */
-  .links{
-    margin-top:16px;padding-top:14px;border-top:1px solid var(--line);
+  .card .links{
+    margin-top:auto;padding-top:14px;border-top:1px solid var(--line);
     display:flex;flex-wrap:wrap;gap:8px 20px
   }
   .links a{
@@ -104,7 +111,7 @@
           <div class="card">
             <p class="tag">Privacy · Networking</p>
             <h2>What can your ISP see?</h2>
-            <p>An illustrated overview of Cloudflare WARP and exactly what your internet
+            <p class="desc">An illustrated overview of Cloudflare WARP and exactly what your internet
             provider can and can't observe about your traffic.</p>
             <p class="links">
               <a href="warp-isp-overview.html">Open guide →</a>
@@ -116,7 +123,7 @@
           <div class="card">
             <p class="tag">AI · Onboarding</p>
             <h2>Your Gemini Starter Dashboard</h2>
-            <p>A practical onboarding dashboard for getting marketing &amp; sales teams up
+            <p class="desc">A practical onboarding dashboard for getting marketing &amp; sales teams up
             and running with Gemini.</p>
             <p class="links">
               <a href="gemini-onboarding-dashboard.html">Open guide →</a>
@@ -132,7 +139,7 @@
           <a class="card" href="about.html">
             <p class="tag">Read me</p>
             <h2>About this collection</h2>
-            <p>What these infographics are, who makes them, and the no-dependencies design
+            <p class="desc">What these infographics are, who makes them, and the no-dependencies design
             principle behind every page.</p>
             <span class="go">Read more →</span>
           </a>
@@ -140,8 +147,7 @@
         <li>
           <a class="card" href="how-this-landing-page-was-made.html">
             <h2>Guidance for building a multi-page site on GitHub</h2>
-            <p>A generic walkthrough for building a small multi-page site like this one and
-            publishing it free with GitHub Pages, including a one-shot Claude prompt.</p>
+            <p class="desc">A walkthrough for building a small multi-page site hosted on GitHub</p>
             <span class="go">Open guide →</span>
           </a>
         </li>
