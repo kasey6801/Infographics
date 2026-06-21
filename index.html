@@ -68,6 +68,18 @@
   .card p{margin:0;color:var(--ink-soft);font-size:.96rem}
   .card .go{margin-top:14px;font-family:var(--mono);font-size:.82rem;color:var(--stamp-red)}
 
+  /* card with multiple action links grouped together */
+  .links{
+    margin-top:16px;padding-top:14px;border-top:1px solid var(--line);
+    display:flex;flex-wrap:wrap;gap:8px 20px
+  }
+  .links a{
+    font-family:var(--mono);font-size:.82rem;text-decoration:none;color:var(--stamp-red)
+  }
+  .links a:hover{text-decoration:underline}
+  .links a.md{color:var(--seal-green)}
+  .links a:focus-visible{outline:3px solid var(--stamp-red);outline-offset:3px}
+
   .card.soon{opacity:.62;cursor:default;border-style:dashed}
   .card.soon .tag{color:var(--ink-soft)}
 
@@ -89,22 +101,28 @@
       <p class="section-label">Guides</p>
       <ul class="grid">
         <li>
-          <a class="card" href="warp-isp-overview.html">
+          <div class="card">
             <p class="tag">Privacy · Networking</p>
             <h2>What can your ISP see?</h2>
             <p>An illustrated overview of Cloudflare WARP and exactly what your internet
             provider can and can't observe about your traffic.</p>
-            <span class="go">Open guide →</span>
-          </a>
+            <p class="links">
+              <a href="warp-isp-overview.html">Open guide →</a>
+              <a class="md" href="Cloudflare%20Warp%20Field%20Guide%20Explained.md">Read the writeup (.md) →</a>
+            </p>
+          </div>
         </li>
         <li>
-          <a class="card" href="gemini-onboarding-dashboard.html">
+          <div class="card">
             <p class="tag">AI · Onboarding</p>
             <h2>Your Gemini Starter Dashboard</h2>
             <p>A practical onboarding dashboard for getting marketing &amp; sales teams up
             and running with Gemini.</p>
-            <span class="go">Open guide →</span>
-          </a>
+            <p class="links">
+              <a href="gemini-onboarding-dashboard.html">Open guide →</a>
+              <a class="md" href="Gemini-dashboard-explained.md">Read the writeup (.md) →</a>
+            </p>
+          </div>
         </li>
         <li>
           <div class="card soon">
