@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gemini Onboarding — Marketing & Sales</title>
+<style>
+  :root{
+    --g1:#4285F4; --g2:#9b72cb; --g3:#d96570; --g4:#f6a83c;
+    --ink:#1f2230; --muted:#6b7280; --line:#e7e8ee;
+    --bg:#f6f7fb; --card:#ffffff; --soft:#f1f3f9;
+    --grad:linear-gradient(115deg,#4285F4 0%,#9b72cb 45%,#d96570 80%,#f6a83c 100%);
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 8px 24px rgba(20,20,40,.06);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1060px;margin:0 auto;padding:0 18px 64px}
+
+  /* Header */
+  header.top{background:var(--grad);color:#fff;padding:30px 0 90px;position:relative;overflow:hidden}
+  header.top:before{content:"";position:absolute;inset:0;
+    background:radial-gradient(700px 240px at 88% -10%,rgba(255,255,255,.25),transparent)}
+  .top-inner{max-width:1060px;margin:0 auto;padding:0 18px;position:relative;display:flex;
+    justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap}
+  .badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.16);
+    border:1px solid rgba(255,255,255,.28);padding:5px 12px;border-radius:999px;font-size:12.5px;
+    font-weight:600;letter-spacing:.2px;margin-bottom:14px}
+  header.top h1{margin:0 0 8px;font-size:30px;line-height:1.15;font-weight:750;letter-spacing:-.4px}
+  header.top p{margin:0;max-width:560px;font-size:15px;color:rgba(255,255,255,.92)}
+  .ring-card{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.26);
+    border-radius:18px;padding:16px 18px;display:flex;align-items:center;gap:14px;backdrop-filter:blur(4px)}
+  .ring{position:relative;width:78px;height:78px;flex:none}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-weight:750;font-size:18px}
+  .ring-card .lbl{font-size:12.5px;color:rgba(255,255,255,.9)}
+  .ring-card .lbl b{display:block;font-size:14.5px;color:#fff;margin-bottom:2px}
+
+  /* Tabs */
+  nav.tabs{max-width:1060px;margin:-58px auto 0;padding:0 18px;position:relative;z-index:5}
+  .tabbar{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);
+    padding:7px;display:flex;gap:4px;overflow-x:auto}
+  .tab{flex:1;min-width:108px;border:0;background:transparent;color:var(--muted);font-weight:600;
+    font-size:13.5px;padding:11px 10px;border-radius:11px;cursor:pointer;white-space:nowrap;
+    display:flex;align-items:center;justify-content:center;gap:7px;transition:.15s}
+  .tab:hover{background:var(--soft);color:var(--ink)}
+  .tab.active{background:var(--ink);color:#fff}
+  .tab .ic{font-size:15px}
+
+  section.panel{display:none;animation:fade .25s ease}
+  section.panel.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  h2.sec{font-size:21px;margin:30px 0 4px;letter-spacing:-.3px}
+  .sub{color:var(--muted);font-size:14px;margin:0 0 18px}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);
+    padding:20px 22px;margin-bottom:16px}
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:1fr 1fr}
+  @media(max-width:720px){.g2{grid-template-columns:1fr}.top-inner{flex-direction:column}}
+
+  .pill{display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;
+    padding:3px 9px;border-radius:7px;color:#fff}
+  .p-blue{background:var(--g1)} .p-purple{background:var(--g2)} .p-pink{background:var(--g3)} .p-amber{background:#e08a1e}
+
+  /* Overview surfaces */
+  .surf{display:flex;gap:13px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--line)}
+  .surf:last-child{border-bottom:0}
+  .surf .ico{width:40px;height:40px;border-radius:11px;flex:none;display:flex;align-items:center;
+    justify-content:center;font-size:19px;background:var(--soft)}
+  .surf h4{margin:0 0 2px;font-size:15px}
+  .surf p{margin:0;font-size:13.5px;color:var(--muted)}
+  .surf .where{font-size:12px;color:var(--g2);font-weight:600;margin-top:3px}
+
+  /* Roadmap */
+  .week{margin-bottom:14px}
+  .week-head{display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none;
+    padding:16px 20px;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .week-head .num{width:34px;height:34px;border-radius:9px;background:var(--grad);color:#fff;font-weight:750;
+    display:flex;align-items:center;justify-content:center;flex:none;font-size:14px}
+  .week-head h3{margin:0;font-size:16px}
+  .week-head .goal{font-size:13px;color:var(--muted);margin-top:1px}
+  .week-head .chev{margin-left:auto;color:var(--muted);transition:.2s;font-size:13px}
+  .week-head .mini{font-size:12px;font-weight:700;color:var(--g2);margin-left:auto;margin-right:10px}
+  .week.open .chev{transform:rotate(180deg)}
+  .week-body{display:none;padding:6px 8px 4px}
+  .week.open .week-body{display:block}
+  .task{display:flex;gap:12px;align-items:flex-start;padding:12px 12px;border-radius:11px;transition:.12s}
+  .task:hover{background:var(--soft)}
+  .task input{appearance:none;width:21px;height:21px;border:2px solid #cfd2e0;border-radius:6px;flex:none;
+    margin-top:1px;cursor:pointer;position:relative;transition:.15s}
+  .task input:checked{background:var(--grad);border-color:transparent}
+  .task input:checked:after{content:"✓";position:absolute;inset:0;display:flex;align-items:center;
+    justify-content:center;color:#fff;font-size:13px;font-weight:800}
+  .task label{cursor:pointer;font-size:14px}
+  .task .t-title{font-weight:600}
+  .task.done .t-title{text-decoration:line-through;color:var(--muted)}
+  .task .t-desc{font-size:13px;color:var(--muted);margin-top:2px}
+
+  /* Prompts */
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .chip{border:1px solid var(--line);background:var(--card);color:var(--muted);font-weight:600;font-size:13px;
+    padding:8px 14px;border-radius:999px;cursor:pointer;transition:.12s}
+  .chip:hover{border-color:#c9ccda;color:var(--ink)}
+  .chip.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .prompt{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);
+    padding:16px 18px;margin-bottom:13px}
+  .prompt .ph{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:9px}
+  .prompt h4{margin:0;font-size:14.5px}
+  .prompt .meta{font-size:12px;color:var(--g2);font-weight:600;margin-top:3px}
+  .ptext{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:12px 13px;
+    font-size:13px;color:#33384a;font-family:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace;
+    line-height:1.55;white-space:pre-wrap}
+  .copy{border:1px solid var(--line);background:var(--card);color:var(--ink);font-weight:600;font-size:12.5px;
+    padding:7px 13px;border-radius:9px;cursor:pointer;flex:none;display:flex;align-items:center;gap:6px;transition:.12s}
+  .copy:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .copy.ok{background:#1f9d55;color:#fff;border-color:#1f9d55}
+
+  /* Workflows */
+  .flow{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);
+    padding:20px 22px;margin-bottom:16px}
+  .flow h3{margin:0 0 3px;font-size:16.5px}
+  .flow .why{font-size:13.5px;color:var(--muted);margin:0 0 16px}
+  .step{display:flex;gap:14px;padding-bottom:16px;position:relative}
+  .step:last-child{padding-bottom:0}
+  .step:not(:last-child):before{content:"";position:absolute;left:15px;top:32px;bottom:-2px;width:2px;background:var(--line)}
+  .step .dot{width:32px;height:32px;border-radius:50%;background:var(--soft);border:2px solid var(--g2);
+    color:var(--g2);font-weight:750;display:flex;align-items:center;justify-content:center;flex:none;font-size:13px;z-index:1}
+  .step .sc h5{margin:0 0 2px;font-size:14px}
+  .step .sc p{margin:0;font-size:13px;color:var(--muted)}
+  .step .sc .tool{display:inline-block;font-size:11.5px;font-weight:700;color:var(--g1);background:#eaf1ff;
+    padding:2px 8px;border-radius:6px;margin-top:5px}
+
+  /* Gem builder */
+  .formula{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:6px 0 8px}
+  @media(max-width:720px){.formula{grid-template-columns:1fr 1fr}}
+  .fcard{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:14px}
+  .fcard .k{font-weight:750;font-size:14px;margin-bottom:4px}
+  .fcard .d{font-size:12.5px;color:var(--muted)}
+  .fcard .k .n{display:inline-flex;width:20px;height:20px;border-radius:6px;background:var(--grad);color:#fff;
+    font-size:11px;align-items:center;justify-content:center;margin-right:6px;vertical-align:1px}
+  .gem{border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);background:var(--card);margin-bottom:13px;overflow:hidden}
+  .gem-head{display:flex;align-items:center;gap:12px;padding:15px 18px;cursor:pointer;user-select:none}
+  .gem-head .gi{width:38px;height:38px;border-radius:10px;background:var(--grad);color:#fff;display:flex;
+    align-items:center;justify-content:center;font-size:18px;flex:none}
+  .gem-head h4{margin:0;font-size:15px}
+  .gem-head p{margin:1px 0 0;font-size:12.5px;color:var(--muted)}
+  .gem-head .chev{margin-left:auto;color:var(--muted);transition:.2s}
+  .gem.open .gem-head .chev{transform:rotate(180deg)}
+  .gem-body{display:none;padding:0 18px 18px}
+  .gem.open .gem-body{display:block}
+  .gem-body .lbl{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;
+    color:var(--g2);margin:12px 0 5px}
+
+  /* Habits */
+  .habit{display:flex;gap:13px;padding:14px 0;border-bottom:1px solid var(--line)}
+  .habit:last-child{border-bottom:0}
+  .habit .hi{font-size:20px;flex:none;width:30px;text-align:center}
+  .habit h4{margin:0 0 2px;font-size:14.5px}
+  .habit p{margin:0;font-size:13.5px;color:var(--muted)}
+  .callout{background:linear-gradient(115deg,rgba(66,133,244,.08),rgba(217,101,112,.08));
+    border:1px solid var(--line);border-radius:14px;padding:16px 18px;font-size:13.5px}
+  .callout b{color:var(--ink)}
+  .foot{text-align:center;color:var(--muted);font-size:12px;margin-top:26px}
+  a.reset{color:var(--g2);cursor:pointer;font-weight:600;text-decoration:none}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div>
+      <span class="badge">✦ No-code · Google Gemini + Workspace</span>
+      <h1>Your Gemini Starter Dashboard</h1>
+      <p>A 4-week, hands-on plan to put AI to work in your day — researching accounts, writing to customers, explaining products, and following up. No coding required.</p>
+    </div>
+    <div class="ring-card">
+      <div class="ring">
+        <svg width="78" height="78">
+          <circle cx="39" cy="39" r="33" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="8"/>
+          <circle id="ringFill" cx="39" cy="39" r="33" fill="none" stroke="#fff" stroke-width="8"
+                  stroke-linecap="round" stroke-dasharray="207.3" stroke-dashoffset="207.3"/>
+        </svg>
+        <div class="pct" id="ringPct">0%</div>
+      </div>
+      <div class="lbl"><b id="ringCount">0 of 0 done</b>Tick tasks as you go —<br>your progress saves here.</div>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <div class="tabbar">
+    <button class="tab active" data-p="overview"><span class="ic">🧭</span>Start here</button>
+    <button class="tab" data-p="roadmap"><span class="ic">🗺️</span>4-week plan</button>
+    <button class="tab" data-p="prompts"><span class="ic">💬</span>Prompts</button>
+    <button class="tab" data-p="workflows"><span class="ic">⚙️</span>Workflows</button>
+    <button class="tab" data-p="gems"><span class="ic">💎</span>Build a Gem</button>
+    <button class="tab" data-p="habits"><span class="ic">✅</span>Good habits</button>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- OVERVIEW -->
+  <section class="panel active" id="overview">
+    <h2 class="sec">Where Gemini lives in your day</h2>
+    <p class="sub">Gemini isn't a separate app you visit — it sits inside the tools you already use, with access to your own emails, docs, and files for context. Here's the map.</p>
+    <div class="card">
+      <div class="surf"><div class="ico">✉️</div><div><h4>Gmail</h4><p>Draft, shorten, and reply to customer emails; summarize long threads so you can catch up fast.</p><div class="where">Side panel + "Help me write"</div></div></div>
+      <div class="surf"><div class="ico">📄</div><div><h4>Docs</h4><p>Turn product specs into plain-language explainers, one-pagers, and FAQs. Refine drafts in your voice.</p><div class="where">Side panel</div></div></div>
+      <div class="surf"><div class="ico">📊</div><div><h4>Sheets</h4><p>Analyze campaign or pipeline data, spot trends, and build interactive dashboards on top of your numbers.</p><div class="where">Side panel + Canvas</div></div></div>
+      <div class="surf"><div class="ico">🖼️</div><div><h4>Slides</h4><p>Generate customer-facing overview decks from your template and content — minimal text, on-brand.</p><div class="where">Side panel</div></div></div>
+      <div class="surf"><div class="ico">🎥</div><div><h4>Meet</h4><p>"Take notes for me" captures a summary and action items automatically — even on Zoom or Teams calls.</p><div class="where">Activities panel</div></div></div>
+      <div class="surf"><div class="ico">🔍</div><div><h4>Gemini app + Deep Research</h4><p>Account research, competitive snapshots, and longer reasoning tasks at gemini.google.com.</p><div class="where">gemini.google.com</div></div></div>
+      <div class="surf"><div class="ico">💎</div><div><h4>Gems</h4><p>Reusable mini-assistants you set up once (persona + instructions) and link to Drive files. The biggest time-saver in this list.</p><div class="where">"Explore Gems" → New Gem</div></div></div>
+      <div class="surf"><div class="ico">🤖</div><div><h4>Workspace Studio</h4><p>Automate recurring chores — pre-meeting briefings, follow-up task docs — described in plain English.</p><div class="where">No-code automation hub</div></div></div>
+    </div>
+    <div class="callout" style="margin-top:4px">
+      <b>The one idea to hold onto:</b> regular Gemini forgets your context every time. A <b>Gem</b> remembers it — your role, your tone, your product knowledge — so you stop re-explaining yourself. Once a task feels repetitive, that's your signal to turn it into a Gem (see the <b>Build a Gem</b> tab).
+    </div>
+  </section>
+
+  <!-- ROADMAP -->
+  <section class="panel" id="roadmap">
+    <h2 class="sec">Your 4-week onboarding plan</h2>
+    <p class="sub">One focused theme per week. Tick each task as you do it — progress saves automatically and feeds the ring up top. Aim for ~20 minutes a day.</p>
+    <div id="roadmap-root"></div>
+  </section>
+
+  <!-- PROMPTS -->
+  <section class="panel" id="prompts">
+    <h2 class="sec">Prompt library</h2>
+    <p class="sub">Copy, paste, and tweak the bracketed bits. These are written for a customer-facing marketing/sales role. Filter by the kind of task you're doing.</p>
+    <div class="filters" id="filters"></div>
+    <div id="prompt-root"></div>
+  </section>
+
+  <!-- WORKFLOWS -->
+  <section class="panel" id="workflows">
+    <h2 class="sec">Day-to-day workflows</h2>
+    <p class="sub">These chain a few Gemini steps together into something you'll actually repeat each week. Each one is no-code — just side panels, the Gemini app, and Gems.</p>
+    <div id="flow-root"></div>
+  </section>
+
+  <!-- GEMS -->
+  <section class="panel" id="gems">
+    <h2 class="sec">Build your own Gem</h2>
+    <p class="sub">A Gem is a custom assistant you configure once and reuse with one click. Go to gemini.google.com → "Explore Gems" → "+ New Gem". Use this 4-part formula in the instructions box.</p>
+    <div class="card">
+      <div class="formula">
+        <div class="fcard"><div class="k"><span class="n">1</span>Persona</div><div class="d">Who it acts as. "You are a product marketer who explains features in plain language."</div></div>
+        <div class="fcard"><div class="k"><span class="n">2</span>Task</div><div class="d">What it does each time. "When I paste a spec, produce a customer-ready explainer."</div></div>
+        <div class="fcard"><div class="k"><span class="n">3</span>Context</div><div class="d">What it should know. Upload or link brand guidelines & product docs from Drive.</div></div>
+        <div class="fcard"><div class="k"><span class="n">4</span>Format</div><div class="d">How the output looks. Spell out the exact sections, length, and tone.</div></div>
+      </div>
+      <div class="callout"><b>Pro tip:</b> link the Gem to a Google Doc of your product specs or brand voice. When you update the Doc, the Gem uses the new version automatically — no editing the Gem needed.</div>
+    </div>
+    <h2 class="sec" style="font-size:17px">4 starter Gems to build first</h2>
+    <p class="sub">Tap to expand. Paste the instructions straight into a new Gem and adjust the brackets.</p>
+    <div id="gem-root"></div>
+  </section>
+
+  <!-- HABITS -->
+  <section class="panel" id="habits">
+    <h2 class="sec">Habits that keep you safe and sharp</h2>
+    <p class="sub">AI gives you a fast first draft, not a finished one. These habits keep the quality — and trust with your customers — high.</p>
+    <div class="card">
+      <div class="habit"><div class="hi">🔎</div><div><h4>Verify before it leaves your hands</h4><p>Always fact-check names, numbers, pricing, dates, and product claims before anything reaches a customer. Gemini can sound confident and still be wrong.</p></div></div>
+      <div class="habit"><div class="hi">🔒</div><div><h4>Know your data boundaries</h4><p>Use Gemini inside your work Workspace account (your data stays governed by your org's controls). Check with your admin before pasting confidential customer data anywhere — and avoid the personal consumer app for sensitive material.</p></div></div>
+      <div class="habit"><div class="hi">📎</div><div><h4>Remember the linked-file limit</h4><p>In Docs, Gemini summarizes the text in the active document only — it won't pull in a separate appendix or linked file. Bring that content into the doc or attach it to a Gem.</p></div></div>
+      <div class="habit"><div class="hi">🗣️</div><div><h4>Keep your judgment in the loop</h4><p>You know the relationship, the politics, and what's landed before. Treat drafts as raw material and add the human read the AI can't have.</p></div></div>
+      <div class="habit"><div class="hi">🔁</div><div><h4>Turn winners into Gems</h4><p>When a prompt gives you a great result twice, save it as a Gem. That's how AI shifts from "a thing you sometimes open" to part of how you work.</p></div></div>
+      <div class="habit"><div class="hi">📅</div><div><h4>Run a 15-minute Friday review</h4><p>Each week, note one task Gemini saved you time on and one it didn't. Refine the prompt or Gem. Small tweaks compound fast.</p></div></div>
+    </div>
+    <div class="foot">Progress saved on this device. <a class="reset" id="resetBtn">Reset my progress</a></div>
+  </section>
+
+</div>
+
+<script>
+/* ---------- DATA ---------- */
+const ROADMAP = [
+  { wk:1, title:"Foundations & first wins", goal:"Find Gemini, get comfortable, score quick daily wins",
+    tasks:[
+      {id:"w1a",t:"Find the Gemini side panel",d:"Open Gmail, Docs, and Drive and click the Gemini ✦ icon. Just see where it lives."},
+      {id:"w1b",t:"Write 3 emails with 'Help me write'",d:"In Gmail, draft a quick intro, a follow-up, and a reschedule note. Edit to taste."},
+      {id:"w1c",t:"Summarize a long email thread",d:"Open a busy thread and ask the side panel to summarize it and list anything you still owe."},
+      {id:"w1d",t:"Try the Gemini app for research",d:"At gemini.google.com, ask it to brief you on a company or industry you're selling into."},
+      {id:"w1e",t:"Read the 'Good habits' tab",d:"Two minutes now saves an awkward customer correction later — especially the 'verify' habit."}
+    ]},
+  { wk:2, title:"Weave it into customer work", goal:"Use Gemini around real meetings and customer touchpoints",
+    tasks:[
+      {id:"w2a",t:"Run a pre-meeting account brief",d:"Use Deep Research in the Gemini app to prep before your next discovery call."},
+      {id:"w2b",t:"Turn on 'Take notes for me' in a Meet call",d:"Open the Activities panel and start it. Review the summary and action items afterward."},
+      {id:"w2c",t:"Draft a follow-up from your meeting notes",d:"Paste the notes into Gemini and ask for a recap email with action items and next steps."},
+      {id:"w2d",t:"Make a customer explainer in Docs",d:"Drop a product spec into a Doc and ask Gemini for a plain-language one-pager."},
+      {id:"w2e",t:"Build a quick overview deck in Slides",d:"Ask for a 6-slide customer overview using your company template."}
+    ]},
+  { wk:3, title:"Build your own Gems", goal:"Stop re-prompting — create reusable assistants",
+    tasks:[
+      {id:"w3a",t:"Learn the 4-part Gem formula",d:"Read the 'Build a Gem' tab: Persona, Task, Context, Format."},
+      {id:"w3b",t:"Build the Customer Explainer Gem",d:"Use the starter instructions provided. Test it with one real product."},
+      {id:"w3c",t:"Build the Brand Voice Outreach Gem",d:"Upload your brand voice guide and 2–3 of your best past emails as knowledge."},
+      {id:"w3d",t:"Link a Gem to a Drive file",d:"Connect a product-specs Doc so the Gem always uses your latest info."},
+      {id:"w3e",t:"Share a Gem with a teammate",d:"Send one Gem to a colleague so you're both working from the same recipe."}
+    ]},
+  { wk:4, title:"Workflows, automation & scale", goal:"Chain it together and let the routine stuff run itself",
+    tasks:[
+      {id:"w4a",t:"Run the 'call to follow-up' workflow end-to-end",d:"See the Workflows tab — notes → recap → tasks in one sitting."},
+      {id:"w4b",t:"Build a Sheets dashboard with Canvas",d:"Ask Gemini to turn pipeline or campaign data into an interactive view."},
+      {id:"w4c",t:"Automate one chore in Workspace Studio",d:"Set up a pre-meeting briefing or auto follow-up doc in plain English."},
+      {id:"w4d",t:"Create a product knowledge base in NotebookLM",d:"Load your product docs so you can ask questions grounded only in them."},
+      {id:"w4e",t:"Set your Friday 15-minute review habit",d:"Pick a recurring slot to refine your prompts and Gems."}
+    ]}
+];
+
+const PROMPTS = [
+  {cat:"Research & prep", color:"p-blue", where:"Gemini app · Deep Research",
+   title:"Pre-call account brief",
+   text:"Act as a sales researcher. Brief me on [Company] before a discovery call. Cover: what they do, their industry and likely priorities this year, any recent news, and 3 sharp questions I should ask about their challenges. Keep it to one page, plain language."},
+  {cat:"Research & prep", color:"p-blue", where:"Gmail side panel",
+   title:"Catch up on a relationship",
+   text:"Summarize my email history with [contact name]. What's the current status, what have I promised them, and what's the best next step? List any open questions I still owe a reply on."},
+  {cat:"Email & outreach", color:"p-purple", where:"Gmail · Help me write",
+   title:"Warm intro email",
+   text:"Write a short, warm outreach email to a [role] at a [industry] company introducing [product]. Open with a problem they likely care about, keep it under 120 words, friendly but professional, and end with one clear call to action to book 20 minutes. No hype."},
+  {cat:"Email & outreach", color:"p-purple", where:"Gmail / Docs side panel",
+   title:"Tighten a draft",
+   text:"Rewrite this email to be clearer and more customer-focused. Cut jargon and filler, keep my friendly tone, and make the ask obvious. Keep it under 130 words:\n\n[paste your draft]"},
+  {cat:"Explain a product", color:"p-pink", where:"Docs side panel (with the spec in the doc)",
+   title:"Plain-language one-pager",
+   text:"Turn the content in this document into a one-pager a non-technical customer could understand. Structure it as: a one-sentence summary, 'What it does', 'Why it matters to you', and '3 ways you'd use it day to day'. Avoid jargon; confident, friendly tone."},
+  {cat:"Explain a product", color:"p-pink", where:"Docs / Gemini app",
+   title:"Customer-ready FAQ",
+   text:"Create a clear FAQ of 8–10 questions a customer new to [product] would actually ask, with short jargon-free answers. Include at least two about pricing/onboarding and one about how it compares to doing nothing."},
+  {cat:"Meetings & follow-up", color:"p-amber", where:"Gemini app / Docs (paste notes)",
+   title:"Follow-up from notes",
+   text:"Using these meeting notes, draft a follow-up email. Thank them, recap what we agreed in 3–4 bullets, list action items with owners and dates, and propose a clear next step. Warm, concise tone:\n\n[paste meeting notes]"},
+  {cat:"Meetings & follow-up", color:"p-amber", where:"Gemini app",
+   title:"Pull out my commitments",
+   text:"From these notes, list every commitment or promise I personally made, and turn each into a checklist item with a suggested due date:\n\n[paste notes]"},
+  {cat:"Content & decks", color:"p-purple", where:"Slides side panel",
+   title:"Customer overview deck",
+   text:"Create a 6-slide customer-facing overview of [product] using our company template: (1) the problem, (2) the solution, (3) how it works, (4) three key benefits, (5) a short customer example, (6) next steps. Minimal text per slide."},
+  {cat:"Content & decks", color:"p-purple", where:"Docs / Gemini app",
+   title:"Repurpose one asset into many",
+   text:"Take this one-pager and repurpose it into: 3 short LinkedIn posts (different angles), 2 follow-up email snippets, and one 30-second talk track I could use on a call:\n\n[paste one-pager]"},
+  {cat:"Data & analysis", color:"p-blue", where:"Sheets side panel",
+   title:"Make sense of campaign data",
+   text:"Analyze this sheet. Tell me which channel drove the most qualified leads, the trend over the last 3 months, anything that looks off, and 3 specific things I should change next month. Explain it like I'm not a data analyst."},
+  {cat:"Data & analysis", color:"p-blue", where:"Sheets Canvas",
+   title:"Interactive pipeline dashboard",
+   text:"Using this pipeline data, build an interactive dashboard showing deals by stage and total value by stage, plus a simple view of what's likely to close this quarter."}
+];
+
+const FLOWS = [
+  {title:"Call → follow-up in 5 minutes", why:"Your fastest, highest-trust win. Never let a good meeting cool off.",
+   steps:[
+     {h:"Capture the call",p:"Turn on 'Take notes for me' before the meeting starts.",tool:"Google Meet"},
+     {h:"Get a clean recap",p:"Open the auto-generated notes doc and skim the summary and action items.",tool:"Notes doc"},
+     {h:"Draft the follow-up",p:"Ask Gemini to write a recap email with action items, owners, and next steps.",tool:"Gemini app / Gmail"},
+     {h:"Add your read & send",p:"Layer in one personal line only you'd know, sanity-check the details, and send.",tool:"You"}
+   ]},
+  {title:"From launch to customer-ready materials", why:"Turn a new product or feature into everything you need to talk about it.",
+   steps:[
+     {h:"Understand it yourself",p:"Drop the spec in a Doc and ask for a plain-language explainer.",tool:"Docs side panel"},
+     {h:"Build the FAQ",p:"Generate the questions customers will ask, with crisp answers.",tool:"Docs / Gemini app"},
+     {h:"Make the overview deck",p:"Generate a 6-slide customer deck from your template.",tool:"Slides side panel"},
+     {h:"Repurpose for outreach",p:"Spin the one-pager into emails and social posts.",tool:"Customer Explainer Gem"}
+   ]},
+  {title:"Smart prospecting sprint", why:"Walk into every first conversation already knowing the room.",
+   steps:[
+     {h:"Research the account",p:"Run a Deep Research brief on the company and its priorities.",tool:"Gemini app"},
+     {h:"Prep your questions",p:"Ask for 5 discovery questions and 2 likely objections to expect.",tool:"Discovery Prep Gem"},
+     {h:"Write the opener",p:"Draft a tailored intro email tied to their likely problem.",tool:"Brand Voice Gem"},
+     {h:"Log & schedule",p:"Ask Gemini in Chat to find a time and set a reminder to follow up.",tool:"Ask Gemini in Chat"}
+   ]},
+  {title:"Weekly pipeline review", why:"Replace the Monday scramble with a 10-minute, data-grounded check-in.",
+   steps:[
+     {h:"Pull the numbers in",p:"Import or paste your pipeline/campaign data into Sheets.",tool:"Sheets"},
+     {h:"Ask what changed",p:"Have Gemini flag trends, stuck deals, and what's likely to close.",tool:"Sheets side panel"},
+     {h:"Visualize it",p:"Build an interactive dashboard you can revisit each week.",tool:"Sheets Canvas"},
+     {h:"Plan the week",p:"Ask for your top 3 priorities based on the data.",tool:"Gemini app"}
+   ]}
+];
+
+const GEMS = [
+  {icon:"📣",name:"Customer Explainer",desc:"Turns any product spec into plain-language, benefit-led copy.",
+   persona:"You are a product marketing expert who translates technical features into clear, benefit-led language for non-technical customers. You never use jargon, and you always lead with the customer's problem.",
+   task:"When I paste product details, a spec, or a feature list, produce a customer-ready explainer.",
+   context:"Link a Google Doc with our product specs and brand voice guide so outputs stay current and on-brand.",
+   format:"Output exactly: (1) a one-sentence summary, (2) 'What it does', (3) 'Why it matters to you', (4) '3 ways you'd use it day to day'. Friendly, confident tone. No jargon, no hype."},
+  {icon:"✍️",name:"Brand Voice Outreach Writer",desc:"Drafts emails that actually sound like your company.",
+   persona:"You are a senior copywriter who writes in [Company]'s brand voice: clear, warm, and never salesy.",
+   task:"Draft outreach and follow-up emails when I give you the recipient, their likely problem, and the goal.",
+   context:"Upload our brand voice guide and 3 of our best-performing past emails as knowledge files.",
+   format:"Output a subject line + a body under 120 words + one clear call to action. No hype, no guarantees, no exclamation overload."},
+  {icon:"🔎",name:"Discovery Call Prep",desc:"Builds a sharp pre-call brief from just a company name.",
+   persona:"You are an experienced B2B sales researcher who prepares reps for first meetings.",
+   task:"When I give you a company name (and optionally a contact role), produce a pre-call brief.",
+   context:"Optionally link a Doc describing our ideal customer profile and what we sell.",
+   format:"Output: a 3-line company snapshot, their likely priorities this year, 5 smart discovery questions, and 2 objections to expect with a one-line response to each."},
+  {icon:"📑",name:"Proposal Drafter",desc:"Turns a call transcript into a proposal in your template.",
+   persona:"You are a solutions consultant who writes proposals that mirror the customer's own language and priorities.",
+   task:"When I paste a call transcript or set of notes, draft a proposal tailored to what they said they need.",
+   context:"Upload our standard proposal template and a strong past proposal as knowledge files.",
+   format:"Match our template's structure exactly. Use the customer's wording for their goals. Clearly flag any assumption or blank I need to confirm before sending."}
+];
+
+/* ---------- STORAGE ---------- */
+const STORE_KEY="gemini_onboarding_progress_v1";
+let completed=new Set();
+let memOnly=false;
+async function loadProgress(){
+  try{const r=await window.storage.get(STORE_KEY);if(r&&r.value)completed=new Set(JSON.parse(r.value));}
+  catch(e){/* no key yet, or storage unavailable */}
+}
+async function saveProgress(){
+  if(memOnly)return;
+  try{await window.storage.set(STORE_KEY,JSON.stringify([...completed]));}
+  catch(e){memOnly=true;}
+}
+
+/* ---------- RENDER ---------- */
+const totalTasks=ROADMAP.reduce((n,w)=>n+w.tasks.length,0);
+
+function renderRoadmap(){
+  const root=document.getElementById("roadmap-root");
+  root.innerHTML=ROADMAP.map((w,i)=>{
+    const done=w.tasks.filter(t=>completed.has(t.id)).length;
+    const tasks=w.tasks.map(t=>{
+      const c=completed.has(t.id);
+      return `<div class="task ${c?'done':''}">
+        <input type="checkbox" data-id="${t.id}" ${c?'checked':''}>
+        <label data-for="${t.id}"><span class="t-title">${t.t}</span><div class="t-desc">${t.d}</div></label>
+      </div>`;}).join("");
+    return `<div class="week ${i===0?'open':''}" data-wk="${w.wk}">
+      <div class="week-head">
+        <div class="num">${w.wk}</div>
+        <div><h3>Week ${w.wk} · ${w.title}</h3><div class="goal">${w.goal}</div></div>
+        <span class="mini" data-mini="${w.wk}">${done}/${w.tasks.length}</span>
+        <span class="chev">▼</span>
+      </div>
+      <div class="week-body">${tasks}</div>
+    </div>`;}).join("");
+
+  root.querySelectorAll(".week-head").forEach(h=>{
+    h.addEventListener("click",e=>{ if(e.target.closest(".task"))return; h.parentElement.classList.toggle("open");});
+  });
+  root.querySelectorAll('input[type=checkbox]').forEach(cb=>{
+    cb.addEventListener("change",()=>toggle(cb.dataset.id,cb.checked));
+  });
+  root.querySelectorAll('label[data-for]').forEach(l=>{
+    l.addEventListener("click",()=>{const cb=root.querySelector('input[data-id="'+l.dataset.for+'"]');cb.checked=!cb.checked;toggle(l.dataset.for,cb.checked);});
+  });
+}
+
+function toggle(id,on){
+  if(on)completed.add(id);else completed.delete(id);
+  saveProgress();
+  // update just the row + counts without full re-render losing open state
+  const row=document.querySelector('input[data-id="'+id+'"]').closest('.task');
+  row.classList.toggle('done',on);
+  ROADMAP.forEach(w=>{
+    const d=w.tasks.filter(t=>completed.has(t.id)).length;
+    const el=document.querySelector('[data-mini="'+w.wk+'"]'); if(el)el.textContent=d+"/"+w.tasks.length;
+  });
+  updateRing();
+}
+
+function updateRing(){
+  const n=completed.size, pct=totalTasks?Math.round(n/totalTasks*100):0;
+  const circ=2*Math.PI*33;
+  document.getElementById("ringFill").style.strokeDashoffset=circ*(1-pct/100);
+  document.getElementById("ringPct").textContent=pct+"%";
+  document.getElementById("ringCount").textContent=n+" of "+totalTasks+" done";
+}
+
+function renderPrompts(filter){
+  const cats=["All",...new Set(PROMPTS.map(p=>p.cat))];
+  document.getElementById("filters").innerHTML=cats.map(c=>
+    `<button class="chip ${(!filter&&c==='All')||filter===c?'active':''}" data-cat="${c}">${c}</button>`).join("");
+  document.querySelectorAll(".chip").forEach(ch=>ch.addEventListener("click",()=>renderPrompts(ch.dataset.cat==="All"?null:ch.dataset.cat)));
+  const list=PROMPTS.filter(p=>!filter||p.cat===filter);
+  document.getElementById("prompt-root").innerHTML=list.map((p,i)=>`
+    <div class="prompt">
+      <div class="ph">
+        <div><span class="pill ${p.color}">${p.cat}</span>
+          <h4 style="margin-top:8px">${p.title}</h4>
+          <div class="meta">↳ ${p.where}</div></div>
+        <button class="copy" data-i="${i}">⧉ Copy</button>
+      </div>
+      <div class="ptext">${p.text.replace(/</g,"&lt;")}</div>
+    </div>`).join("");
+  document.querySelectorAll(".copy").forEach(b=>b.addEventListener("click",()=>doCopy(b,list[b.dataset.i].text)));
+}
+
+function doCopy(btn,text){
+  const done=()=>{btn.classList.add("ok");btn.textContent="✓ Copied";setTimeout(()=>{btn.classList.remove("ok");btn.textContent="⧉ Copy";},1400);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done).catch(()=>fallback(text,done));}
+  else fallback(text,done);
+}
+function fallback(text,cb){const ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(e){}document.body.removeChild(ta);cb();}
+
+function renderFlows(){
+  document.getElementById("flow-root").innerHTML=FLOWS.map(f=>`
+    <div class="flow">
+      <h3>${f.title}</h3><p class="why">${f.why}</p>
+      ${f.steps.map((s,i)=>`<div class="step"><div class="dot">${i+1}</div>
+        <div class="sc"><h5>${s.h}</h5><p>${s.p}</p><span class="tool">${s.tool}</span></div></div>`).join("")}
+    </div>`).join("");
+}
+
+function renderGems(){
+  document.getElementById("gem-root").innerHTML=GEMS.map((g,i)=>`
+    <div class="gem ${i===0?'open':''}">
+      <div class="gem-head"><div class="gi">${g.icon}</div>
+        <div><h4>${g.name}</h4><p>${g.desc}</p></div><span class="chev">▼</span></div>
+      <div class="gem-body">
+        <div class="lbl">1 · Persona</div><div class="ptext">${g.persona.replace(/</g,"&lt;")}</div>
+        <div class="lbl">2 · Task</div><div class="ptext">${g.task.replace(/</g,"&lt;")}</div>
+        <div class="lbl">3 · Context</div><div class="ptext">${g.context.replace(/</g,"&lt;")}</div>
+        <div class="lbl">4 · Format</div><div class="ptext">${g.format.replace(/</g,"&lt;")}</div>
+        <button class="copy gemcopy" data-i="${i}" style="margin-top:12px">⧉ Copy full instructions</button>
+      </div>
+    </div>`).join("");
+  document.querySelectorAll(".gem-head").forEach(h=>h.addEventListener("click",()=>h.parentElement.classList.toggle("open")));
+  document.querySelectorAll(".gemcopy").forEach(b=>b.addEventListener("click",e=>{
+    e.stopPropagation();const g=GEMS[b.dataset.i];
+    const full=`PERSONA: ${g.persona}\n\nTASK: ${g.task}\n\nCONTEXT: ${g.context}\n\nFORMAT: ${g.format}`;
+    doCopy(b,full);
+  }));
+}
+
+/* ---------- TABS ---------- */
+document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll(".panel").forEach(x=>x.classList.remove("active"));
+  t.classList.add("active");
+  document.getElementById(t.dataset.p).classList.add("active");
+  window.scrollTo({top:0,behavior:"smooth"});
+}));
+
+document.getElementById("resetBtn").addEventListener("click",async()=>{
+  completed=new Set();await saveProgress();renderRoadmap();updateRing();
+});
+
+/* ---------- INIT ---------- */
+(async function(){
+  await loadProgress();
+  renderRoadmap();
+  renderPrompts(null);
+  renderFlows();
+  renderGems();
+  updateRing();
+})();
+</script>
+</body>
+</html>

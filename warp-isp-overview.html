@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What can your ISP see? — An overview of Cloudflare WARP</title>
+<style>
+  :root{
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --paper:#E9E1CF;
+    --paper-2:#E1D8C2;
+    --ink:#1C1A15;
+    --ink-soft:#4A463C;
+    --line:#C5BAA0;
+    --stamp-red:#B23A2E;
+    --seal-green:#2E6149;
+    --warp:#E8590C;       /* cloudflare-ish brand orange, used sparingly */
+    --read:#B23A2E;       /* "exposed" tone */
+    --hidden:#2E6149;     /* "protected" tone */
+    --shadow: 0 2px 0 rgba(28,26,21,.14);
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:
+      radial-gradient(circle at 18% 12%, rgba(255,255,255,.35), transparent 40%),
+      radial-gradient(circle at 82% 78%, rgba(28,26,21,.05), transparent 45%);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:980px;margin:0 auto;padding:0 22px}
+
+  /* ---------- type ---------- */
+  h1{
+    font-family:var(--sans);font-weight:900;
+    font-size:clamp(42px,8.5vw,84px);line-height:.95;letter-spacing:-.02em;
+    margin:.18em 0 .25em;
+  }
+  h2{
+    font-family:var(--sans);font-weight:800;
+    font-size:clamp(24px,4vw,34px);line-height:1.05;letter-spacing:-.01em;
+    margin:0 0 .2em;
+  }
+  h3{font-family:var(--sans);font-weight:700;font-size:19px;margin:0 0 6px}
+  p{margin:0 0 14px}
+  .lede{font-size:clamp(17px,2.4vw,21px);color:var(--ink-soft);max-width:62ch}
+  .mono{font-family:var(--mono)}
+  .sec-num{font-family:var(--mono);font-size:13px;color:var(--warp);letter-spacing:.1em}
+
+  /* ---------- hero ---------- */
+  header{padding:64px 0 26px;position:relative}
+  .filetab{
+    display:inline-flex;align-items:center;gap:9px;
+    background:var(--ink);color:var(--paper);
+    font-family:var(--mono);font-size:12px;letter-spacing:.14em;
+    padding:7px 14px;border-radius:3px 3px 0 0;text-transform:uppercase;
+  }
+  .filetab .dot{width:8px;height:8px;border-radius:50%;background:var(--warp)}
+  .hero-line{height:3px;background:var(--ink);margin-top:-1px}
+  /* hero: how the data gets used */
+  .uses{margin-top:30px}
+  .uses-label{font-family:var(--mono);font-size:11.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:13px;display:block}
+  .uses-grid{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+  .use{flex:0 1 calc(33.333% - 8px);background:var(--paper-2);border:1.5px solid var(--ink);border-radius:6px;padding:15px;box-shadow:var(--shadow)}
+  .use .ug{font-size:22px;line-height:1;display:block;margin-bottom:9px}
+  .use h4{font-family:var(--sans);font-weight:800;font-size:14.5px;margin:0 0 5px;line-height:1.1}
+  .use p{font-size:12.8px;color:var(--ink-soft);margin:0;line-height:1.4}
+  .uses-caveat{margin-top:14px;font-size:13px;color:var(--ink-soft);font-style:italic;border-left:3px solid var(--warp);padding-left:13px}
+
+  /* ---------- generic section ---------- */
+  section{padding:42px 0;border-top:1px solid var(--line)}
+  .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:22px;flex-wrap:wrap}
+
+  /* ---------- primer cards ---------- */
+  .who{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:stretch}
+  .card{
+    background:var(--paper-2);border:1.5px solid var(--ink);border-radius:6px;
+    padding:18px 18px 16px;box-shadow:var(--shadow);position:relative;
+    display:flex;flex-direction:column;
+  }
+  .card .role{
+    font-family:var(--mono);font-size:11px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--ink-soft);margin-bottom:8px;display:block;
+  }
+  .card .glyph{font-size:26px;line-height:1;margin-bottom:10px;display:block}
+  .card.watcher{border-color:var(--stamp-red)}
+  .card.watcher .role{color:var(--stamp-red)}
+  .device-note{
+    margin-top:13px;padding:11px 12px;border-radius:6px;
+    background:rgba(178,58,46,.07);border:1px solid rgba(178,58,46,.32);
+    font-size:12.5px;line-height:1.42;color:var(--ink-soft);
+  }
+  .dn-flag{
+    display:inline-flex;align-items:center;gap:5px;margin-bottom:6px;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;
+    color:var(--stamp-red);font-weight:700;
+  }
+  .isp-note{
+    margin-top:13px;padding:11px 12px;border-radius:6px;
+    background:rgba(28,26,21,.05);border:1px solid var(--line);
+    font-size:12.5px;line-height:1.42;color:var(--ink-soft);
+  }
+  .isp-note .dn-flag{color:var(--ink-soft)}
+  .note{
+    margin-top:22px;font-size:15px;color:var(--ink-soft);
+    border-left:3px solid var(--warp);padding:8px 0 8px 14px;
+  }
+  .note b{color:var(--ink)}
+
+  /* ---------- the redaction hero (signature) ---------- */
+  .scenarios{display:flex;flex-direction:column;gap:16px}
+  .scn{
+    background:#F2EBDB;border:1.5px solid var(--ink);border-radius:6px;
+    padding:16px 18px;box-shadow:var(--shadow);
+  }
+  .scn-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+  .scn-name{font-family:var(--sans);font-weight:800;font-size:16px}
+  .scn-set{font-family:var(--mono);font-size:12px;color:var(--ink-soft)}
+  .logline{
+    font-family:var(--mono);font-size:14.5px;
+    background:var(--ink);color:var(--paper);border-radius:4px;
+    padding:13px 14px;overflow-x:auto;white-space:nowrap;
+  }
+  .logline .t{color:#9b9580}
+  .logline .field{color:#F2EBDB}
+  /* redaction bar */
+  .rd{position:relative;display:inline-block;border-radius:2px;cursor:pointer}
+  .rd .w{background:var(--paper);color:var(--paper);border-radius:2px;padding:0 3px;transition:color .18s,background .18s}
+  .rd:hover .w,.rd.revealed .w{background:transparent;color:#7CE7C4}
+  .rd::after{content:"";}
+  .seen-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .tag{
+    font-family:var(--mono);font-size:11px;letter-spacing:.04em;
+    padding:4px 9px;border-radius:999px;border:1.5px solid;display:inline-flex;gap:6px;align-items:center;
+  }
+  .tag.exposed{color:var(--read);border-color:var(--read);background:rgba(178,58,46,.07)}
+  .tag.safe{color:var(--hidden);border-color:var(--hidden);background:rgba(46,97,73,.07)}
+  .reveal-hint{font-size:12.5px;color:var(--ink-soft);margin-top:14px;font-style:italic}
+
+  /* ---------- three switches ---------- */
+  .switches{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .switch{background:var(--paper-2);border:1.5px solid var(--ink);border-radius:6px;padding:18px;box-shadow:var(--shadow)}
+  .switch .k{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--warp);text-transform:uppercase}
+  .opts{list-style:none;margin:12px 0 0;padding:0;font-size:14px}
+  .opts li{padding:8px 0;border-top:1px dashed var(--line)}
+  .opts li:first-child{border-top:none}
+  .opts b{font-family:var(--mono);font-size:13px}
+  .opts .sub{color:var(--ink-soft);font-size:13px;display:block;margin-top:2px}
+
+  /* ---------- decision matrix ---------- */
+  .matrix{display:flex;flex-direction:column;gap:12px}
+  .row{
+    display:grid;grid-template-columns:1.15fr 1.35fr .9fr;gap:0;
+    background:var(--paper-2);border:1.5px solid var(--ink);border-radius:6px;overflow:hidden;box-shadow:var(--shadow);
+  }
+  .row > div{padding:15px 16px}
+  .row .want{border-right:1px solid var(--line)}
+  .row .do{border-right:1px solid var(--line)}
+  .row .g{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--ink-soft);text-transform:uppercase;display:block;margin-bottom:8px}
+  .row .want b{font-size:15.5px;font-family:var(--sans);font-weight:600}
+  /* app-style mode selector (mirrors the WARP app dropdown) */
+  .app-mode{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    background:var(--ink);color:var(--paper);border-radius:7px;
+    padding:9px 12px;font-family:var(--sans);font-size:13.5px;font-weight:500;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);
+  }
+  .app-mode .amv{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .app-mode .amc{opacity:.55;font-size:13px;flex-shrink:0}
+  .app-mode.off{background:transparent;color:var(--ink-soft);border:1.5px dashed var(--line);box-shadow:none}
+  .filter{display:block;margin-top:10px;font-family:var(--mono);font-size:12px;color:var(--ink-soft)}
+  .filter b{color:var(--ink)}
+  .sees{display:flex;flex-direction:column;gap:7px}
+  .meter{display:flex;gap:4px;align-items:center}
+  .seg{width:22px;height:9px;border-radius:2px;border:1.4px solid var(--ink)}
+  .seg.on-red{background:var(--read)}
+  .seg.on-amber{background:var(--warp)}
+  .seg.off{background:transparent}
+  .sees .lvl{font-family:var(--mono);font-size:11.5px;letter-spacing:.03em}
+  .sees small{font-size:12px;color:var(--ink-soft);line-height:1.35;display:block}
+
+  /* ---------- the catch ---------- */
+  .catch{background:var(--ink);color:var(--paper);border-radius:8px;padding:30px 26px;position:relative;overflow:hidden}
+  .catch h2{color:var(--paper)}
+  .catch p{color:#D8CFB9;max-width:60ch}
+  .catch .stamp{
+    position:absolute;top:18px;right:18px;
+    font-family:var(--mono);font-weight:700;font-size:13px;letter-spacing:.1em;
+    color:var(--warp);border:2.5px solid var(--warp);border-radius:5px;padding:6px 11px;
+    transform:rotate(7deg);opacity:.9;
+  }
+  .trade{display:flex;align-items:center;gap:14px;margin-top:18px;flex-wrap:wrap;font-family:var(--mono);font-size:13px}
+  .trade .chip{border:1.5px solid #5a5648;border-radius:999px;padding:6px 13px;color:var(--paper)}
+  .trade .arrow{color:var(--warp);font-size:18px}
+
+  /* ---------- zero trust contrast ---------- */
+  .zt{margin-top:18px}
+  .zt-intro{font-size:15.5px;color:var(--ink-soft);margin:0 0 16px;max-width:64ch}
+  .zt-intro b{color:var(--ink)}
+  .zt-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .zt-col{background:var(--paper-2);border:1.5px solid var(--ink);border-radius:6px;padding:18px;box-shadow:var(--shadow);border-left-width:5px}
+  .zt-col.you{border-left-color:var(--seal-green)}
+  .zt-col.org{border-left-color:var(--stamp-red)}
+  .zt-tag{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:4px}
+  .zt-col.you .zt-tag{color:var(--seal-green)}
+  .zt-col.org .zt-tag{color:var(--stamp-red)}
+  .zt-col h3{margin-bottom:12px}
+  .zt-list{list-style:none;margin:0;padding:0;font-size:13.8px;line-height:1.45}
+  .zt-list li{padding:7px 0 7px 22px;position:relative;border-top:1px dashed var(--line);color:var(--ink-soft)}
+  .zt-list li:first-child{border-top:none}
+  .zt-list li::before{position:absolute;left:0;top:7px;font-family:var(--mono)}
+  .zt-col.you .zt-list li::before{content:"✓";color:var(--seal-green)}
+  .zt-col.org .zt-list li::before{content:"👁";font-size:12px}
+  .zt-bottom{margin-top:16px;font-size:14.5px;border-left:3px solid var(--stamp-red);padding:8px 0 8px 14px;color:var(--ink)}
+  .zt-bottom b{color:var(--stamp-red)}
+
+  /* ---------- resources ---------- */
+  .links{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .lnk{
+    display:flex;flex-direction:column;text-decoration:none;color:var(--ink);
+    background:var(--paper-2);border:1.5px solid var(--ink);border-radius:6px;
+    padding:18px;box-shadow:var(--shadow);transition:transform .15s ease,box-shadow .15s ease,background .15s ease;
+  }
+  .lnk:hover,.lnk:focus-visible{transform:translateY(-3px);box-shadow:0 6px 0 rgba(28,26,21,.16);background:#ECE4D2;outline:none}
+  .lnk-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+  .lnk-title{font-family:var(--sans);font-weight:800;font-size:17px;line-height:1.1}
+  .lnk-ext{font-family:var(--mono);color:var(--warp);font-size:18px;flex-shrink:0;transition:transform .15s ease}
+  .lnk:hover .lnk-ext{transform:translate(2px,-2px)}
+  .lnk-desc{font-size:13.5px;color:var(--ink-soft);line-height:1.4;flex-grow:1}
+  .lnk-url{
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.02em;
+    color:var(--ink);margin-top:14px;padding-top:11px;border-top:1px dashed var(--line);
+    word-break:break-all;
+  }
+  .lnk-url::before{content:"↳ ";color:var(--warp)}
+
+  /* ---------- footer ---------- */
+  footer{padding:36px 0 60px;border-top:1px solid var(--line);color:var(--ink-soft);font-size:13px}
+  footer .where{font-family:var(--mono);color:var(--ink);margin-bottom:6px}
+
+  /* ---------- reveal anim ---------- */
+  .fade{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+  .fade.in{opacity:1;transform:none}
+
+  /* ---------- responsive ---------- */
+  @media(max-width:760px){
+    .who{grid-template-columns:1fr}
+    .uses-grid .use{flex-basis:calc(50% - 6px)}
+    .switches{grid-template-columns:1fr}
+    .links{grid-template-columns:1fr}
+    .row{grid-template-columns:1fr}
+    .row .want,.row .do{border-right:none;border-bottom:1px solid var(--line)}
+    .logline{font-size:13px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .fade{transition:none;opacity:1;transform:none}
+    html{scroll-behavior:auto}
+    .rd .w{transition:none}
+  }
+  .rd:focus-visible{outline:2px solid var(--warp);outline-offset:2px}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <header>
+    <span class="filetab"><span class="dot"></span>CLOUDFLARE WARP · FIELD GUIDE</span>
+    <div class="hero-line"></div>
+    <h1>What can<br>your ISP see?</h1>
+    <p class="lede">Everything you do online passes through your internet provider — so with nothing protecting it, they can see where you go, and by default it's logged. The real questions aren't <em>whether</em> that happens, but how long they keep the record and what they do with it. These WARP settings change the one part you control: how much they can read in the first place. Here's an overview.</p>
+
+    <div class="uses fade">
+      <span class="uses-label">What your browsing data can be used for</span>
+      <div class="uses-grid">
+        <div class="use">
+          <span class="ug">💰</span>
+          <h4>Sold for profit</h4>
+          <p>Your browsing history can be packaged and sold to data brokers and others willing to pay for it.</p>
+        </div>
+        <div class="use">
+          <span class="ug">🧩</span>
+          <h4>Profiling</h4>
+          <p>Patterns in where you go can infer things you never stated — political leanings, group affiliations, gender, relationship status, opinions, even health.</p>
+        </div>
+        <div class="use">
+          <span class="ug">📣</span>
+          <h4>Advertising</h4>
+          <p>Your activity feeds ad targeting — shaping which ads you're shown and letting advertisers pay to reach you specifically.</p>
+        </div>
+        <div class="use">
+          <span class="ug">🐢</span>
+          <h4>Throttling</h4>
+          <p>Seeing that you're streaming, gaming, or downloading, a provider can deliberately slow it.</p>
+        </div>
+        <div class="use">
+          <span class="ug">🚫</span>
+          <h4>Blocked or restricted</h4>
+          <p>Where you're connecting can be used to deny the request — sites blocked by a network or government, or content withheld because of your region.</p>
+        </div>
+        <div class="use">
+          <span class="ug">📋</span>
+          <h4>Handed over</h4>
+          <p>Logs can be handed to authorities — or compelled by a legal request, even from a private party such as a copyright holder.</p>
+        </div>
+        <div class="use">
+          <span class="ug">🔓</span>
+          <h4>Leaked in a breach</h4>
+          <p>Whatever the provider stores can spill out if they're hacked — exposure you can't control.</p>
+        </div>
+      </div>
+      <p class="uses-caveat">Exactly what's permitted varies by provider and country — but the less they can read, the less any of this is possible.</p>
+    </div>
+  </header>
+
+  <!-- WHO'S ON THE WIRE -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">01</span>
+      <h2>Who's on the wire</h2>
+    </div>
+    <div class="who">
+      <div class="card fade">
+        <span class="glyph">📱</span>
+        <span class="role">You</span>
+        <h3>Your device</h3>
+        <p style="margin:0;font-size:14.5px;color:var(--ink-soft)">Your phone or laptop. Every site you open starts here as a request.</p>
+        <div class="device-note">
+          <span class="dn-flag">⚠ WARP can't protect this</span>
+          Your OS (Android, iOS) and installed apps — social media, say — can read your data right here, before any request leaves. How much depends on each app's privacy policy. A tunnel only guards data once it's on the wire.
+        </div>
+      </div>
+      <div class="card watcher fade">
+        <span class="glyph">👁️</span>
+        <span class="role">The watcher</span>
+        <h3>Your ISP</h3>
+        <p style="margin:0;font-size:14.5px;color:var(--ink-soft)">The company you pay for internet. Every request passes through them, so unless it's hidden, they can see and record it.</p>
+        <div class="isp-note">
+          <span class="dn-flag">⚖ Lawful access</span>
+          In many countries, ISPs are legally required to give authorities direct — sometimes real‑time — access to the traffic on their network, beyond case‑by‑case requests.
+        </div>
+      </div>
+      <div class="card watcher fade">
+        <span class="glyph">🕵️</span>
+        <span class="role">Uninvited</span>
+        <h3>Eavesdroppers</h3>
+        <p style="margin:0;font-size:14.5px;color:var(--ink-soft)">On public Wi‑Fi — a café, airport, or hotel — someone on the same network can quietly intercept unprotected traffic. That's the everyday risk; at the far end, network operators and even state actors can tap the cables your data crosses.</p>
+      </div>
+      <div class="card fade">
+        <span class="glyph">🛡️</span>
+        <span class="role">The tunnel</span>
+        <h3>Cloudflare WARP</h3>
+        <p style="margin:0;font-size:14.5px;color:var(--ink-soft)">A free app that wraps your traffic in a sealed tunnel and carries it for you — past everyone watching the wire.</p>
+      </div>
+    </div>
+    <p class="note"><b>One word you'll see: DNS.</b> Opening a website starts with a lookup — like asking a phone book, "what's the number for wikipedia.org?" That question is a <b>DNS lookup</b>. By itself it travels in plain text, so the watcher can read it.</p>
+  </section>
+
+  <!-- THE BIG IDEA: REDACTION -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">02</span>
+      <h2>The same line, redacted three ways</h2>
+    </div>
+    <p class="lede" style="margin-bottom:22px">Here's a single page of your ISP's logbook for one website visit. As you turn on more protection, more of the line gets blacked out — until there's almost nothing left to read.</p>
+
+    <div class="scenarios">
+
+      <div class="scn fade">
+        <div class="scn-top">
+          <span class="scn-name">① WARP off — plain DNS</span>
+          <span class="scn-set mono">No tunnel · DNS over UDP</span>
+        </div>
+        <div class="logline">
+          <span class="t">14:09</span>&nbsp; lookup: <span class="field">wikipedia.org</span> &nbsp;→&nbsp; visit: <span class="field">208.80.153.224</span> &nbsp; <span class="field">(wikipedia.org)</span>
+        </div>
+        <div class="seen-tags">
+          <span class="tag exposed">● ISP reads your lookup</span>
+          <span class="tag exposed">● ISP reads where you go</span>
+        </div>
+      </div>
+
+      <div class="scn fade">
+        <div class="scn-top">
+          <span class="scn-name">② Encrypted DNS only</span>
+          <span class="scn-set mono">No tunnel · DNS over HTTPS / TLS</span>
+        </div>
+        <div class="logline">
+          <span class="t">14:09</span>&nbsp; lookup: <span class="rd" tabindex="0" title="Hidden from your ISP"><span class="w">wikipedia.org</span></span> &nbsp;→&nbsp; visit: <span class="field">208.80.153.224</span> &nbsp; <span class="field">(wikipedia.org)</span>
+        </div>
+        <div class="seen-tags">
+          <span class="tag safe">✓ Lookup hidden</span>
+          <span class="tag exposed">● ISP still sees where you connect</span>
+        </div>
+      </div>
+
+      <div class="scn fade">
+        <div class="scn-top">
+          <span class="scn-name">③ Full WARP — Traffic and DNS</span>
+          <span class="scn-set mono">Tunnel on · any DNS protocol</span>
+        </div>
+        <div class="logline">
+          <span class="t">14:09</span>&nbsp; lookup: <span class="rd" tabindex="0" title="Hidden from your ISP"><span class="w">wikipedia.org</span></span> &nbsp;→&nbsp; visit: <span class="rd" tabindex="0" title="Hidden from your ISP"><span class="w">208.80.153.224</span></span> &nbsp;<span class="field">sealed tunnel → Cloudflare</span>
+        </div>
+        <div class="seen-tags">
+          <span class="tag safe">✓ Lookup hidden</span>
+          <span class="tag safe">✓ Destination hidden</span>
+          <span class="tag exposed">● ISP only sees "talking to Cloudflare"</span>
+        </div>
+      </div>
+
+    </div>
+    <p class="reveal-hint">Tip: hover or tap a black bar to peek at what would have leaked without protection.</p>
+  </section>
+
+  <!-- THE THREE SWITCHES -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">03</span>
+      <h2>The three switches</h2>
+    </div>
+    <p class="lede" style="margin-bottom:22px">Everything in the app comes down to three independent choices. The first two change what your ISP sees. The third only changes what <em>you</em> can reach.</p>
+    <div class="switches">
+
+      <div class="switch fade">
+        <span class="k">Switch 1 · Mode</span>
+        <h3>What travels in the tunnel</h3>
+        <ul class="opts">
+          <li><b>Traffic and DNS</b><span class="sub">Everything goes through the tunnel. Strongest hiding from your ISP.</span></li>
+          <li><b>DNS only</b><span class="sub">Only your lookups are protected. Your actual visits stay on the ISP's wire.</span></li>
+        </ul>
+      </div>
+
+      <div class="switch fade">
+        <span class="k">Switch 2 · DNS protocol</span>
+        <h3>How your lookups travel</h3>
+        <ul class="opts">
+          <li><b>DNS over UDP</b><span class="sub">Plain text. Only safe <em>inside</em> the full tunnel — fastest, no extra wrapping.</span></li>
+          <li><b>over HTTPS (DoH)</b><span class="sub">Locked on its own. Blends in with normal web traffic; safe anywhere.</span></li>
+          <li><b>over TLS (DoT)</b><span class="sub">Also locked on its own, but on a dedicated lane that's easier to spot or block.</span></li>
+        </ul>
+      </div>
+
+      <div class="switch fade">
+        <span class="k">Switch 3 · 1.1.1.1 for Families</span>
+        <h3>What gets filtered out</h3>
+        <ul class="opts">
+          <li><b>None</b><span class="sub">No filtering. Fastest, nothing blocked.</span></li>
+          <li><b>Block malware</b><span class="sub">Refuses to look up known dangerous sites. Near-invisible day to day.</span></li>
+          <li><b>+ adult content</b><span class="sub">Also blocks adult sites. Good for kids' devices; a net, not a wall.</span></li>
+        </ul>
+      </div>
+
+    </div>
+    <p class="note">Filtering works by giving you a "no answer" for bad sites, so your device never connects. It <b>doesn't change what your ISP sees</b> — it's about your safety, not your privacy.</p>
+  </section>
+
+  <!-- DECISION MATRIX -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">04</span>
+      <h2>Choose your tunnel</h2>
+    </div>
+    <p class="lede" style="margin-bottom:22px">Find your goal on the left. The meter on the right shows how much your ISP can still see — fuller bars mean more exposed.</p>
+
+    <div class="matrix">
+
+      <div class="row fade">
+        <div class="want"><span class="g">If you want</span><b>Maximum privacy from your ISP</b></div>
+        <div class="do">
+          <span class="g">Choose this mode</span>
+          <div class="app-mode"><span class="amv">Traffic and DNS (HTTPS)</span><span class="amc">▾</span></div>
+          <span class="filter">+ filter: <b>Block malware</b></span>
+        </div>
+        <div class="sees">
+          <span class="g">What your ISP sees</span>
+          <div class="meter"><span class="seg on-amber"></span><span class="seg off"></span><span class="seg off"></span></div>
+          <span class="lvl" style="color:var(--hidden)">ALMOST NOTHING</span>
+          <small>Just an encrypted tunnel to Cloudflare.</small>
+        </div>
+      </div>
+
+      <div class="row fade">
+        <div class="want"><span class="g">If you want</span><b>Fastest setup that still hides you</b></div>
+        <div class="do">
+          <span class="g">Choose this mode</span>
+          <div class="app-mode"><span class="amv">Traffic and DNS (UDP)</span><span class="amc">▾</span></div>
+          <span class="filter">+ filter: <b>Block malware</b></span>
+        </div>
+        <div class="sees">
+          <span class="g">What your ISP sees</span>
+          <div class="meter"><span class="seg on-amber"></span><span class="seg off"></span><span class="seg off"></span></div>
+          <span class="lvl" style="color:var(--hidden)">ALMOST NOTHING</span>
+          <small>Tunnel does the work; no double-wrapping, less overhead.</small>
+        </div>
+      </div>
+
+      <div class="row fade">
+        <div class="want"><span class="g">If you want</span><b>A safe device for kids</b></div>
+        <div class="do">
+          <span class="g">Choose this mode</span>
+          <div class="app-mode"><span class="amv">Traffic and DNS (HTTPS)</span><span class="amc">▾</span></div>
+          <span class="filter">+ filter: <b>Block malware &amp; adult content</b></span>
+        </div>
+        <div class="sees">
+          <span class="g">What your ISP sees</span>
+          <div class="meter"><span class="seg on-amber"></span><span class="seg off"></span><span class="seg off"></span></div>
+          <span class="lvl" style="color:var(--hidden)">ALMOST NOTHING</span>
+          <small>Same ISP blindness, plus content filtering.</small>
+        </div>
+      </div>
+
+      <div class="row fade">
+        <div class="want"><span class="g">If you want</span><b>Just hide my lookups, keep it light</b></div>
+        <div class="do">
+          <span class="g">Choose this mode</span>
+          <div class="app-mode"><span class="amv">DNS only (HTTPS)</span><span class="amc">▾</span></div>
+          <span class="filter">+ filter: <b>Block malware</b></span>
+        </div>
+        <div class="sees">
+          <span class="g">What your ISP sees</span>
+          <div class="meter"><span class="seg on-amber"></span><span class="seg on-amber"></span><span class="seg off"></span></div>
+          <span class="lvl" style="color:var(--warp)">SOME</span>
+          <small>Lookups hidden, but ISP still sees the sites you connect to.</small>
+        </div>
+      </div>
+
+      <div class="row fade">
+        <div class="want"><span class="g">If you want</span><b>To not route everything through one company</b></div>
+        <div class="do">
+          <span class="g">Choose this mode</span>
+          <div class="app-mode"><span class="amv">DNS only (HTTPS)</span><span class="amc">▾</span></div>
+          <span class="filter">+ filter: optional · traffic stays on your ISP</span>
+        </div>
+        <div class="sees">
+          <span class="g">What your ISP sees</span>
+          <div class="meter"><span class="seg on-amber"></span><span class="seg on-amber"></span><span class="seg off"></span></div>
+          <span class="lvl" style="color:var(--warp)">SOME</span>
+          <small>You keep trust with your ISP for traffic; only DNS goes to Cloudflare.</small>
+        </div>
+      </div>
+
+      <div class="row fade">
+        <div class="want"><span class="g">If you do</span><b>Nothing (WARP turned off)</b></div>
+        <div class="do">
+          <span class="g">Choose this mode</span>
+          <div class="app-mode off"><span class="amv">WARP turned off</span><span class="amc">▾</span></div>
+          <span class="filter">no filter · default DNS over UDP</span>
+        </div>
+        <div class="sees">
+          <span class="g">What your ISP sees</span>
+          <div class="meter"><span class="seg on-red"></span><span class="seg on-red"></span><span class="seg on-red"></span></div>
+          <span class="lvl" style="color:var(--read)">EVERYTHING</span>
+          <small>Your lookups and your destinations are both readable.</small>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- THE CATCH -->
+  <section style="border-bottom:none">
+    <div class="sec-head">
+      <span class="sec-num">05</span>
+      <h2>The catch</h2>
+    </div>
+    <div class="catch fade">
+      <span class="stamp">READ THIS</span>
+      <h2>You're not invisible — you're changing who holds the logbook.</h2>
+      <p>Turning on full WARP hides you from your ISP. But the tunnel has to end somewhere: now <b>Cloudflare</b> carries your traffic instead. They commit to not logging or selling it, and they're independently audited — but the trust simply moves to them. WARP secures the path; it isn't an anonymity cloak or a way to fake your location.</p>
+      <div class="trade">
+        <span class="chip">Trust your ISP</span>
+        <span class="arrow">→</span>
+        <span class="chip" style="border-color:var(--warp);color:var(--warp)">Trust Cloudflare</span>
+      </div>
+    </div>
+
+    <div class="zt fade">
+      <p class="zt-intro" style="margin-top:26px"><b>And there's a bigger twist: the very same app has a second life.</b> Everything in this guide describes the free <b>consumer</b> version of WARP. But when a workplace or school enrolls your device into their <b>Cloudflare Zero Trust</b> account, the app is built to do the <em>opposite</em> — let the organisation see and control your traffic instead of hiding it.</p>
+      <div class="zt-grid">
+        <div class="zt-col you">
+          <span class="zt-tag">This guide · Consumer WARP</span>
+          <h3>Your tool, to hide you</h3>
+          <ul class="zt-list">
+            <li>You install it for yourself.</li>
+            <li>Cloudflare carries your traffic and pledges not to log or sell it.</li>
+            <li>The goal is to hide your activity from your ISP.</li>
+          </ul>
+        </div>
+        <div class="zt-col org">
+          <span class="zt-tag">Zero Trust · Work / school device</span>
+          <h3>Their tool, to watch you</h3>
+          <ul class="zt-list">
+            <li>An organisation enrols your device into their account.</li>
+            <li>Every DNS lookup and web request is logged with your identity and device attached.</li>
+            <li>They filter what you can reach and check your device's health (OS, disk encryption, installed apps).</li>
+            <li>They can even read your encrypted (HTTPS) traffic — if their security certificate is installed on the device.</li>
+          </ul>
+        </div>
+      </div>
+      <p class="zt-bottom"><b>"Zero Trust" means "never trust, always verify"</b> — every request is checked against the organisation's rules rather than waved through. So if your device is managed by an employer or school, the privacy in this guide may not apply: the watcher simply becomes your organisation, by design. (You can usually tell: a Zero Trust device shows your organisation's name and a login in the app.)</p>
+    </div>
+  </section>
+
+  <!-- RESOURCES -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">06</span>
+      <h2>Go deeper</h2>
+    </div>
+    <p class="lede" style="margin-bottom:22px">Straight from the source — download the app and read Cloudflare's own documentation on every setting in this guide.</p>
+    <div class="links">
+
+      <a class="lnk fade" href="https://one.one.one.one/" target="_blank" rel="noopener noreferrer">
+        <div class="lnk-top">
+          <span class="lnk-title">Get the app</span>
+          <span class="lnk-ext">↗</span>
+        </div>
+        <span class="lnk-desc">The official home of 1.1.1.1 / WARP. Download it for iOS, Android, Windows, macOS, or Linux.</span>
+        <span class="lnk-url">one.one.one.one</span>
+      </a>
+
+      <a class="lnk fade" href="https://developers.cloudflare.com/1.1.1.1/" target="_blank" rel="noopener noreferrer">
+        <div class="lnk-top">
+          <span class="lnk-title">1.1.1.1 docs</span>
+          <span class="lnk-ext">↗</span>
+        </div>
+        <span class="lnk-desc">How the DNS resolver works, the DoH / DoT / UDP protocols, and the 1.1.1.1 for Families filtering tiers.</span>
+        <span class="lnk-url">developers.cloudflare.com/1.1.1.1</span>
+      </a>
+
+      <a class="lnk fade" href="https://developers.cloudflare.com/warp-client/" target="_blank" rel="noopener noreferrer">
+        <div class="lnk-top">
+          <span class="lnk-title">WARP client docs</span>
+          <span class="lnk-ext">↗</span>
+        </div>
+        <span class="lnk-desc">The tunnel itself — modes, MASQUE vs WireGuard, settings, and what resetting your encryption keys does.</span>
+        <span class="lnk-url">developers.cloudflare.com/warp-client</span>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="where">Where to find these: open the 1.1.1.1 / WARP app → Settings &amp; Connectivity.</div>
+    A plain-English explainer of the available options. Not affiliated with or endorsed by Cloudflare. "Sees some" means your ISP can still identify the sites you reach even when your DNS lookups are encrypted.
+  </footer>
+
+</div>
+
+<script>
+  // gentle scroll-reveal, respecting reduced motion
+  (function(){
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var els = document.querySelectorAll('.fade');
+    if(reduce || !('IntersectionObserver' in window)){
+      els.forEach(function(e){e.classList.add('in')});
+      return;
+    }
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); }
+      });
+    },{threshold:.12});
+    els.forEach(function(e){io.observe(e)});
+  })();
+
+  // tap / click / keyboard reveal for redaction bars (touch devices don't fire :hover)
+  (function(){
+    document.querySelectorAll('.rd').forEach(function(el){
+      el.setAttribute('role','button');
+      el.setAttribute('aria-pressed','false');
+      function toggle(){
+        var on = el.classList.toggle('revealed');
+        el.setAttribute('aria-pressed', on ? 'true' : 'false');
+      }
+      el.addEventListener('click', toggle);
+      el.addEventListener('keydown', function(e){
+        if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); }
+      });
+    });
+  })();
+</script>
+</body>
+</html>
