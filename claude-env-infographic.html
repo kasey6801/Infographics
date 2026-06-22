@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="referrer" content="no-referrer">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Environment Overview</title>
+<style>
+  :root {
+    --bg:#0d0f14;--surface:#161b24;--surface2:#1e2535;--border:#2a3348;
+    --accent:#d97706;--accent2:#f59e0b;
+    --blue:#3b82f6;--purple:#8b5cf6;--green:#10b981;--teal:#14b8a6;
+    --text:#e2e8f0;--text-muted:#94a3b8;--text-dim:#64748b;
+    --web:#3b82f6;--desktop:#8b5cf6;--ide:#10b981;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:13px;line-height:1.5;}
+  a{color:inherit;text-decoration:none;}
+  code{font-family:monospace;font-size:11px;background:#0d0f14;padding:1px 4px;border-radius:3px;border:1px solid var(--border);}
+
+  .page{max-width:1140px;margin:0 auto;padding:32px 24px 60px;}
+
+  /* Header */
+  .header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:1px solid var(--border);padding-bottom:22px;margin-bottom:30px;}
+  .header h1{font-size:26px;font-weight:700;letter-spacing:-0.5px;color:#fff;}
+  .header p{color:var(--text-muted);margin-top:4px;font-size:13px;}
+  .hbadge{background:linear-gradient(135deg,#d97706,#f59e0b);color:#0d0f14;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:0.5px;margin-top:6px;display:inline-block;}
+  .vtags{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
+  .vtag{font-size:10px;padding:2px 8px;border-radius:4px;font-weight:600;}
+  .vtag.web{background:#1e3a5f;color:var(--web);border:1px solid #2a4f7a;}
+  .vtag.desktop{background:#2d1b6e;color:var(--desktop);border:1px solid #3d2a8a;}
+  .vtag.ide{background:#0d3328;color:var(--ide);border:1px solid #1a4f3a;}
+
+  /* Section title */
+  .stitle{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-dim);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+  .stitle::after{content:'';flex:1;height:1px;background:var(--border);}
+
+  /* Environments */
+  .env-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:26px;}
+  .env-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;position:relative;overflow:hidden;}
+  .env-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+  .env-card.web::before{background:var(--web);}
+  .env-card.desktop::before{background:var(--desktop);}
+  .env-card.ide::before{background:var(--ide);}
+  .env-name{font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+  .env-icon{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+  .env-card.web .env-icon{background:#1e3a5f;}
+  .env-card.desktop .env-icon{background:#2d1b6e;}
+  .env-card.ide .env-icon{background:#0d3328;}
+  .env-url{font-size:10px;color:var(--text-dim);font-family:monospace;margin-bottom:10px;}
+  .env-items{list-style:none;display:flex;flex-direction:column;gap:4px;}
+  .env-items li{font-size:11px;color:var(--text-muted);padding-left:12px;position:relative;}
+  .env-items li::before{content:'›';position:absolute;left:0;color:var(--text-dim);}
+  .env-items li strong{color:var(--text);font-weight:600;}
+
+  /* Mid grid */
+  .mid-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:26px;}
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;}
+  .ptitle{font-size:13px;font-weight:700;color:#fff;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+  .ptitle .dot{width:8px;height:8px;border-radius:50%;}
+
+  /* Sidebar mockup */
+  .sb-mock{background:#0d0f14;border-radius:8px;padding:10px;border:1px solid var(--border);display:flex;flex-direction:column;gap:2px;}
+  .sb-item{padding:5px 10px;border-radius:5px;font-size:11px;display:flex;align-items:center;gap:7px;color:var(--text-muted);}
+  .sb-item.active{background:var(--surface2);color:var(--text);}
+  .sb-item.new-btn{background:linear-gradient(135deg,#d97706,#f59e0b);color:#000;font-weight:700;margin-bottom:6px;justify-content:center;}
+  .sb-div{height:1px;background:var(--border);margin:4px 0;}
+  .sb-lbl{font-size:9px;color:var(--text-dim);padding:3px 10px 1px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;}
+  .sb-icon{font-size:12px;width:15px;text-align:center;}
+
+  /* Plus menu */
+  .plus-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+  .plus-item{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:9px;display:flex;flex-direction:column;gap:3px;}
+  .pi-head{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--text);}
+  .pi-head .pi{font-size:13px;}
+  .pi-body{font-size:10px;color:var(--text-muted);line-height:1.4;}
+  .pbadge{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:600;margin-left:auto;flex-shrink:0;}
+  .pbadge.web{background:#1e3a5f;color:var(--web);}
+  .pbadge.desktop{background:#2d1b6e;color:var(--desktop);}
+  .pbadge.all{background:#1a2035;color:var(--text-dim);}
+
+  /* Model */
+  .model-row{display:flex;flex-direction:column;gap:7px;margin-bottom:26px;}
+  .model-item{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:11px 13px;display:flex;align-items:flex-start;gap:9px;}
+  .model-item.sel{border-color:var(--accent);background:#1e1a10;}
+  .mbadge{font-size:10px;font-weight:700;padding:3px 7px;border-radius:4px;flex-shrink:0;margin-top:1px;}
+  .mbadge.opus{background:#2d1b6e;color:#a78bfa;}
+  .mbadge.sonnet{background:#1a2e1a;color:#4ade80;border:1px solid #166534;}
+  .mbadge.haiku{background:#1e1a10;color:var(--accent2);border:1px solid #78350f;}
+  .minfo{flex:1;}
+  .mname{font-size:12px;font-weight:700;color:var(--text);}
+  .mdesc{font-size:11px;color:var(--text-muted);margin-top:2px;}
+  .mtag{font-size:10px;background:var(--surface);border:1px solid var(--border);padding:1px 5px;border-radius:3px;color:var(--text-dim);display:inline-block;margin-top:3px;margin-right:3px;}
+  .sel-dot{width:7px;height:7px;border-radius:50%;background:var(--accent2);flex-shrink:0;margin-top:4px;}
+
+  /* ── Commands section ── */
+  .cmd-section{margin-bottom:26px;}
+  .cmd-grid-outer{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .cmd-panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;}
+  .cmd-panel-title{font-size:12px;font-weight:700;color:var(--ide);margin-bottom:11px;display:flex;align-items:center;gap:6px;}
+
+  /* Command cards */
+  .cmd-cards{display:flex;flex-direction:column;gap:6px;}
+  .cmd-card{background:#0d0f14;border:1px solid var(--border);border-radius:6px;padding:9px 11px;display:flex;flex-direction:column;gap:4px;transition:border-color 0.2s;}
+  .cmd-card:hover{border-color:var(--ide);}
+  .cmd-card-top{display:flex;align-items:center;gap:8px;}
+  .cmd-name{font-family:monospace;font-size:12px;font-weight:700;color:#4ade80;flex-shrink:0;}
+  .cmd-name.cli{color:#60a5fa;}
+  .cmd-name.file{color:#fb923c;}
+  .cmd-short{font-size:11px;color:var(--text-muted);flex:1;}
+  .cmd-link{font-size:9px;color:var(--text-dim);font-family:monospace;display:flex;align-items:center;gap:3px;transition:color 0.2s;text-decoration:none;flex-shrink:0;}
+  .cmd-card:hover .cmd-link{color:var(--ide);}
+  .cmd-example{font-family:monospace;font-size:10px;color:#94a3b8;background:#101318;padding:3px 7px;border-radius:3px;border-left:2px solid var(--ide);margin-top:1px;}
+
+  /* ── Core Concept cards ── */
+  .concepts-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:0;}
+  .cc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:15px;display:flex;flex-direction:column;gap:7px;text-decoration:none;transition:border-color 0.18s,transform 0.15s;cursor:pointer;}
+  .cc:hover{border-color:var(--accent);transform:translateY(-2px);}
+  .cc:hover .cc-link{color:var(--accent2);}
+  .cc-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;}
+  .cc-title{font-size:13px;font-weight:700;color:#fff;}
+  .cc-desc{font-size:11px;color:var(--text-muted);line-height:1.5;}
+  .cc-example{background:#0d0f14;border:1px solid var(--border);border-radius:5px;padding:7px 9px;margin-top:1px;}
+  .cc-example-lbl{font-size:9px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.8px;font-weight:700;margin-bottom:4px;}
+  .cc-example code{font-size:10px;background:transparent;border:none;padding:0;color:#93c5fd;display:block;line-height:1.6;}
+  .cc-example code.sh{color:#4ade80;}
+  .cc-example code.comment{color:var(--text-dim);}
+  .cc-link{font-size:10px;color:var(--text-dim);font-family:monospace;display:flex;align-items:center;gap:3px;transition:color 0.2s;word-break:break-all;margin-top:auto;}
+  .cc-tags{display:flex;gap:4px;flex-wrap:wrap;}
+  .ctag{font-size:9px;padding:1px 6px;border-radius:3px;font-weight:600;}
+  .ctag.web{background:#1e3a5f;color:var(--web);}
+  .ctag.desktop{background:#2d1b6e;color:var(--desktop);}
+  .ctag.ide{background:#0d3328;color:var(--ide);}
+  .ctag.api{background:#1c1232;color:#a78bfa;}
+
+  /* MD File Management */
+  .md-section{margin-bottom:26px;}
+  .md-outer{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;}
+  .md-outer-title{font-size:12px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .md-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+  .md-scope-panel{border-radius:8px;padding:14px;}
+  .md-scope-panel.project{background:#0d1a10;border:1px solid #1a3a1f;}
+  .md-scope-panel.env{background:#0d1025;border:1px solid #1a1f40;}
+  .md-scope-title{font-size:11px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:7px;}
+  .section-doc-link{margin-left:auto;font-size:10px;color:var(--text-dim);font-family:monospace;transition:color 0.2s;text-decoration:none;}
+  .section-doc-link.green:hover{color:#4ade80;}
+  .section-doc-link.purple:hover{color:#c084fc;}
+  .md-file-list{display:flex;flex-direction:column;gap:6px;}
+  .md-file{background:#0a0d12;border-radius:6px;padding:8px 10px;border:1px solid var(--border);}
+  .md-file-head{display:flex;align-items:center;gap:7px;margin-bottom:3px;}
+  .md-file-name{font-family:monospace;font-size:11px;font-weight:700;}
+  .md-file-name.green{color:#4ade80;}
+  .md-file-name.blue{color:#60a5fa;}
+  .md-file-name.orange{color:#fb923c;}
+  .md-file-name.yellow{color:var(--accent2);}
+  .md-file-name.purple{color:#c084fc;}
+  .md-file-path{font-family:monospace;font-size:10px;color:var(--text-dim);margin-bottom:2px;}
+  .md-file-desc{font-size:10px;color:var(--text-muted);line-height:1.5;}
+  .md-tag{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:600;margin-left:auto;flex-shrink:0;}
+  .md-tag.git{background:#0d2a1a;color:#4ade80;border:1px solid #166534;}
+  .md-tag.no-git{background:#2a1a0d;color:var(--accent2);border:1px solid #78350f;}
+  .md-tag.auto{background:#1c1232;color:#c084fc;border:1px solid #4c1d95;}
+  .md-tag.lazy{background:#1a1a0d;color:#fbbf24;border:1px solid #78350f;}
+  /* Loading behaviour row */
+  .md-behaviour{border-top:1px solid var(--border);padding-top:12px;margin-top:2px;}
+  .md-beh-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.9px;color:var(--text-dim);margin-bottom:8px;}
+  .md-beh-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
+  .md-beh-item{background:#0a0d12;border:1px solid var(--border);border-radius:6px;padding:8px 9px;}
+  .md-beh-label{font-size:10px;font-weight:700;color:var(--text);margin-bottom:3px;display:flex;align-items:center;gap:5px;}
+  .md-beh-body{font-size:10px;color:var(--text-muted);line-height:1.5;}
+  /* What goes where */
+  .md-decision{background:#0a0d12;border:1px solid var(--border);border-radius:8px;padding:11px 14px;margin-top:12px;}
+  .md-decision-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.9px;color:var(--text-dim);margin-bottom:8px;}
+  .md-decision-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+  .md-dec-col{display:flex;flex-direction:column;gap:4px;}
+  .md-dec-head{font-size:10px;font-weight:700;padding:3px 7px;border-radius:4px;text-align:center;}
+  .md-dec-head.green{background:#0d2a1a;color:#4ade80;}
+  .md-dec-head.orange{background:#1e1208;color:#fb923c;}
+  .md-dec-head.purple{background:#1c1232;color:#c084fc;}
+  .md-dec-head.blue{background:#0d1a2a;color:#60a5fa;}
+  .md-dec-item{font-size:10px;color:var(--text-muted);padding-left:10px;position:relative;}
+  .md-dec-item::before{content:'›';position:absolute;left:0;color:var(--text-dim);}
+
+  /* Custom commands panel */
+  .custom-panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;margin-top:14px;}
+  .custom-panel-title{font-size:12px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .custom-grid{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;gap:14px;}
+  .custom-col{}
+  .custom-col-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.9px;color:var(--text-dim);margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--border);}
+  .step-list{display:flex;flex-direction:column;gap:6px;}
+  .step{display:flex;gap:9px;align-items:flex-start;}
+  .step-num{width:18px;height:18px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);font-size:10px;font-weight:700;color:var(--accent2);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+  .step-body{font-size:11px;color:var(--text-muted);line-height:1.5;}
+  .step-body strong{color:var(--text);}
+  .scope-table{display:flex;flex-direction:column;gap:5px;}
+  .scope-row{background:#0d0f14;border:1px solid var(--border);border-radius:5px;padding:7px 9px;}
+  .scope-label{font-size:10px;font-weight:700;margin-bottom:2px;}
+  .scope-path{font-family:monospace;font-size:10px;color:#60a5fa;display:block;margin-bottom:2px;}
+  .scope-desc{font-size:10px;color:var(--text-muted);}
+  .invoke-grid{display:flex;flex-direction:column;gap:6px;}
+  .invoke-item{background:#0d0f14;border:1px solid var(--border);border-radius:5px;padding:7px 9px;}
+  .invoke-label{font-size:10px;font-weight:700;margin-bottom:3px;}
+  .invoke-ex{font-family:monospace;font-size:10px;padding:3px 6px;border-radius:3px;border-left:2px solid var(--accent2);background:#101318;display:block;color:#93c5fd;}
+  .invoke-note{font-size:10px;color:var(--text-muted);margin-top:3px;}
+  .snippet-block{background:#0d0f14;border:1px solid var(--border);border-radius:6px;padding:10px;font-family:monospace;font-size:10px;line-height:1.8;overflow:auto;}
+  .sn-comment{color:var(--text-dim);}
+  .sn-key{color:#f9a8d4;}
+  .sn-val{color:#86efac;}
+  .sn-head{color:var(--accent2);}
+  .sn-cmd{color:#60a5fa;}
+  .sn-inject{color:#fb923c;}
+  .approach-pills{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;}
+  .pill{font-size:10px;padding:2px 8px;border-radius:12px;font-weight:600;border:1px solid;}
+  .pill.legacy{background:#1e1a10;color:var(--accent2);border-color:#78350f;}
+  .pill.modern{background:#0d2a1a;color:#4ade80;border-color:#166534;}
+
+  /* Footer */
+  .footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+  .footer-note{font-size:10px;color:var(--text-dim);}
+  .footer-links{display:flex;gap:14px;flex-wrap:wrap;}
+  .footer-links a{font-size:10px;color:var(--text-muted);text-decoration:none;}
+  .footer-links a:hover{color:var(--accent2);}
+
+  /* Deprecated badge */
+  .dep{font-size:9px;padding:1px 5px;border-radius:3px;background:#3b1919;color:#f87171;font-weight:600;flex-shrink:0;}
+  /* ── THEME TOGGLE ── */
+  #theme-toggle{background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:13px;font-family:inherit;transition:background 0.15s,border-color 0.15s;display:flex;align-items:center;gap:6px;white-space:nowrap;}
+  #theme-toggle:hover{border-color:var(--accent2);}
+
+  /* ── LIGHT MODE ── */
+  [data-theme="light"]{--bg:#f7f7f0;--surface:#ffffff;--surface2:#eeeee8;--border:#d4d4c8;--text:#18181b;--text-muted:#52525b;--text-dim:#a1a1aa;--web:#1d4ed8;--desktop:#6d28d9;--ide:#047857;}
+  [data-theme="light"] .env-card{background:var(--surface);}
+  [data-theme="light"] .env-card.web{background:#eff6ff;border-color:#bfdbfe;}
+  [data-theme="light"] .env-card.desktop{background:#f5f3ff;border-color:#ddd6fe;}
+  [data-theme="light"] .env-card.ide{background:#f0fdf4;border-color:#bbf7d0;}
+  [data-theme="light"] .vtag.web{background:#dbeafe;color:#1d4ed8;border-color:#93c5fd;}
+  [data-theme="light"] .vtag.desktop{background:#ede9fe;color:#6d28d9;border-color:#c4b5fd;}
+  [data-theme="light"] .vtag.ide{background:#dcfce7;color:#047857;border-color:#86efac;}
+  [data-theme="light"] .ctag.web{background:#dbeafe;color:#1d4ed8;}
+  [data-theme="light"] .ctag.desktop{background:#ede9fe;color:#6d28d9;}
+  [data-theme="light"] .ctag.ide{background:#dcfce7;color:#047857;}
+  [data-theme="light"] .ctag.api{background:#f3e8ff;color:#7c3aed;}
+  [data-theme="light"] .pbadge.web{background:#dbeafe;color:#1d4ed8;}
+  [data-theme="light"] .pbadge.desktop{background:#ede9fe;color:#6d28d9;}
+  [data-theme="light"] .pbadge.all{background:#f1f5f9;color:#64748b;}
+  [data-theme="light"] code{background:#f1f5f9;border-color:#d1d5db;color:#1e293b;}
+  [data-theme="light"] .sb-mock{background:#f1f5f9;}
+  [data-theme="light"] .sb-item.active{background:#e2e8f0;}
+  [data-theme="light"] .plus-item{background:#f1f5f9;}
+  [data-theme="light"] .model-item{background:#f1f5f9;}
+  [data-theme="light"] .model-item.sel{background:#fefce8;border-color:var(--accent);}
+  [data-theme="light"] .mbadge.opus{background:#ede9fe;color:#5b21b6;}
+  [data-theme="light"] .mbadge.sonnet{background:#dcfce7;color:#15803d;border-color:#86efac;}
+  [data-theme="light"] .mbadge.haiku{background:#fef9c3;color:#a16207;border-color:#fde047;}
+  [data-theme="light"] .mtag{background:#f1f5f9;border-color:#d1d5db;color:#52525b;}
+  [data-theme="light"] .cmd-panel{background:var(--surface);}
+  [data-theme="light"] .cmd-card{background:#f1f5f9;}
+  [data-theme="light"] .cmd-card:hover{border-color:var(--ide);}
+  [data-theme="light"] .cmd-name{color:#047857;}
+  [data-theme="light"] .cmd-name.cli{color:#1d4ed8;}
+  [data-theme="light"] .cmd-name.file{color:#c2410c;}
+  [data-theme="light"] .cmd-example{background:#e8f5ee;border-left-color:var(--ide);color:#374151;}
+  [data-theme="light"] .dep{background:#fee2e2;color:#b91c1c;}
+  [data-theme="light"] .custom-panel{background:var(--surface);}
+  [data-theme="light"] .step-num{background:#f1f5f9;border-color:var(--border);color:var(--accent);}
+  [data-theme="light"] .snippet-block{background:#f8fafc;color:#374151;}
+  [data-theme="light"] .sn-comment{color:#6b7280;}
+  [data-theme="light"] .sn-key{color:#be185d;}
+  [data-theme="light"] .sn-val{color:#047857;}
+  [data-theme="light"] .sn-head{color:#b45309;}
+  [data-theme="light"] .sn-cmd{color:#1d4ed8;}
+  [data-theme="light"] .sn-inject{color:#c2410c;}
+  [data-theme="light"] .scope-row{background:#f8fafc;}
+  [data-theme="light"] .invoke-item{background:#f8fafc;}
+  [data-theme="light"] .invoke-ex{background:#f1f5f9;color:#1d4ed8;}
+  [data-theme="light"] .pill.modern{background:#dcfce7;color:#15803d;border-color:#86efac;}
+  [data-theme="light"] .pill.legacy{background:#fef9c3;color:#a16207;border-color:#fde047;}
+  [data-theme="light"] .cc{background:var(--surface);}
+  [data-theme="light"] .cc-example{background:#f1f5f9;}
+  [data-theme="light"] .cc-example code{background:transparent;border:none;}
+  [data-theme="light"] .cc-example code.sh{color:#047857;}
+  [data-theme="light"] .cc-example code.comment{color:#6b7280;}
+  [data-theme="light"] .md-outer{background:var(--surface);}
+  [data-theme="light"] .md-scope-panel.project{background:#f0fdf4;border-color:#86efac;}
+  [data-theme="light"] .md-scope-panel.env{background:#eff6ff;border-color:#bfdbfe;}
+  [data-theme="light"] .md-file{background:#f8fafc;}
+  [data-theme="light"] .md-file-name.green{color:#15803d;}
+  [data-theme="light"] .md-file-name.blue{color:#1d4ed8;}
+  [data-theme="light"] .md-file-name.orange{color:#c2410c;}
+  [data-theme="light"] .md-file-name.yellow{color:#a16207;}
+  [data-theme="light"] .md-file-name.purple{color:#7c3aed;}
+  [data-theme="light"] .md-tag.git{background:#dcfce7;color:#15803d;border-color:#86efac;}
+  [data-theme="light"] .md-tag.no-git{background:#fef9c3;color:#a16207;border-color:#fde047;}
+  [data-theme="light"] .md-tag.auto{background:#f3e8ff;color:#7c3aed;border-color:#d8b4fe;}
+  [data-theme="light"] .md-tag.lazy{background:#fef9c3;color:#a16207;border-color:#fde047;}
+  [data-theme="light"] .md-beh-item{background:#f8fafc;}
+  [data-theme="light"] .md-decision{background:#f8fafc;}
+  [data-theme="light"] .md-dec-head.green{background:#dcfce7;color:#15803d;}
+  [data-theme="light"] .md-dec-head.orange{background:#ffedd5;color:#c2410c;}
+  [data-theme="light"] .md-dec-head.purple{background:#f3e8ff;color:#7c3aed;}
+  [data-theme="light"] .md-dec-head.blue{background:#dbeafe;color:#1d4ed8;}
+  /* Inline-style background overrides (hardcoded dark hex values) */
+  [data-theme="light"] [style*="background:#0d0f14"]{background:#f8fafc !important;}
+  [data-theme="light"] [style*="background:#101318"]{background:#f1f5f9 !important;}
+  [data-theme="light"] [style*="background:#0a0d12"]{background:#f8fafc !important;}
+  [data-theme="light"] [style*="background:#161b24"]{background:#f1f5f9 !important;}
+  [data-theme="light"] [style*="background:#1e2535"]{background:#eeeee8 !important;}
+  [data-theme="light"] [style*="background:#1e3a5f"]{background:#dbeafe !important;}
+  [data-theme="light"] [style*="background:#2d1b6e"]{background:#ede9fe !important;}
+  [data-theme="light"] [style*="background:#0d3328"]{background:#dcfce7 !important;}
+  [data-theme="light"] [style*="background:#1e1a10"]{background:#fef9c3 !important;}
+  [data-theme="light"] [style*="background:#1e1a35"]{background:#f3e8ff !important;}
+  [data-theme="light"] [style*="background:#0d1f1a"]{background:#ecfdf5 !important;}
+  [data-theme="light"] [style*="background:#1a1030"]{background:#f5f3ff !important;}
+  [data-theme="light"] [style*="background:#1a1025"]{background:#f5f0ff !important;}
+  [data-theme="light"] [style*="background:#1a2030"]{background:#eff6ff !important;}
+  [data-theme="light"] [style*="background:#1c1232"]{background:#f3e8ff !important;}
+  [data-theme="light"] [style*="background:#140808"]{background:#fef2f2 !important;}
+  [data-theme="light"] [style*="background:#2a0f0f"]{background:#fef2f2 !important;}
+  [data-theme="light"] [style*="background:#1a0a0a"]{background:#fef2f2 !important;}
+  [data-theme="light"] [style*="background:#0d1a2a"]{background:#dbeafe !important;}
+  [data-theme="light"] [style*="background:#0d1a10"]{background:#dcfce7 !important;}
+  [data-theme="light"] [style*="background:#0d2a1a"]{background:#dcfce7 !important;}
+  [data-theme="light"] [style*="background:#1a2e1a"]{background:#dcfce7 !important;}
+  [data-theme="light"] [style*="background:#1a1208"]{background:#fef9c3 !important;}
+  [data-theme="light"] [style*="background:#1f0f0f"]{background:#fef2f2 !important;}
+  /* Inline text color overrides */
+  [data-theme="light"] [style*="color:#4ade80"]{color:#15803d !important;}
+  [data-theme="light"] [style*="color:#60a5fa"]{color:#1d4ed8 !important;}
+  [data-theme="light"] [style*="color:#fb923c"]{color:#c2410c !important;}
+  [data-theme="light"] [style*="color:#c084fc"]{color:#7c3aed !important;}
+  [data-theme="light"] [style*="color:#a78bfa"]{color:#7c3aed !important;}
+  [data-theme="light"] [style*="color:#f87171"]{color:#dc2626 !important;}
+  [data-theme="light"] [style*="color:#93c5fd"]{color:#1d4ed8 !important;}
+  [data-theme="light"] [style*="color:#86efac"]{color:#15803d !important;}
+  [data-theme="light"] [style*="color:#fbbf24"]{color:#a16207 !important;}
+  [data-theme="light"] [style*="color:#f9a8d4"]{color:#be185d !important;}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <h1>Claude Environment</h1>
+      <p>Interface reference for developers new to Claude's ecosystem</p>
+      <span class="hbadge">June 2026 · Claude 4 + Fable 5</span>
+    </div>
+    <div class="vtags">
+      <span class="vtag web">🌐 Web</span>
+      <span class="vtag desktop">🖥 Desktop</span>
+      <span class="vtag ide">⌨️ IDE / CLI</span>
+    </div>
+  </div>
+
+  <!-- Environments -->
+  <div class="stitle">Surfaces &amp; Access Points</div>
+  <div class="env-grid">
+    <div class="env-card web">
+      <div class="env-name"><div class="env-icon">🌐</div><span style="color:var(--web)">Web</span></div>
+      <div class="env-url">claude.ai</div>
+      <ul class="env-items">
+        <li>Full chat UI in Chromium / Firefox</li>
+        <li>Projects with persistent context &amp; instructions</li>
+        <li><strong>Connectors</strong> (MCP apps) via OAuth</li>
+        <li>Google Drive file access integration</li>
+        <li>Artifacts panel — code, HTML, SVG, React previews</li>
+        <li>Deep Research &amp; web search built-in</li>
+        <li>Styles &amp; Skills configuration</li>
+        <li><strong>Context window:</strong> 200K tokens (Free/Pro/Team) · 500K on Enterprise (some models)</li>
+      </ul>
+    </div>
+    <div class="env-card desktop">
+      <div class="env-name"><div class="env-icon">🖥</div><span style="color:var(--desktop)">Desktop</span></div>
+      <div class="env-url">claude.com/download → macOS / Windows</div>
+      <ul class="env-items">
+        <li>Native app, full Web feature parity</li>
+        <li><strong>Local file access</strong> without upload step</li>
+        <li>Screen capture &amp; image attach via system menu</li>
+        <li>Desktop notifications &amp; background sync</li>
+        <li>MCP servers via <code>claude_desktop_config.json</code></li>
+        <li>Keyboard shortcut: <strong>⌥ Space</strong> global hotkey</li>
+        <li>Cowork — desktop file &amp; task automation</li>
+        <li><strong>Context window:</strong> 200K tokens (Chat) · Cowork auto-manages via summarisation — no hard session cutoff</li>
+      </ul>
+    </div>
+    <div class="env-card ide">
+      <div class="env-name"><div class="env-icon">⌨️</div><span style="color:var(--ide)">IDE / CLI — Claude Code</span></div>
+      <div class="env-url">code.claude.com · VS Code ext · JetBrains plugin</div>
+      <ul class="env-items">
+        <li>Agentic coding: reads, edits &amp; runs code autonomously</li>
+        <li>Terminal-first: <code>claude</code> REPL or <code>claude -p</code> pipe mode</li>
+        <li>Full codebase context via <strong>CLAUDE.md</strong></li>
+        <li>Slash commands, skills, hooks &amp; MCP tools</li>
+        <li><strong>Dynamic Workflows</strong> — coordinate hundreds of parallel subagents with adversarial verification</li>
+        <li>Auto mode safety — blocks destructive git/terraform commands unless explicitly requested</li>
+        <li><strong>/fast</strong> toggle — switches to Fast mode (2.5× speed) mid-session</li>
+        <li><strong>/cd</strong> — move session to a new working directory without restarting</li>
+        <li><strong>VS Code</strong>: inline edits, sidebar chat panel</li>
+        <li><strong>JetBrains</strong>: plugin for IntelliJ family IDEs</li>
+        <li><strong>Chrome extension</strong> (beta) — browse &amp; act on web pages</li>
+        <li><strong>Computer use</strong> (preview) — cursor, click, type on-screen</li>
+        <li><strong>Context window:</strong> 1M tokens for Opus/Sonnet on paid plans — Pro requires usage credits enabled; 200K for Haiku</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Sidebar + Plus -->
+  <div class="stitle">Sidebar &amp; Input Controls</div>
+  <div class="mid-grid">
+    <div class="panel">
+      <div class="ptitle"><span class="dot" style="background:var(--web)"></span>Sidebar Navigation</div>
+      <div class="sb-mock">
+        <div class="sb-item new-btn">✦ &nbsp;New chat</div>
+        <div class="sb-lbl">Workspace</div>
+        <div class="sb-item active"><span class="sb-icon">◎</span>Home</div>
+        <div class="sb-item"><span class="sb-icon">🗂</span>Projects <span style="margin-left:auto;font-size:9px;color:var(--text-dim)">shared context</span></div>
+        <div class="sb-item"><span class="sb-icon">⭐</span>Starred conversations</div>
+        <div class="sb-div"></div>
+        <div class="sb-lbl">Recents</div>
+        <div class="sb-item"><span class="sb-icon">💬</span>Bookmark Themes v1 plan</div>
+        <div class="sb-item"><span class="sb-icon">💬</span>Claude Code setup guide</div>
+        <div class="sb-item"><span class="sb-icon">💬</span>Vulnerability scanning</div>
+        <div class="sb-div"></div>
+        <div class="sb-lbl">Account</div>
+        <div class="sb-item"><span class="sb-icon">⚙️</span>Settings</div>
+        <div class="sb-item"><span class="sb-icon">🎛</span>Capabilities &amp; Styles</div>
+        <div class="sb-item"><span class="sb-icon">👤</span>Profile / Plan</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="ptitle"><span class="dot" style="background:var(--accent)"></span>Input Bar — "+" Attach Menu</div>
+      <div class="plus-grid">
+        <div class="plus-item"><div class="pi-head"><span class="pi">📎</span>Upload file<span class="pbadge all">All</span></div><div class="pi-body">PDFs, text, code, spreadsheets, Word docs — up to 32 MB per file</div></div>
+        <div class="plus-item"><div class="pi-head"><span class="pi">🖼</span>Add image<span class="pbadge all">All</span></div><div class="pi-body">PNG, JPEG, GIF, WebP for visual analysis &amp; multimodal tasks</div></div>
+        <div class="plus-item"><div class="pi-head"><span class="pi">🎨</span>Use style<span class="pbadge all">All</span></div><div class="pi-body">Apply a saved writing style (tone, format, persona) to this chat</div></div>
+        <div class="plus-item"><div class="pi-head"><span class="pi">🧩</span>Add skill<span class="pbadge all">All</span></div><div class="pi-body">Attach a SKILL.md folder — expertise applied automatically</div></div>
+        <div class="plus-item"><div class="pi-head"><span class="pi">🔌</span>Use connector<span class="pbadge web">Web</span></div><div class="pi-body">Connect an MCP app (Asana, GitHub, Slack, etc.) via OAuth</div></div>
+        <div class="plus-item"><div class="pi-head"><span class="pi">📁</span>Google Drive<span class="pbadge web">Web</span></div><div class="pi-body">Browse &amp; attach Docs, Sheets, Slides directly from Drive</div></div>
+        <div class="plus-item"><div class="pi-head"><span class="pi">📸</span>Screen capture<span class="pbadge desktop">Desktop</span></div><div class="pi-body">Snapshot any window or region — sent directly as an image</div></div>
+        <div class="plus-item"><div class="pi-head"><span class="pi">🔍</span>Deep Research<span class="pbadge web">Web</span></div><div class="pi-body">Multi-step web research — synthesizes dozens of sources</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Model Selection -->
+  <div class="stitle">Model Selection</div>
+  <div class="panel" style="margin-bottom:26px">
+    <div class="ptitle"><span class="dot" style="background:var(--accent2)"></span>Available Models — Claude 4 Family &nbsp;<span style="font-size:10px;color:var(--text-dim);font-weight:400">Select via model picker (Web/Desktop) · <code>--model</code> flag or <code>/model</code> command (CLI)</span></div>
+    <div class="model-row">
+      <div class="model-item">
+        <span class="mbadge opus">OPUS 4</span>
+        <div class="minfo">
+          <div class="mname">claude-opus-4 <span style="font-size:10px;color:var(--text-dim);font-weight:400">· claude-opus-4-5</span></div>
+          <div class="mdesc">Most capable — complex reasoning, long-horizon tasks, highest accuracy. Best for research synthesis, intricate architecture decisions, and multi-step agentic work.</div>
+          <span class="mtag">Extended thinking</span><span class="mtag">200K context</span><span class="mtag">Highest cost</span>
+        </div>
+      </div>
+      <div class="model-item sel">
+        <span class="mbadge sonnet">SONNET 4.6</span>
+        <div class="minfo">
+          <div class="mname">claude-sonnet-4-6 <span style="font-size:10px;color:var(--text-dim);font-weight:400">· Default in claude.ai</span></div>
+          <div class="mdesc">Smart &amp; efficient — everyday development, code generation, analysis. Best balance of intelligence and speed for production workloads and interactive use.</div>
+          <span class="mtag">Extended thinking</span><span class="mtag">1M context</span><span class="mtag">64K output</span><span class="mtag">Recommended</span>
+        </div>
+        <div class="sel-dot"></div>
+      </div>
+      <div class="model-item">
+        <span class="mbadge haiku">HAIKU 4.5</span>
+        <div class="minfo">
+          <div class="mname">claude-haiku-4-5-20251001 <span style="font-size:10px;color:var(--text-dim);font-weight:400">· Fastest, lowest cost</span></div>
+          <div class="mdesc">Lightweight &amp; fast — high-volume tasks, real-time classification, and cost-sensitive pipelines.</div>
+          <span class="mtag">Sub-second latency</span><span class="mtag">200K context</span><span class="mtag">High throughput</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MD File Management -->
+  <div class="stitle">Markdown File Management — Project vs Environment Scope</div>
+  <div class="md-section">
+    <div class="md-outer">
+      <div class="md-outer-title">
+        <span style="font-size:15px">📄</span>
+        <span style="color:#c084fc">.md File Ecosystem</span>
+        <span style="font-size:10px;color:var(--text-dim);font-weight:400;margin-left:4px">Persistent context &amp; instructions Claude reads every session — no prompt re-pasting needed</span>
+        <a href="https://code.claude.com/docs/en/memory" target="_blank" class="section-doc-link purple">↗ code.claude.com/docs/en/memory</a>
+      </div>
+
+      <div class="md-cols">
+
+        <!-- Project scope -->
+        <div class="md-scope-panel project">
+          <div class="md-scope-title">
+            <span style="font-size:15px">📁</span>
+            <span style="color:#4ade80">Project Scope</span>
+            <span style="font-size:9px;font-weight:400;color:var(--text-dim);margin-left:4px">Lives in your repo · commit to share with teammates</span>
+          </div>
+          <div class="md-file-list">
+
+            <div class="md-file">
+              <div class="md-file-head">
+                <span class="md-file-name green">CLAUDE.md</span>
+                <span class="md-file-path">./CLAUDE.md  (project root)</span>
+                <span class="md-tag git">git ✓</span>
+              </div>
+              <div class="md-file-desc">The primary memory file. Loaded at session start and <strong>re-injected after /compact</strong>. Put stack conventions, build commands, architecture decisions, and team standards here. Target under 200 lines — longer files reduce adherence.</div>
+            </div>
+
+            <div class="md-file">
+              <div class="md-file-head">
+                <span class="md-file-name green">CLAUDE.md</span>
+                <span class="md-file-path">./src/api/CLAUDE.md  (subdirectory)</span>
+                <span class="md-tag lazy">lazy load</span>
+                <span class="md-tag git">git ✓</span>
+              </div>
+              <div class="md-file-desc">Loaded only when Claude reads a file inside that subdirectory. Ideal for module-specific rules (e.g. auth layer security constraints, API versioning policy). Not re-injected after /compact until Claude revisits that folder.</div>
+            </div>
+
+            <div class="md-file">
+              <div class="md-file-head">
+                <span class="md-file-name orange">CLAUDE.local.md</span>
+                <span class="md-file-path">./CLAUDE.local.md  (project root)</span>
+                <span class="md-tag no-git">gitignore</span>
+              </div>
+              <div class="md-file-desc">Loaded alongside root CLAUDE.md but <strong>not committed</strong>. Use for personal overrides, local API keys, machine-specific paths, or WIP notes you don't want in the shared repo.</div>
+            </div>
+
+            <div class="md-file">
+              <div class="md-file-head">
+                <span class="md-file-name yellow">.claude/rules/*.md</span>
+                <span class="md-file-path">.claude/rules/security.md, .claude/rules/api/*.md</span>
+                <span class="md-tag git">git ✓</span>
+              </div>
+              <div class="md-file-desc">Modular rules files — keeps project CLAUDE.md lean. Rules can be <strong>path-scoped</strong> with a <code>path:</code> frontmatter key so they only load when Claude works in matching directories. Ideal for monorepos.</div>
+            </div>
+
+            <div class="md-file">
+              <div class="md-file-head">
+                <span class="md-file-name blue">.claude/skills/*/SKILL.md</span>
+                <span class="md-file-path">.claude/skills/pr-prep/SKILL.md</span>
+                <span class="md-tag git">git ✓</span>
+              </div>
+              <div class="md-file-desc">Project-scoped skills — reusable procedures that only load when invoked. Keep procedures here, not in CLAUDE.md. The skill folder can bundle templates, examples, and scripts alongside SKILL.md.</div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Environment / personal scope -->
+        <div class="md-scope-panel env">
+          <div class="md-scope-title">
+            <span style="font-size:15px">🌐</span>
+            <span style="color:#60a5fa">Environment / Personal Scope</span>
+            <span style="font-size:9px;font-weight:400;color:var(--text-dim);margin-left:4px">Lives in ~/.claude · applies across all projects</span>
+          </div>
+          <div class="md-file-list">
+
+            <div class="md-file">
+              <div class="md-file-head">
+                <span class="md-file-name blue">~/.claude/CLAUDE.md</span>
+                <span class="md-file-path">Global personal memory</span>
+                <span class="md-tag no-git">personal</span>
+              </div>
+              <div class="md-file-desc">Loaded in every project, every session. Store your universal preferences: preferred language, editor conventions, how you like responses formatted, and coding habits that span all your work.</div>
+            </div>
+
+            <div class="md-file">
+              <div class="md-file-head">
+                <span class="md-file-name purple">MEMORY.md</span>
+                <span class="md-file-path">~/.claude/memory/  (auto memory dir)</span>
+                <span class="md-tag auto">auto-written</span>
+              </div>
+              <div class="md-file-desc">Claude writes this automatically as you work — capturing preferences, build commands, and patterns it notices. First <strong>200 lines or 25 KB</strong> loaded each session. Browse and edit via <code>/memory</code>. Plain markdown; safe to prune.</div>
+            </div>
+
+            <div class="md-file">
+              <div class="md-file-head">
+                <span class="md-file-name blue">~/.claude/skills/*/SKILL.md</span>
+                <span class="md-file-path">~/.claude/skills/summarize-changes/SKILL.md</span>
+                <span class="md-tag no-git">personal</span>
+              </div>
+              <div class="md-file-desc">Personal skills available across all projects. Good for individual workflows: your preferred PR format, personal debugging checklist, or research approach. Not shared with teammates.</div>
+            </div>
+
+            <div class="md-file">
+              <div class="md-file-head">
+                <span class="md-file-name blue">~/.claude/agents/*.md</span>
+                <span class="md-file-path">~/.claude/agents/reviewer.md</span>
+                <span class="md-tag no-git">personal</span>
+              </div>
+              <div class="md-file-desc">Personal subagent definitions — specialised AI assistants with custom prompts and tool scopes. Available in all projects. Project-scoped equivalents live at <code>.claude/agents/*.md</code> and can be committed.</div>
+            </div>
+
+            <div class="md-file" style="border-color:#4c1d95;">
+              <div class="md-file-head">
+                <span class="md-file-name purple">Enterprise managed</span>
+                <span class="md-file-path">Deployed via admin console (plist / HKLM / remote)</span>
+                <span class="md-tag" style="background:#1c1232;color:#c084fc;border:1px solid #4c1d95;">org-wide</span>
+              </div>
+              <div class="md-file-desc">Org-level CLAUDE.md and settings pushed by admins. <strong>Takes precedence over all user and project settings.</strong> Appears in <code>/status</code> as "Enterprise managed settings". Individual users cannot override it.</div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Loading behaviour row -->
+      <div class="md-behaviour">
+        <div class="md-beh-title">Loading behaviour &amp; tips</div>
+        <div class="md-beh-grid">
+
+          <div class="md-beh-item">
+            <div class="md-beh-label">⚡ Load order</div>
+            <div class="md-beh-body">Enterprise → global (~/.claude/CLAUDE.md) → project root (CLAUDE.md) → project local (CLAUDE.local.md) → nested (lazy). All are in context before your first message.</div>
+          </div>
+
+          <div class="md-beh-item">
+            <div class="md-beh-label">🔁 After /compact</div>
+            <div class="md-beh-body">Project root CLAUDE.md is <strong>re-read from disk and re-injected</strong>. Nested subdirectory CLAUDE.md files are not — they reload next time Claude reads a file in that folder. Give critical rules in the root file.</div>
+          </div>
+
+          <div class="md-beh-item">
+            <div class="md-beh-label">📏 Size limits</div>
+            <div class="md-beh-body">Target <strong>under 200 lines</strong> per CLAUDE.md. Files beyond that consume context and reduce adherence. Offload procedures to Skills, use path-scoped rules, and ruthlessly prune anything Claude already does correctly by default.</div>
+          </div>
+
+          <div class="md-beh-item">
+            <div class="md-beh-label">📥 @-imports</div>
+            <div class="md-beh-body"><code>@.claude/rules/api.md</code> in a CLAUDE.md imports another file. Useful for organisation — but the imported file <strong>still loads at startup</strong> and counts toward context. Imports reduce complexity, not token cost.</div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- What goes where -->
+      <div class="md-decision">
+        <div class="md-decision-title">What goes where — quick guide</div>
+        <div class="md-decision-grid">
+          <div class="md-dec-col">
+            <div class="md-dec-head green">CLAUDE.md (root)</div>
+            <div class="md-dec-item">Stack &amp; language versions</div>
+            <div class="md-dec-item">Build &amp; test commands</div>
+            <div class="md-dec-item">Coding conventions &amp; style</div>
+            <div class="md-dec-item">Architecture decisions</div>
+            <div class="md-dec-item">Review checklist</div>
+          </div>
+          <div class="md-dec-col">
+            <div class="md-dec-head orange">Nested / Rules files</div>
+            <div class="md-dec-item">Module-specific constraints</div>
+            <div class="md-dec-item">API versioning rules</div>
+            <div class="md-dec-item">Security requirements per layer</div>
+            <div class="md-dec-item">Package-level conventions (monorepos)</div>
+            <div class="md-dec-item">Domain logic notes</div>
+          </div>
+          <div class="md-dec-col">
+            <div class="md-dec-head purple">Skills (SKILL.md)</div>
+            <div class="md-dec-item">Multi-step procedures</div>
+            <div class="md-dec-item">Repeatable workflows (PR prep, deploy)</div>
+            <div class="md-dec-item">Custom slash commands</div>
+            <div class="md-dec-item">Tasks with supporting templates</div>
+            <div class="md-dec-item">Things you keep re-pasting</div>
+          </div>
+          <div class="md-dec-col">
+            <div class="md-dec-head blue">~/.claude (personal)</div>
+            <div class="md-dec-item">Response format preferences</div>
+            <div class="md-dec-item">Universal coding habits</div>
+            <div class="md-dec-item">Auto memory (Claude-managed)</div>
+            <div class="md-dec-item">Cross-project personal skills</div>
+            <div class="md-dec-item">Local credentials &amp; overrides</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Commands -->
+  <div class="stitle">Claude Code — Slash Commands &amp; CLI</div>
+  <div class="cmd-section">
+    <div class="cmd-grid-outer">
+
+      <!-- Slash Commands -->
+      <div class="cmd-panel">
+        <div class="cmd-panel-title">⚡ Built-in Slash Commands <span style="color:var(--text-dim);font-weight:400;font-size:9px">Type / in session to browse 60+ commands</span></div>
+        <div class="cmd-cards">
+
+          <a class="cmd-card" href="https://code.claude.com/docs/en/memory" target="_blank">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/init</span>
+              <span class="cmd-short">Generate CLAUDE.md project guide from codebase</span>
+              <span class="cmd-link">↗ memory</span>
+            </div>
+            <div class="cmd-example">$ /init → walks codebase, writes CLAUDE.md with stack, conventions &amp; project structure</div>
+          </a>
+
+          <a class="cmd-card" href="https://code.claude.com/docs/en/commands" target="_blank">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/compact</span>
+              <span class="cmd-short">Compress context with optional focus instructions</span>
+              <span class="cmd-link">↗ commands</span>
+            </div>
+            <div class="cmd-example">$ /compact focus on auth module → summarizes history, preserves auth context</div>
+          </a>
+
+          <a class="cmd-card" href="https://code.claude.com/docs/en/commands" target="_blank">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/clear</span>
+              <span class="cmd-short">Clear conversation history, free up context window</span>
+              <span class="cmd-link">↗ commands</span>
+            </div>
+            <div class="cmd-example">$ /clear → blank slate; use before switching to an unrelated task</div>
+          </a>
+
+          <a class="cmd-card" href="https://code.claude.com/docs/en/costs" target="_blank">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/cost</span>
+              <span class="cmd-short">Show token usage statistics for this session</span>
+              <span class="cmd-link">↗ costs</span>
+            </div>
+            <div class="cmd-example">$ /cost → Input: 42k tokens · Output: 8k tokens · Cache hit: 78%</div>
+          </a>
+
+          <a class="cmd-card" href="https://code.claude.com/docs/en/model-config" target="_blank">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/model</span>
+              <span class="cmd-short">Swap model mid-session without restarting</span>
+              <span class="cmd-link">↗ model-config</span>
+            </div>
+            <div class="cmd-example">$ /model claude-opus-4 → switches immediately, context preserved</div>
+          </a>
+
+          <a class="cmd-card" href="https://code.claude.com/docs/en/mcp" target="_blank">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/mcp</span>
+              <span class="cmd-short">List, connect &amp; manage MCP server connections</span>
+              <span class="cmd-link">↗ mcp</span>
+            </div>
+            <div class="cmd-example">$ /mcp → shows connected servers; /mcp add github → OAuth flow</div>
+          </a>
+
+          <a class="cmd-card" href="https://code.claude.com/docs/en/commands" target="_blank">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/security-review</span>
+              <span class="cmd-short">Analyze pending git diff for security vulnerabilities</span>
+              <span class="cmd-link">↗ commands</span>
+            </div>
+            <div class="cmd-example">$ /security-review → flags injection risks, auth gaps, data exposure in staged changes</div>
+          </a>
+
+          <a class="cmd-card" href="https://code.claude.com/docs/en/checkpointing" target="_blank">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/rewind</span>
+              <span class="cmd-short">Roll back conversation &amp; code to a prior checkpoint</span>
+              <span class="cmd-link">↗ checkpointing</span>
+            </div>
+            <div class="cmd-example">$ /rewind → pick a message; code reverted, conversation branched from that point</div>
+          </a>
+
+          <a class="cmd-card" href="https://code.claude.com/docs/en/claude-directory" target="_blank">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/config</span>
+              <span class="cmd-short">Open Settings: theme, model, editor mode, output style</span>
+              <span class="cmd-link">↗ claude-directory</span>
+            </div>
+            <div class="cmd-example">$ /config → interactive UI; set Vim mode, dark theme, auto-compact threshold</div>
+          </a>
+
+          <a class="cmd-card" href="https://code.claude.com/docs/en/sub-agents" target="_blank">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/batch &lt;task&gt;</span>
+              <span class="cmd-short">Spawn parallel subagents across codebase (Skill)</span>
+              <span class="cmd-link">↗ sub-agents</span>
+            </div>
+            <div class="cmd-example">$ /batch migrate src/ from Solid to React → spawns one agent per module in parallel</div>
+          </a>
+
+          <a class="cmd-card" href="https://code.claude.com/docs/en/commands" target="_blank">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/plan</span>
+              <span class="cmd-short">Enter plan mode — review before Claude executes</span>
+              <span class="cmd-link">↗ commands</span>
+            </div>
+            <div class="cmd-example">$ /plan fix the auth bug → Claude proposes steps; you approve before any edits</div>
+          </a>
+
+          <a class="cmd-card" href="https://code.claude.com/docs/en/commands" target="_blank">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/review</span>
+              <span class="cmd-short">Deep read-only review of current diff — complements /code-review</span>
+              <span class="cmd-link">↗ commands</span>
+            </div>
+            <div class="cmd-example">$ /review → flags logic errors &amp; style issues; no auto-apply. Use /code-review --fix to apply findings</div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- CLI commands -->
+      <div class="cmd-panel">
+        <div class="cmd-panel-title">🖥 CLI Shell Commands &amp; Config Files</div>
+        <div class="cmd-cards">
+
+          <a class="cmd-card" href="https://code.claude.com/docs/en/cli-reference" target="_blank">
+            <div class="cmd-card-top">
+              <span class="cmd-name cli">claude</span>
+              <span class="cmd-short">Launch interactive REPL session</span>
+              <span class="cmd-link">↗ cli-reference</span>
+            </div>
+            <div class="cmd-example">$ claude "explain this project" → opens session with initial prompt</div>
+          </a>
+
+          <a class="cmd-card" href="https://code.claude.com/docs/en/cli-reference" target="_blank">
+            <div class="cmd-card-top">
+              <span class="cmd-name cli">claude -p "…"</span>
+              <span class="cmd-short">Non-interactive pipe mode — single prompt, then exit</span>
+              <span class="cmd-link">↗ cli-reference</span>
+            </div>
+            <div class="cmd-example">$ cat logs.txt | claude -p "summarise errors" → CI-safe, no REPL</div>
+          </a>
+
+          <a class="cmd-card" href="https://code.claude.com/docs/en/cli-reference" target="_blank">
+            <div class="cmd-card-top">
+              <span class="cmd-name cli">claude -c</span>
+              <span class="cmd-short">Continue most recent conversation in current directory</span>
+              <span class="cmd-link">↗ cli-reference</span>
+            </div>
+            <div class="cmd-example">$ claude -c → picks up where you left off; no context loss on restart</div>
+          </a>
+
+          <a class="cmd-card" href="https://code.claude.com/docs/en/cli-reference" target="_blank">
+            <div class="cmd-card-top">
+              <span class="cmd-name cli">claude -r "name"</span>
+              <span class="cmd-short">Resume session by name or ID with an initial prompt</span>
+              <span class="cmd-link">↗ cli-reference</span>
+            </div>
+            <div class="cmd-example">$ claude -r "auth-refactor" "finish the PR" → resumes named session</div>
+          </a>
+
+          <a class="cmd-card" href="https://code.claude.com/docs/en/model-config" target="_blank">
+            <div class="cmd-card-top">
+              <span class="cmd-name cli">--model &lt;id&gt;</span>
+              <span class="cmd-short">Specify model at launch time</span>
+              <span class="cmd-link">↗ model-config</span>
+            </div>
+            <div class="cmd-example">$ claude --model claude-opus-4 → starts session with Opus 4</div>
+          </a>
+
+          <a class="cmd-card" href="https://code.claude.com/docs/en/cli-reference" target="_blank">
+            <div class="cmd-card-top">
+              <span class="cmd-name cli">--print / --no-repl</span>
+              <span class="cmd-short">Print output then exit without entering REPL</span>
+              <span class="cmd-link">↗ cli-reference</span>
+            </div>
+            <div class="cmd-example">$ claude -p "list todos" --print → stdout-only for scripts &amp; CI pipelines</div>
+          </a>
+
+          <a class="cmd-card" href="https://code.claude.com/docs/en/memory" target="_blank">
+            <div class="cmd-card-top">
+              <span class="cmd-name file">CLAUDE.md</span>
+              <span class="cmd-short">Project instructions loaded automatically on every session</span>
+              <span class="cmd-link">↗ memory</span>
+            </div>
+            <div class="cmd-example"># CLAUDE.md → stack: Node 20 + TS, always run `pnpm test` before committing</div>
+          </a>
+
+          <a class="cmd-card" href="https://code.claude.com/docs/en/skills" target="_blank">
+            <div class="cmd-card-top">
+              <span class="cmd-name file">.claude/commands/</span>
+              <span class="cmd-short">Custom slash commands as Markdown files (now unified with Skills)</span>
+              <span class="cmd-link">↗ skills</span>
+            </div>
+            <div class="cmd-example">.claude/commands/deploy.md → invoked as /deploy during any session</div>
+          </a>
+
+          <a class="cmd-card" href="https://code.claude.com/docs/en/claude-directory" target="_blank">
+            <div class="cmd-card-top">
+              <span class="cmd-name file">.claude/settings.json</span>
+              <span class="cmd-short">Permissions allowlist, MCP config, tool rules</span>
+              <span class="cmd-link">↗ claude-directory</span>
+            </div>
+            <div class="cmd-example">{"allowedTools":["bash","read"],"mcpServers":{...}} → scoped to repo</div>
+          </a>
+
+          <a class="cmd-card" href="https://code.claude.com/docs/en/hooks" target="_blank">
+            <div class="cmd-card-top">
+              <span class="cmd-name file">hooks</span>
+              <span class="cmd-short">Shell scripts that fire on tool events (pre/post bash, edit, etc.)</span>
+              <span class="cmd-link">↗ hooks</span>
+            </div>
+            <div class="cmd-example">PostToolUse[bash] → run pnpm lint automatically after every shell command</div>
+          </a>
+
+          <a class="cmd-card" href="https://code.claude.com/docs/en/env-vars" target="_blank">
+            <div class="cmd-card-top">
+              <span class="cmd-name file">env vars</span>
+              <span class="cmd-short">Control behaviour via environment variables</span>
+              <span class="cmd-link">↗ env-vars</span>
+            </div>
+            <div class="cmd-example">ANTHROPIC_MODEL=claude-opus-4 claude → override default model for a session</div>
+          </a>
+
+          <a class="cmd-card" href="https://code.claude.com/docs/en/interactive-mode" target="_blank">
+            <div class="cmd-card-top">
+              <span class="cmd-name cli">! shell cmd</span>
+              <span class="cmd-short">Run shell command directly inside a session without conversation overhead</span>
+              <span class="cmd-link">↗ interactive-mode</span>
+            </div>
+            <div class="cmd-example">! git status → runs directly; skips Claude's conversational parsing</div>
+          </a>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Custom Commands -->
+  <div class="custom-panel">
+    <div class="custom-panel-title">
+      <span style="font-size:15px">🛠</span>
+      <span style="color:var(--ide)">Creating Your Own Slash Commands</span>
+      <span style="font-size:10px;color:var(--text-dim);font-weight:400;margin-left:4px">Custom commands are now unified with Skills — both approaches create <code>/name</code> commands</span>
+      <a href="https://code.claude.com/docs/en/skills" target="_blank" style="margin-left:auto;font-size:10px;color:var(--text-dim);font-family:monospace;transition:color 0.2s;" onmouseover="this.style.color='#4ade80'" onmouseout="this.style.color='var(--text-dim)'">↗ code.claude.com/docs/en/skills</a>
+    </div>
+
+    <div class="custom-grid">
+
+      <!-- Step-by-step -->
+      <div class="custom-col">
+        <div class="custom-col-title">How to create a command</div>
+        <div class="approach-pills">
+          <span class="pill modern">✦ Modern — SKILL.md (recommended)</span>
+          <span class="pill legacy">Legacy — .md file (still works)</span>
+        </div>
+        <div class="step-list">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-body"><strong>Choose a scope</strong> — project (<code>.claude/skills/</code>) or personal (<code>~/.claude/skills/</code>). Personal skills apply to all your projects.</div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-body"><strong>Create the skill folder</strong> — the directory name becomes the command name.<br><code>mkdir .claude/skills/pr-prep</code></div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-body"><strong>Write SKILL.md</strong> — add YAML frontmatter with a <code>description</code> (used for auto-detection) then markdown instructions below the <code>---</code> separator.</div>
+          </div>
+          <div class="step">
+            <div class="step-num">4</div>
+            <div class="step-body"><strong>Test it</strong> — start a session and type <code>/pr-prep</code>, or describe the task and let Claude auto-invoke it when the context matches.</div>
+          </div>
+          <div class="step">
+            <div class="step-num">5</div>
+            <div class="step-body"><strong>Commit to repo</strong> — project-scoped skills live in <code>.claude/</code>, so teammates get them automatically. Treat them as code.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SKILL.md anatomy -->
+      <div class="custom-col">
+        <div class="custom-col-title">SKILL.md anatomy</div>
+        <div class="snippet-block">
+<span class="sn-comment">--- (YAML frontmatter)</span>
+<span class="sn-key">name:</span> <span class="sn-val">pr-prep</span>
+<span class="sn-key">description:</span> <span class="sn-val">Prepares a PR —</span>
+<span class="sn-val">  runs tests, lints, writes</span>
+<span class="sn-val">  summary. Use when user</span>
+<span class="sn-val">  asks to open or prep PR.</span>
+<span class="sn-key">invocation:</span> <span class="sn-val">explicit</span>
+<span class="sn-comment">---</span>
+
+<span class="sn-head">## Current diff</span>
+<span class="sn-inject">!`git diff HEAD`</span>   <span class="sn-comment">← dynamic</span>
+
+<span class="sn-head">## Instructions</span>
+1. Run <span class="sn-cmd">`pnpm test`</span>
+2. Run <span class="sn-cmd">`pnpm lint`</span>
+3. Write a PR description
+   covering: what changed,
+   why, and any risks.
+        </div>
+        <div style="margin-top:7px;font-size:10px;color:var(--text-muted);line-height:1.5;">
+          <span style="color:var(--accent2);font-weight:700">!</span><code>`cmd`</code> lines are <strong>dynamic context injection</strong> — Claude Code runs the shell command and inlines the output into the skill before Claude reads it.
+        </div>
+      </div>
+
+      <!-- Scope levels -->
+      <div class="custom-col">
+        <div class="custom-col-title">Scope levels</div>
+        <div class="scope-table">
+          <div class="scope-row">
+            <div class="scope-label" style="color:#f87171">🏢 Enterprise</div>
+            <span class="scope-path">managed settings (admin)</span>
+            <div class="scope-desc">Pushed to all users in your org. Set via admin console.</div>
+          </div>
+          <div class="scope-row">
+            <div class="scope-label" style="color:var(--accent2)">👤 Personal</div>
+            <span class="scope-path">~/.claude/skills/&lt;name&gt;/SKILL.md</span>
+            <div class="scope-desc">Available across all your projects on this machine.</div>
+          </div>
+          <div class="scope-row">
+            <div class="scope-label" style="color:#4ade80">📁 Project</div>
+            <span class="scope-path">.claude/skills/&lt;name&gt;/SKILL.md</span>
+            <div class="scope-desc">Scoped to one repo. Commit it — teammates get it too.</div>
+          </div>
+          <div class="scope-row" style="border-color:#78350f;">
+            <div class="scope-label" style="color:var(--accent2)">📄 Legacy</div>
+            <span class="scope-path">.claude/commands/&lt;name&gt;.md</span>
+            <div class="scope-desc">Still works. No frontmatter, no supporting files. Skill takes precedence if names collide.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Invocation & tips -->
+      <div class="custom-col">
+        <div class="custom-col-title">Invocation &amp; tips</div>
+        <div class="invoke-grid">
+          <div class="invoke-item">
+            <div class="invoke-label" style="color:var(--ide)">Explicit — you invoke</div>
+            <code class="invoke-ex">/pr-prep</code>
+            <div class="invoke-note">Set <code>invocation: explicit</code> in frontmatter. Claude won't auto-run it — you control timing.</div>
+          </div>
+          <div class="invoke-item">
+            <div class="invoke-label" style="color:var(--blue)">Automatic — Claude invokes</div>
+            <code class="invoke-ex">"what changed in my diff?"</code>
+            <div class="invoke-note">Omit <code>invocation</code> or set <code>auto</code>. Claude matches <code>description</code> to context and loads the skill on its own.</div>
+          </div>
+          <div class="invoke-item">
+            <div class="invoke-label" style="color:var(--accent2)">Arguments</div>
+            <code class="invoke-ex">/pr-prep fix auth bug</code>
+            <div class="invoke-note">Text after the command name is passed as <code>$ARGUMENTS</code> — reference it inside SKILL.md instructions.</div>
+          </div>
+          <div class="invoke-item" style="border-color:#1a2e1a;">
+            <div class="invoke-label" style="color:var(--text-muted)">💡 Tips</div>
+            <div class="invoke-note">Keep instructions procedure-based, not factual (facts belong in CLAUDE.md). Add supporting files (templates, examples) as siblings in the skill folder. Use <code>/skills</code> command to list all loaded skills.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Core Concepts -->
+  <div class="stitle">Core Concepts — Developer Reference</div>
+  <div class="concepts-grid">
+
+    <a class="cc" href="https://code.claude.com/docs/en/commands" target="_blank">
+      <div class="cc-icon" style="background:#0d3328">⚡</div>
+      <div class="cc-title">Commands</div>
+      <div class="cc-tags"><span class="ctag ide">IDE</span><span class="ctag api">CLI</span></div>
+      <div class="cc-desc">Slash commands in Claude Code — 60+ built-ins like <code>/init</code>, <code>/compact</code>, <code>/batch</code> plus fully custom commands stored as Markdown in <code>.claude/commands/</code>. Custom commands are unified with Skills: both are invoked as <code>/name</code>; the Skill version takes precedence if both exist.</div>
+      <div class="cc-example">
+        <div class="cc-example-lbl">Example — custom command</div>
+        <code class="sh"># .claude/commands/pr-prep.md</code>
+        <code>Run tests, lint, summarise</code>
+        <code>changes for the PR description.</code>
+        <code class="sh">→ invoke as /pr-prep</code>
+      </div>
+      <div class="cc-link">↗ code.claude.com/docs/en/commands</div>
+    </a>
+
+    <a class="cc" href="https://code.claude.com/docs/en/skills" target="_blank">
+      <div class="cc-icon" style="background:#1e1a10">🧩</div>
+      <div class="cc-title">Skills</div>
+      <div class="cc-tags"><span class="ctag web">Web</span><span class="ctag ide">IDE</span><span class="ctag api">API</span></div>
+      <div class="cc-desc">Reusable capability packages defined by a <code>SKILL.md</code> file plus supporting assets. Claude auto-detects and applies the skill when the context matches — no manual selection needed. Build once, runs on Claude.ai, Claude Code, and the API unchanged. Stack multiple skills for complex workflows.</div>
+      <div class="cc-example">
+        <div class="cc-example-lbl">Example — SKILL.md structure</div>
+        <code>skills/internal-comms/</code>
+        <code>  SKILL.md          <span style="color:var(--text-dim)"># instructions</span></code>
+        <code>  examples/3p.md   <span style="color:var(--text-dim)"># format guides</span></code>
+        <code>  templates/        <span style="color:var(--text-dim)"># reusable files</span></code>
+      </div>
+      <div class="cc-link">↗ code.claude.com/docs/en/skills</div>
+    </a>
+
+    <a class="cc" href="https://code.claude.com/docs/en/mcp" target="_blank">
+      <div class="cc-icon" style="background:#1e1a35">🔌</div>
+      <div class="cc-title">Connectors</div>
+      <div class="cc-tags"><span class="ctag web">Web</span><span class="ctag desktop">Desktop</span></div>
+      <div class="cc-desc">MCP-powered integrations with 100+ external services — Google Drive, Asana, GitHub, Slack, Salesforce, and more. Connect via OAuth in Settings → Connectors. Claude can read, write, and act through these tools inside any conversation or Project.</div>
+      <div class="cc-example">
+        <div class="cc-example-lbl">Example — using a connector</div>
+        <code class="sh">"Pull my open Asana tasks</code>
+        <code class="sh"> and group by project"</code>
+        <code class="comment">→ Claude calls Asana MCP,</code>
+        <code class="comment">  returns live task data</code>
+      </div>
+      <div class="cc-link">↗ code.claude.com/docs/en/mcp</div>
+    </a>
+
+    <a class="cc" href="https://code.claude.com/docs/en/mcp" target="_blank">
+      <div class="cc-icon" style="background:#0d1f1a">🛠</div>
+      <div class="cc-title">MCP</div>
+      <div class="cc-tags"><span class="ctag web">Web</span><span class="ctag desktop">Desktop</span><span class="ctag ide">IDE</span></div>
+      <div class="cc-desc">Model Context Protocol — open standard for connecting Claude to external tools, databases, and APIs. Two deployment modes: local stdio servers configured in <code>claude_desktop_config.json</code>, or hosted URL-based servers (SSE/HTTP). MCP servers expose tools, resources, and prompts that appear as commands via <code>/mcp__server__prompt</code>.</div>
+      <div class="cc-example">
+        <div class="cc-example-lbl">Example — Desktop config</div>
+        <code>// claude_desktop_config.json</code>
+        <code>{"mcpServers": {</code>
+        <code>  "github": {</code>
+        <code>    "command": "npx",</code>
+        <code>    "args": ["@mcp/github"]}}}</code>
+      </div>
+      <div class="cc-link">↗ code.claude.com/docs/en/mcp</div>
+    </a>
+
+    <a class="cc" href="https://code.claude.com/docs/en/third-party-integrations" target="_blank">
+      <div class="cc-icon" style="background:#1a1030">🚀</div>
+      <div class="cc-title">Platform / API</div>
+      <div class="cc-tags"><span class="ctag api">API</span></div>
+      <div class="cc-desc">Anthropic API — <code>POST /v1/messages</code> for building Claude-powered products. Now available natively on <strong>Claude Platform on AWS</strong> with IAM auth. <strong>Managed Agents</strong> support self-hosted sandboxes (public beta) and private MCP servers — your sandbox, Anthropic's orchestration. Also available via Amazon Bedrock and Google Vertex AI.</div>
+      <div class="cc-example">
+        <div class="cc-example-lbl">Example — Managed Agent sandbox</div>
+        <code class="comment">// agent loop on Anthropic</code>
+        <code class="comment">// tool execution in YOUR infra</code>
+        <code>providers: ["cloudflare",</code>
+        <code>  "daytona","modal","vercel"]</code>
+        <code class="sh">→ private MCP servers supported</code>
+      </div>
+      <div class="cc-link">↗ code.claude.com/docs/en/third-party-integrations</div>
+    </a>
+
+    <a class="cc" href="https://code.claude.com/docs/en/context-window" target="_blank">
+      <div class="cc-icon" style="background:#1a1025">🧠</div>
+      <div class="cc-title">Context Management</div>
+      <div class="cc-tags"><span class="ctag api">API</span><span class="ctag ide">IDE</span></div>
+      <div class="cc-desc">New context editing and memory tools that let Claude agents handle long-running tasks without hitting limits. Covers <code>/compact</code> for session compression, prompt caching to cut costs on repeated content, CLAUDE.md for persistent project context, and memory file patterns for agentic loops.</div>
+      <div class="cc-example">
+        <div class="cc-example-lbl">Example — prompt caching (API)</div>
+        <code>system: [{type:"text",</code>
+        <code>  text: "...10k token doc...",</code>
+        <code>  cache_control: {</code>
+        <code>    type:"ephemeral"} }]</code>
+        <code class="comment">→ 90% cost reduction on repeats</code>
+      </div>
+      <div class="cc-link">↗ code.claude.com/docs/en/context-window</div>
+    </a>
+
+    <a class="cc" href="https://code.claude.com/docs/en/best-practices" target="_blank">
+      <div class="cc-icon" style="background:#1a2030">✍️</div>
+      <div class="cc-title">Prompt Engineering</div>
+      <div class="cc-tags"><span class="ctag web">Web</span><span class="ctag ide">IDE</span><span class="ctag api">API</span></div>
+      <div class="cc-desc">Anthropic's official prompting best practices. Key techniques: clear role framing in system prompts, XML tags for structured output, chain-of-thought via <code>thinking</code> blocks, explicit format instructions, positive + negative examples, and task decomposition for complex workflows.</div>
+      <div class="cc-example">
+        <div class="cc-example-lbl">Example — XML structured output</div>
+        <code class="sh">"Analyse this code.</code>
+        <code class="sh">Reply using:</code>
+        <code>&lt;issues&gt;...&lt;/issues&gt;</code>
+        <code>&lt;suggestions&gt;...&lt;/suggestions&gt;</code>
+        <code>&lt;severity&gt;low|med|high&lt;/severity&gt;"</code>
+      </div>
+      <div class="cc-link">↗ code.claude.com/docs/en/best-practices</div>
+    </a>
+
+    <a class="cc" href="https://code.claude.com/docs/en/how-claude-code-works" target="_blank" style="background:#0d0f14;border-style:dashed;">
+      <div class="cc-icon" style="background:#161b24">📂</div>
+      <div class="cc-title" style="color:var(--text-muted)">Projects</div>
+      <div class="cc-tags"><span class="ctag web">Web</span><span class="ctag desktop">Desktop</span></div>
+      <div class="cc-desc">Containers for related conversations with a shared system prompt, uploaded knowledge files, and persistent context across sessions. The chat-interface equivalent of a repo-level CLAUDE.md. Team members on the same plan share a Project's context and history.</div>
+      <div class="cc-example">
+        <div class="cc-example-lbl">Example — system prompt in Project</div>
+        <code class="comment">"You are a senior engineer</code>
+        <code class="comment"> on the Payments team. Always</code>
+        <code class="comment"> follow our style guide (see</code>
+        <code class="comment"> attached docs) and prefer</code>
+        <code class="comment"> Stripe SDK over raw HTTP."</code>
+      </div>
+      <div class="cc-link">↗ code.claude.com/docs/en/how-claude-code-works</div>
+    </a>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-note">Claude Sonnet 4.6 · May 2026 · Anthropic PBC</div>
+    <div class="footer-links">
+      <a href="https://docs.anthropic.com" target="_blank">Docs →</a>
+      <a href="https://code.claude.com/docs/en/commands" target="_blank">Commands →</a>
+      <a href="https://code.claude.com/docs/en/cli-reference" target="_blank">CLI Ref →</a>
+      <a href="https://platform.claude.com" target="_blank">Console →</a>
+      <a href="https://claude.com/connectors" target="_blank">Connectors →</a>
+      <a href="https://claude.com/skills" target="_blank">Skills →</a>
+      <a href="https://support.claude.com" target="_blank">Support →</a>
+    </div>
+  </div>
+
+</div>
+<script>
+  /* QA fix: rel=noopener noreferrer on all external links */
+  document.querySelectorAll('a[target="_blank"]').forEach(function(a){
+    a.rel = 'noopener noreferrer';
+  });
+  /* Light / dark toggle */
+  window.toggleTheme = function() {
+    var h = document.documentElement;
+    var next = h.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+    h.setAttribute('data-theme', next);
+    var btn = document.getElementById('theme-toggle');
+    if (btn) btn.innerHTML = next === 'light'
+      ? '🌙 <span style="font-size:11px;font-weight:600">Dark</span>'
+      : '☀️ <span style="font-size:11px;font-weight:600">Light</span>';
+  };
+</script>
+
+<footer style="max-width:1140px;margin:0 auto;padding:18px 24px 40px;color:var(--text-dim);font-size:11px;text-align:center;border-top:1px solid var(--border)">Released under the <a href="https://github.com/kasey6801/Infographics/blob/main/LICENSE" target="_blank" rel="noopener" style="color:var(--accent2);text-decoration:underline">MIT License</a>.</footer>
+</body>
+</html>

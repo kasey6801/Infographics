@@ -12,6 +12,7 @@ its own.
 - `index.html` — landing page linking to all guides
 - `warp-isp-overview.html` — *What can your ISP see? — an overview of Cloudflare WARP*
 - `gemini-onboarding-dashboard.html` — *Your Gemini Starter Dashboard (Marketing & Sales)*
+- `claude-env-infographic.html` — *Claude Environment* (interface reference: web, desktop, IDE/CLI)
 - `how-this-landing-page-was-made.html` — *How this landing page was made* (a generic GitHub Pages walkthrough; no companion `.md`)
 - `about.html` — about the collection and its design principle
 
