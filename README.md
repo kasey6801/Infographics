@@ -24,6 +24,7 @@ built. These files lay out the step-by-step process used to create the guide, pl
 
 - `Cloudflare Warp Field Guide Explained.md` — accompanies `warp-isp-overview.html`
 - `Gemini-dashboard-explained.md` — accompanies `gemini-onboarding-dashboard.html`
+- `Claude-Environment-Guide-Explained.md` — accompanies `claude-env-infographic.html`
 
 On the landing page, each guide's card links to its explained file via the
 "How this was made (.md) →" link (which opens GitHub's rendered view).
