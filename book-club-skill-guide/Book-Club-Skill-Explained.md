@@ -1,6 +1,6 @@
 # The Book Club Skill — How This Was Made
 
-The companion to the [**Install &amp; Use guide**](book-club-skill-guide.html). This document is the
+The companion to the [**Install &amp; Use guide**](index.html). This document is the
 behind-the-scenes record: what was built, the QA it went through, and the copy-paste **prompts to
 recreate the whole workflow** from scratch.
 

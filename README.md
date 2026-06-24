@@ -10,10 +10,10 @@ its own.
 ## Pages
 
 - `index.html` — landing page linking to all guides
-- `warp-isp-overview.html` — *What can your ISP see? — an overview of Cloudflare WARP*
-- `gemini-onboarding-dashboard.html` — *Your Gemini Starter Dashboard (Marketing & Sales)*
-- `claude-env-infographic.html` — *Claude Environment* (interface reference: web, desktop, IDE/CLI)
-- `book-club-skill-guide.html` — *The Book Club Skill* (install &amp; use a Claude reading-log skill)
+- `warp-isp-overview/` — *What can your ISP see? — an overview of Cloudflare WARP* (folder: `index.html` + explainer `.md`)
+- `gemini-onboarding-dashboard/` — *Your Gemini Starter Dashboard (Marketing & Sales)* (folder: `index.html` + explainer `.md`)
+- `claude-env-infographic/` — *Claude Environment* — interface reference: web, desktop, IDE/CLI (folder: `index.html` + explainer `.md`)
+- `book-club-skill-guide/` — *The Book Club Skill* — install &amp; use a Claude reading-log skill (folder: `index.html` + explainer `.md`)
 - `how-this-landing-page-was-made.html` — *How this landing page was made* (a generic GitHub Pages walkthrough; no companion `.md`)
 - `about.html` — about the collection and its design principle
 
@@ -23,10 +23,10 @@ Each infographic ships with a companion `*explained*.md` file that documents how
 built. These files lay out the step-by-step process used to create the guide, plus a
 **one-shot prompt** you can use to re-create the infographic from scratch.
 
-- `Cloudflare Warp Field Guide Explained.md` — accompanies `warp-isp-overview.html`
-- `Gemini-dashboard-explained.md` — accompanies `gemini-onboarding-dashboard.html`
-- `Claude-Environment-Guide-Explained.md` — accompanies `claude-env-infographic.html`
-- `Book-Club-Skill-Explained.md` — accompanies `book-club-skill-guide.html`
+- `warp-isp-overview/Cloudflare Warp Field Guide Explained.md` — accompanies `warp-isp-overview/index.html`
+- `gemini-onboarding-dashboard/Gemini-dashboard-explained.md` — accompanies `gemini-onboarding-dashboard/index.html`
+- `claude-env-infographic/Claude-Environment-Guide-Explained.md` — accompanies `claude-env-infographic/index.html`
+- `book-club-skill-guide/Book-Club-Skill-Explained.md` — accompanies `book-club-skill-guide/index.html`
 
 On the landing page, each guide's card links to its explained file via the
 "How this was made (.md) →" link (which opens GitHub's rendered view).
@@ -38,4 +38,5 @@ python3 -m http.server 8000
 # then open http://localhost:8000/
 ```
 
-Or just open `index.html` directly in a browser.
+Use a local server (as above) rather than opening `index.html` from the file system, so the
+folder-based guide links (e.g. `warp-isp-overview/`) resolve to each folder's `index.html`.
