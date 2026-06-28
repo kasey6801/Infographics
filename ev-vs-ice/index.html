@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer">
+<script>
+  (function(){
+    try{
+      var t = localStorage.getItem('theme');
+      if (t === 'dark' || (!t && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)){
+        document.documentElement.setAttribute('data-theme','dark');
+      }
+    }catch(e){}
+  })();
+</script>
+<title>EV vs ICE Decision Guide</title>
+<style>
+  :root{
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --paper:#E9E1CF;
+    --paper-2:#E1D8C2;
+    --card:#F3EDDD;
+    --ink:#1C1A15;
+    --ink-soft:#4A463C;
+    --line:#C5BAA0;
+    --stamp-red:#B23A2E;
+    --seal-green:#2E6149;
+    --warp:#E8590C;
+    --shadow:0 2px 0 rgba(28,26,21,.14);
+    /* tool accents: EV reads as the "clean" seal-green, ICE as a combustion orange */
+    --ev:#2E6149;
+    --ice:#C2410C;
+    --ev-dim:#C2D4C8;
+    --ice-dim:#E8CBB2;
+    --even:#8A8270;
+    /* aliases consumed by the inline SVG gauge */
+    --surface:var(--card);
+    --faint:var(--ink-soft);
+    /* stacked-bar segment colors */
+    --seg-buy:#6F6750;
+    --seg-maint:#4E6E7C;
+    --seg-fin:#7E5E86;
+    --seg-ins:#A8782E;
+  }
+  [data-theme="dark"]{
+    color-scheme:dark;
+    --paper:#17150F; --paper-2:#1F1B14; --card:#221E17;
+    --ink:#ECE3D0;   --ink-soft:#B3AA96; --line:#403829;
+    --stamp-red:#E08A7C; --seal-green:#69B294;
+    --shadow:0 2px 0 rgba(0,0,0,.45);
+    --ev:#69B294;
+    --ice:#F0883C;
+    --ev-dim:#33493E;
+    --ice-dim:#5A3E29;
+    --even:#9A917D;
+    --seg-buy:#8F856C;
+    --seg-maint:#5E8294;
+    --seg-fin:#9A7AA4;
+    --seg-ins:#C39A52;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{
+    background:
+      radial-gradient(900px 520px at 10% -5%, rgba(255,255,255,.55), transparent 60%),
+      radial-gradient(900px 620px at 105% 105%, rgba(28,26,21,.07), transparent 55%),
+      var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.58;
+    -webkit-font-smoothing:antialiased;
+    padding:28px 0 72px;
+    min-height:100vh;
+  }
+  [data-theme="dark"] body{
+    background:
+      radial-gradient(900px 520px at 10% -5%, rgba(255,255,255,.04), transparent 60%),
+      radial-gradient(900px 620px at 105% 105%, rgba(0,0,0,.4), transparent 55%),
+      var(--paper);
+  }
+  .wrap{max-width:980px;margin:0 auto;padding:0 22px;}
+  a{color:var(--stamp-red);}
+  :focus-visible{outline:2px solid var(--stamp-red);outline-offset:2px;}
+
+  #theme-toggle{
+    position:fixed;top:14px;right:14px;z-index:20;
+    font-family:var(--mono);font-size:12px;letter-spacing:.06em;
+    color:var(--ink);background:var(--card);
+    border:1.5px solid var(--ink);border-radius:8px;
+    padding:7px 11px;cursor:pointer;box-shadow:var(--shadow);
+  }
+  #theme-toggle:hover{transform:translateY(-1px);}
+
+  /* header */
+  header{margin-bottom:24px;}
+  .eyebrow{
+    font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--stamp-red);margin:0 0 10px;
+  }
+  h1{font-size:clamp(30px,6vw,48px);font-weight:900;letter-spacing:-.02em;line-height:1.02;margin:0;color:var(--ink);}
+  h1 .ev{color:var(--ev);}
+  h1 .ice{color:var(--ice);}
+  .lede{color:var(--ink-soft);max-width:60ch;margin:12px 0 0;font-size:15px;}
+  .defn{color:var(--ink-soft);max-width:66ch;margin:14px 0 0;font-size:13.5px;line-height:1.6;}
+  .defn .tag{font-family:var(--mono);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.85em;}
+  .defn .tag.ev{color:var(--ev);}
+  .defn .tag.ice{color:var(--ice);}
+  .defn .hy{color:var(--ink);}
+
+  .unitbar{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+  .unitbar .ub-lab{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);}
+  .useg{display:inline-flex;border:1.5px solid var(--ink);border-radius:8px;overflow:hidden;background:var(--card);box-shadow:var(--shadow);}
+  .useg input{position:absolute;opacity:0;pointer-events:none;}
+  .useg label{padding:7px 16px;font-family:var(--mono);font-size:12px;letter-spacing:.06em;font-weight:700;color:var(--ink-soft);cursor:pointer;}
+  .useg label + input + label{border-left:1.5px solid var(--ink);}
+  .useg input:checked + label{background:var(--ink);color:var(--card);}
+
+  /* layout */
+  .grid{display:grid;grid-template-columns:1fr;gap:18px;margin-top:24px;}
+  @media(min-width:880px){
+    .grid{grid-template-columns:1.05fr .95fr;gap:22px;align-items:start;}
+    .results{position:sticky;top:20px;}
+  }
+
+  .panel{background:var(--card);border:1.5px solid var(--ink);border-radius:10px;padding:18px 18px 20px;box-shadow:var(--shadow);}
+  .panel + .panel{margin-top:16px;}
+  .panel > h2{
+    font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--ink-soft);margin:0 0 14px;font-weight:700;display:flex;align-items:center;gap:10px;
+  }
+  .panel > h2 .n{
+    color:var(--card);background:var(--stamp-red);border-radius:6px;
+    width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;
+  }
+
+  /* sliders + fields */
+  .field{margin-bottom:16px;}
+  .field:last-child{margin-bottom:0;}
+  .field .row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:7px;}
+  .field label{font-size:13.5px;color:var(--ink);font-weight:700;}
+  .field .val{font-family:var(--mono);font-size:14px;color:var(--stamp-red);font-variant-numeric:tabular-nums;}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:3px;background:var(--line);outline:none;margin:6px 0 0;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:var(--stamp-red);border:2px solid var(--card);box-shadow:0 0 0 1.5px var(--ink);cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--stamp-red);border:2px solid var(--card);box-shadow:0 0 0 1.5px var(--ink);cursor:pointer;}
+
+  .duo{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .num{display:block;}
+  .num span.lab{font-size:12.5px;color:var(--ink-soft);display:block;margin-bottom:6px;font-weight:600;}
+  .num .ctl{display:flex;align-items:center;background:var(--paper);border:1.5px solid var(--ink);border-radius:8px;padding:0 10px;}
+  .num .ctl .pre{color:var(--ink-soft);font-family:var(--mono);font-size:13px;}
+  .num input[type=number]{width:100%;border:0;background:transparent;color:var(--ink);font-family:var(--mono);font-size:15px;padding:10px 4px;outline:none;font-variant-numeric:tabular-nums;}
+  .num .ctl:focus-within{border-color:var(--stamp-red);}
+  .num.ice .ctl:focus-within{border-color:var(--ice);}
+
+  details{margin-top:4px;border-top:1.5px solid var(--line);padding-top:14px;}
+  details summary{cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);list-style:none;}
+  details summary::-webkit-details-marker{display:none;}
+  details summary::before{content:"+ ";color:var(--stamp-red);font-weight:700;}
+  details[open] summary::before{content:"\2212 ";}
+  details .duo{margin-top:14px;}
+
+  .note{font-size:12px;color:var(--ink-soft);margin-top:9px;line-height:1.5;}
+
+  /* result card */
+  .gauge-wrap{position:relative;padding:8px 0 4px;}
+  svg.gauge{display:block;width:100%;height:auto;}
+  .needle{transition:transform .7s cubic-bezier(.22,1,.36,1);transform-origin:160px 160px;}
+  @media(prefers-reduced-motion:reduce){.needle{transition:none;}}
+
+  .readout{text-align:center;margin-top:-8px;}
+  .verdict-lab{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);}
+  .delta{font-size:clamp(30px,7vw,42px);font-weight:900;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.1;margin:4px 0 2px;color:var(--ink);}
+  .verdict-sub{font-size:13.5px;color:var(--ink-soft);min-height:1.2em;}
+
+  .bars{margin-top:20px;border-top:1.5px solid var(--line);padding-top:18px;}
+  .bar-block{margin-bottom:14px;}
+  .bar-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+  .bar-head .name{font-weight:700;font-size:13px;}
+  .bar-head .tot{font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums;color:var(--ink);}
+  .bar-track{display:flex;height:22px;border-radius:5px;overflow:hidden;background:var(--paper-2);border:1.5px solid var(--ink);}
+  .bar-seg{height:100%;min-width:0;transition:width .5s ease;}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:11.5px;color:var(--ink-soft);}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .legend i{width:9px;height:9px;border-radius:2px;display:inline-block;border:1px solid rgba(28,26,21,.25);}
+
+  .drivers{margin-top:18px;border-top:1.5px solid var(--line);padding-top:16px;}
+  .drivers h3{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 12px;}
+  .drv{display:flex;justify-content:space-between;gap:12px;font-size:13px;padding:5px 0;border-bottom:1px dashed var(--line);}
+  .drv:last-child{border-bottom:0;}
+  .drv .k{color:var(--ink-soft);}
+  .drv .v{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--ink);}
+  .drv .v.win-ev{color:var(--ev);}
+  .drv .v.win-ice{color:var(--ice);}
+
+  .flags{margin-top:16px;display:flex;flex-direction:column;gap:9px;}
+  .flag{font-size:12.5px;color:var(--ink);background:var(--paper-2);border:1.5px solid var(--ink);border-left-width:5px;border-radius:8px;padding:9px 12px;box-shadow:var(--shadow);}
+  .flag.ok{border-left-color:var(--seal-green);}
+  .flag.neutral{border-left-color:var(--ink-soft);}
+  .flag b{font-weight:700;}
+
+  a.reset{color:var(--stamp-red);text-decoration:none;font-family:var(--mono);font-size:12px;letter-spacing:.05em;cursor:pointer;font-weight:700;}
+  a.reset:hover{text-decoration:underline;}
+
+  footer{margin-top:30px;border-top:1.5px solid var(--line);padding-top:16px;color:var(--ink-soft);font-size:12px;line-height:1.6;}
+  footer .disc{margin-top:6px;}
+  footer a{color:var(--stamp-red);}
+</style>
+</head>
+<body>
+<button id="theme-toggle" type="button" aria-label="Switch color theme">🌙 Dark</button>
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Decision Guide · Total cost of ownership</p>
+    <h1><span class="ev">EV</span> vs <span class="ice">ICE</span></h1>
+    <p class="lede">Cost comparison.</p>
+    <p class="defn"><span class="tag ev">EV</span>: an electric vehicle, powered only by a battery and electric motor, charged from the grid. <span class="tag ice">ICE</span>: an internal-combustion-engine vehicle, the conventional car that burns gasoline. <span class="hy">This tool compares those two drivetrains only; hybrids and plug-in hybrids, which pair an engine with a battery, are not included.</span></p>
+  </header>
+
+  <div class="grid">
+    <!-- ===================== INPUTS ===================== -->
+    <section class="inputs">
+
+      <div class="unitbar">
+        <span class="ub-lab">Units</span>
+        <div class="useg" role="radiogroup" aria-label="Unit system">
+          <input type="radio" name="unit" id="unit-imp" value="imp" checked><label for="unit-imp">Imperial</label>
+          <input type="radio" name="unit" id="unit-met" value="met"><label for="unit-met">Metric</label>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2><span class="n">1</span> How you drive</h2>
+        <div class="field">
+          <div class="row"><label for="miles" id="milesLab">Miles per year</label><span class="val" id="milesVal">12,000</span></div>
+          <input type="range" id="miles" min="2000" max="40000" step="500" value="12000">
+        </div>
+        <div class="field">
+          <div class="row"><label for="years">Years you'll keep it</label><span class="val" id="yearsVal">7</span></div>
+          <input type="range" id="years" min="1" max="15" step="1" value="7">
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2><span class="n">2</span> The two cars</h2>
+        <div class="duo">
+          <label class="num"><span class="lab">EV price</span>
+            <span class="ctl"><span class="pre">$</span><input type="number" id="evPrice" value="40000" min="0" step="500"></span>
+          </label>
+          <label class="num ice"><span class="lab">ICE car price</span>
+            <span class="ctl"><span class="pre">$</span><input type="number" id="gasPrice" value="40000" min="0" step="500"></span>
+          </label>
+        </div>
+        <div class="duo" style="margin-top:14px">
+          <label class="num"><span class="lab">EV amount financed</span>
+            <span class="ctl"><span class="pre">$</span><input type="number" id="evFin" value="0" min="0" step="500"></span>
+          </label>
+          <label class="num ice"><span class="lab">ICE amount financed</span>
+            <span class="ctl"><span class="pre">$</span><input type="number" id="gasFin" value="0" min="0" step="500"></span>
+          </label>
+        </div>
+        <div class="duo" style="margin-top:14px">
+          <label class="num"><span class="lab">EV finance rate APR</span>
+            <span class="ctl"><input type="number" id="evApr" value="7" min="0" step="0.1"><span class="pre">%</span></span>
+          </label>
+          <label class="num ice"><span class="lab">ICE finance rate APR</span>
+            <span class="ctl"><input type="number" id="gasApr" value="7" min="0" step="0.1"><span class="pre">%</span></span>
+          </label>
+        </div>
+        <div class="duo" style="margin-top:14px">
+          <label class="num"><span class="lab">EV loan term</span>
+            <span class="ctl"><input type="number" id="term" value="5" min="1" max="10" step="1"><span class="pre">yr</span></span>
+          </label>
+          <label class="num ice"><span class="lab">ICE loan term</span>
+            <span class="ctl"><input type="number" id="termIce" value="5" min="1" max="10" step="1"><span class="pre">yr</span></span>
+          </label>
+        </div>
+        <div class="duo" style="margin-top:14px">
+          <label class="num"><span class="lab">EV maintenance / yr</span>
+            <span class="ctl"><span class="pre">$</span><input type="number" id="evMaintYr" value="700" min="0" step="50"></span>
+          </label>
+          <label class="num ice"><span class="lab">ICE maintenance / yr</span>
+            <span class="ctl"><span class="pre">$</span><input type="number" id="iceMaintYr" value="1200" min="0" step="50"></span>
+          </label>
+        </div>
+        <div class="duo" style="margin-top:14px">
+          <label class="num"><span class="lab">EV insurance / yr</span>
+            <span class="ctl"><span class="pre">$</span><input type="number" id="evIns" value="1900" min="0" step="50"></span>
+          </label>
+          <label class="num ice"><span class="lab">ICE insurance / yr</span>
+            <span class="ctl"><span class="pre">$</span><input type="number" id="iceIns" value="1600" min="0" step="50"></span>
+          </label>
+        </div>
+        <p class="note">Leave amount financed at 0 for a cash purchase. Maintenance and insurance defaults are rough placeholders; replace with your own figures, since both vary widely by driver and model.</p>
+      </div>
+
+      <div class="panel">
+        <h2><span class="n">3</span> EV rebates at time of purchase</h2>
+        <label class="num"><span class="lab">Rebate amount you qualify for</span>
+          <span class="ctl"><span class="pre">$</span><input type="number" id="incentive" value="0" min="0" step="250"></span>
+        </label>
+        <p class="note">Applied to the EV purchase price only. Tax incentives credited after purchase (claimed later on your tax return) are not included.</p>
+      </div>
+
+      <div class="panel">
+        <h2><span class="n">4</span> Energy prices</h2>
+        <div class="duo">
+          <label class="num"><span class="lab">Electricity ¢/kWh</span>
+            <span class="ctl"><input type="number" id="elec" value="18" min="1" step="0.5"><span class="pre">¢</span></span>
+          </label>
+          <label class="num ice"><span class="lab" id="fuelLab">Gasoline $/gallon</span>
+            <span class="ctl"><span class="pre">$</span><input type="number" id="gas" value="3.93" min="0.5" step="0.05"></span>
+          </label>
+        </div>
+
+        <details>
+          <summary>Fine-tune efficiency &amp; assumptions</summary>
+          <div class="duo">
+            <label class="num"><span class="lab" id="effLab">EV efficiency mi/kWh</span>
+              <span class="ctl"><input type="number" id="eff" value="3.5" min="1" step="0.1"></span>
+            </label>
+            <label class="num ice"><span class="lab" id="mpgLab">ICE car MPG</span>
+              <span class="ctl"><input type="number" id="mpg" value="32" min="5" step="1"></span>
+            </label>
+          </div>
+          <p class="note">Estimates, not quotes; registration is excluded since it varies more by you than by drivetrain.</p>
+        </details>
+      </div>
+
+    </section>
+
+    <!-- ===================== RESULTS ===================== -->
+    <section class="results">
+      <div class="panel">
+        <div class="gauge-wrap">
+          <svg class="gauge" viewBox="0 0 320 200" role="img" aria-labelledby="gaugeTitle">
+            <title id="gaugeTitle">Decision gauge: needle leans toward the cheaper option</title>
+            <!-- ICE arc (left) -->
+            <path d="M 32 160 A 128 128 0 0 1 160 32" fill="none" stroke="var(--ice-dim)" stroke-width="14" stroke-linecap="round"/>
+            <!-- electric arc (right) -->
+            <path d="M 160 32 A 128 128 0 0 1 288 160" fill="none" stroke="var(--ev-dim)" stroke-width="14" stroke-linecap="round"/>
+            <!-- center even tick -->
+            <line x1="160" y1="40" x2="160" y2="24" stroke="var(--faint)" stroke-width="2"/>
+            <!-- needle -->
+            <g class="needle" id="needle">
+              <line x1="160" y1="160" x2="160" y2="50" stroke="var(--even)" stroke-width="4" stroke-linecap="round" id="needleLine"/>
+            </g>
+            <circle cx="160" cy="160" r="9" fill="var(--surface)" stroke="var(--line)" stroke-width="2"/>
+            <circle cx="160" cy="160" r="3" fill="var(--ink)" id="hub"/>
+            <text x="34" y="184" fill="var(--ice)" font-family="ui-monospace,monospace" font-size="12" font-weight="700" letter-spacing="1">ICE</text>
+            <text x="286" y="184" fill="var(--ev)" font-family="ui-monospace,monospace" font-size="12" font-weight="700" letter-spacing="1" text-anchor="end">EV</text>
+          </svg>
+        </div>
+
+        <div class="readout">
+          <div class="verdict-lab" id="vLab">Lifetime cost gap</div>
+          <div class="delta" id="delta">-</div>
+          <div class="verdict-sub" id="vSub">Adjust the inputs to see which way it tips.</div>
+        </div>
+
+        <div class="bars">
+          <div class="bar-block">
+            <div class="bar-head"><span class="name" style="color:var(--ev)">EV: Total Cost of Ownership</span><span class="tot" id="evTot">-</span></div>
+            <div class="bar-track" id="evBar"></div>
+          </div>
+          <div class="bar-block">
+            <div class="bar-head"><span class="name" style="color:var(--ice)">ICE: Total Cost of Ownership</span><span class="tot" id="iceTot">-</span></div>
+            <div class="bar-track" id="iceBar"></div>
+          </div>
+          <div class="legend">
+            <span><i style="background:var(--seg-buy)"></i>Purchase</span>
+            <span><i style="background:var(--ev)"></i>Energy / fuel</span>
+            <span><i style="background:var(--seg-maint)"></i>Maintenance</span>
+            <span><i style="background:var(--seg-fin)"></i>Financing</span>
+            <span><i style="background:var(--seg-ins)"></i>Insurance</span>
+          </div>
+        </div>
+
+        <div class="drivers">
+          <h3>What's driving it</h3>
+          <div class="drv"><span class="k" id="drFuelLab">Cost to fuel, per mile</span><span class="v" id="drFuel">-</span></div>
+          <div class="drv"><span class="k">Fuel / energy over <span id="drYears">7</span> yrs</span><span class="v" id="drFuelTot">-</span></div>
+          <div class="drv"><span class="k">Maintenance gap</span><span class="v win-ev" id="drMaint">-</span></div>
+          <div class="drv"><span class="k">Insurance gap (full period)</span><span class="v" id="drIns">-</span></div>
+          <div class="drv"><span class="k">Financing interest</span><span class="v" id="drFinance">-</span></div>
+          <div class="drv"><span class="k">Sticker gap (after EV rebates)</span><span class="v" id="drSticker">-</span></div>
+        </div>
+
+        <div class="flags" id="flags"></div>
+      </div>
+      <p style="text-align:right;margin:10px 4px 0"><a class="reset" id="resetBtn" role="button" tabindex="0">↺ reset to defaults</a></p>
+    </section>
+  </div>
+
+  <footer>
+    <div class="disc">Default driving assumptions: 12,000 miles per year, kept for 7 years.</div>
+    <div class="disc">Default running costs reflect mid-2026 US figures (≈$3.93/gal, ≈18¢/kWh national averages).</div>
+    <div class="disc">Released under the <a href="https://github.com/kasey6801/Infographics/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>.</div>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var fmt0 = function(n){ return '$' + Math.round(n).toLocaleString('en-US'); };
+  var FIN_COLOR = 'var(--seg-fin)';
+  var INS_COLOR = 'var(--seg-ins)';
+  var KM = 1.60934;      // km per mile
+  var LPG = 3.78541;     // litres per US gallon
+  var unit = 'imp';      // 'imp' or 'met', internal math always stays imperial
+
+  // total interest paid on an amortizing loan (0 if cash or 0% APR)
+  function loanInterest(principal, aprPct, termYears){
+    principal = Math.max(0, principal || 0);
+    if (principal <= 0) return 0;
+    var r = (aprPct/100)/12;
+    var n = Math.max(1, Math.round(termYears*12));
+    if (r <= 0) return 0;
+    var pay = principal * r * Math.pow(1+r, n) / (Math.pow(1+r, n) - 1);
+    return pay * n - principal;
+  }
+
+  var clampN = function(v, lo, hi){ return Math.min(hi, Math.max(lo, v)); };
+
+  // set labels and slider/step bounds for a unit system (does not touch values)
+  function setUnitUI(u){
+    var met = (u === 'met');
+    $('milesLab').textContent = met ? 'Kilometres per year' : 'Miles per year';
+    $('fuelLab').textContent  = met ? 'Gasoline $/litre'     : 'Gasoline $/gallon';
+    $('effLab').textContent   = met ? 'EV efficiency km/kWh' : 'EV efficiency mi/kWh';
+    $('mpgLab').textContent   = met ? 'ICE fuel use L/100km'  : 'ICE car MPG';
+    $('drFuelLab').textContent = met ? 'Cost to fuel, per km' : 'Cost to fuel, per mile';
+    var m = $('miles');
+    if (met){ m.min = 3000; m.max = 64000; m.step = 1000; }
+    else    { m.min = 2000; m.max = 40000; m.step = 500;  }
+    $('gas').step = met ? 0.02 : 0.05;
+    $('mpg').step = met ? 0.1  : 1;
+    $('eff').step = 0.1;
+  }
+
+  // switch units: convert current display values via an imperial canonical, then re-display
+  function applyUnit(to){
+    var met0 = (unit === 'met');
+    // current display values -> canonical imperial
+    var canMiles = parseFloat($('miles').value); if (met0) canMiles /= KM;
+    var fuel = parseFloat($('gas').value) || (met0 ? 1.04 : 3.93);
+    var canGal = met0 ? fuel * LPG : fuel;            // $/gallon
+    var ef = parseFloat($('eff').value) || (met0 ? 5.6 : 3.5);
+    var canEff = met0 ? ef / KM : ef;                 // mi/kWh
+    var mg = parseFloat($('mpg').value) || (met0 ? 7.35 : 32);
+    var canMpg = met0 ? 235.215 / mg : mg;            // MPG
+
+    setUnitUI(to);
+    var met1 = (to === 'met');
+    if (met1){
+      $('miles').value = clampN(Math.round(canMiles * KM / 1000) * 1000, 3000, 64000);
+      $('gas').value   = (canGal / LPG).toFixed(2);
+      $('eff').value   = (canEff * KM).toFixed(2);
+      $('mpg').value   = (235.215 / canMpg).toFixed(1);
+    } else {
+      $('miles').value = clampN(Math.round(canMiles / 500) * 500, 2000, 40000);
+      $('gas').value   = canGal.toFixed(2);
+      $('eff').value   = canEff.toFixed(1);
+      $('mpg').value   = Math.round(canMpg);
+    }
+    unit = to;
+    compute();
+  }
+
+  document.querySelectorAll('input[name=unit]').forEach(function(el){
+    el.addEventListener('change', function(){ applyUnit(el.value); });
+  });
+
+  var ids = ['miles','years','evPrice','gasPrice','evFin','evApr','gasFin','gasApr','term','termIce','evMaintYr','iceMaintYr','evIns','iceIns','incentive','elec','gas','eff','mpg'];
+  ids.forEach(function(id){
+    var el = $(id);
+    el.addEventListener('input', compute);
+    el.addEventListener('change', compute);
+  });
+
+  function doReset(){
+    unit = 'imp'; $('unit-imp').checked = true; setUnitUI('imp');
+    $('miles').value=12000; $('years').value=7; $('evPrice').value=40000; $('gasPrice').value=40000;
+    $('evFin').value=0; $('evApr').value=7; $('gasFin').value=0; $('gasApr').value=7; $('term').value=5; $('termIce').value=5;
+    $('evIns').value=1900; $('iceIns').value=1600; $('evMaintYr').value=700; $('iceMaintYr').value=1200;
+    $('incentive').value=0; $('elec').value=18; $('gas').value=3.93; $('eff').value=3.5; $('mpg').value=32;
+    compute();
+  }
+  $('resetBtn').addEventListener('click', doReset);
+  $('resetBtn').addEventListener('keydown', function(e){
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); doReset(); }
+  });
+
+  function num(id, fallback){ var v = parseFloat($(id).value); return (isFinite(v) && v>0) ? v : fallback; }
+
+  function compute(){
+    var met = (unit === 'met');
+    var rawMiles = parseFloat($('miles').value);          // value in the displayed unit
+    var miles = met ? rawMiles / KM : rawMiles;            // canonical miles
+    var years = parseFloat($('years').value);
+    var totalMiles = miles * years;
+    var evPrice = Math.max(0, parseFloat($('evPrice').value)||0);
+    var gasCar  = Math.max(0, parseFloat($('gasPrice').value)||0);
+    var incent  = Math.max(0, parseFloat($('incentive').value)||0);
+    var elec    = num('elec', 18) / 100;        // $/kWh (unit-neutral)
+    var gasGal  = met ? num('gas', 1.04) * LPG : num('gas', 3.93);   // $/gallon
+    var eff     = met ? num('eff', 5.6) / KM   : num('eff', 3.5);    // mi/kWh
+    var mpg     = met ? 235.215 / num('mpg', 7.35) : num('mpg', 32); // MPG
+    var evFin   = Math.max(0, parseFloat($('evFin').value)||0);
+    var gasFin  = Math.max(0, parseFloat($('gasFin').value)||0);
+    var evApr   = Math.max(0, parseFloat($('evApr').value)||0);
+    var gasApr  = Math.max(0, parseFloat($('gasApr').value)||0);
+    var term    = num('term', 5);
+    var termIce = num('termIce', 5);
+    var evIns   = Math.max(0, parseFloat($('evIns').value)||0);
+    var iceIns  = Math.max(0, parseFloat($('iceIns').value)||0);
+    var evMaintYr  = Math.max(0, parseFloat($('evMaintYr').value)||0);
+    var iceMaintYr = Math.max(0, parseFloat($('iceMaintYr').value)||0);
+
+    // live labels
+    $('milesVal').textContent = Math.round(rawMiles).toLocaleString('en-US');
+    $('yearsVal').textContent = years;
+    $('drYears').textContent = years;
+
+    // per-mile fuel cost
+    var evPerMile  = elec / eff;
+    var icePerMile = gasGal / mpg;
+
+    // energy / fuel over horizon
+    var evFuel  = totalMiles * evPerMile;
+    var iceFuel = totalMiles * icePerMile;
+
+    // maintenance over the ownership period
+    var evMaint  = evMaintYr * years;
+    var iceMaint = iceMaintYr * years;
+
+    // financing interest
+    var evInterest  = loanInterest(evFin, evApr, term);
+    var iceInterest = loanInterest(gasFin, gasApr, termIce);
+
+    // insurance over the ownership period
+    var evInsTotal  = evIns * years;
+    var iceInsTotal = iceIns * years;
+
+    // purchase (after incentive for EV)
+    var evBuy  = Math.max(0, evPrice - incent);
+
+    var evTotal  = evBuy + evFuel + evMaint + evInterest + evInsTotal;
+    var iceTotal = gasCar + iceFuel + iceMaint + iceInterest + iceInsTotal;
+
+    var delta = iceTotal - evTotal;   // + => EV cheaper
+
+    // ---- needle ----
+    var norm = Math.tanh(delta / 9000);     // -1..1 ; + leans electric
+    var angle = norm * 82;                   // degrees, clockwise = electric (right)
+    $('needle').style.transform = 'rotate(' + angle.toFixed(1) + 'deg)';
+    var winColor = Math.abs(delta) < 1500 ? 'var(--even)' : (delta > 0 ? 'var(--ev)' : 'var(--ice)');
+    $('needleLine').setAttribute('stroke', winColor);
+    $('hub').setAttribute('fill', winColor);
+
+    // ---- verdict ----
+    var dEl = $('delta'), sub = $('vSub'), lab = $('vLab');
+    if (Math.abs(delta) < 1500){
+      lab.textContent = 'Too close to call on cost';
+      dEl.textContent = '≈ ' + fmt0(Math.abs(delta));
+      dEl.style.color = 'var(--even)';
+      sub.textContent = 'Within a rounding error over ' + years + ' years. Let the non-cost factors decide.';
+    } else if (delta > 0){
+      lab.textContent = 'EV is cheaper to own';
+      dEl.textContent = '+' + fmt0(delta);
+      dEl.style.color = 'var(--ev)';
+      sub.textContent = 'EV saves about ' + fmt0(delta) + ' over ' + years + ' years on these inputs.';
+    } else {
+      lab.textContent = 'ICE is cheaper to own';
+      dEl.textContent = '+' + fmt0(-delta);
+      dEl.style.color = 'var(--ice)';
+      sub.textContent = 'ICE comes out about ' + fmt0(-delta) + ' ahead over ' + years + ' years here.';
+    }
+
+    // ---- bars ----
+    var maxTot = Math.max(evTotal, iceTotal, 1);
+    function seg(w, color){ return '<div class="bar-seg" style="width:' + (w/maxTot*100) + '%;background:' + color + '"></div>'; }
+    $('evBar').innerHTML  = seg(evBuy,'var(--seg-buy)') + seg(evFuel,'var(--ev)') + seg(evMaint,'var(--seg-maint)') + seg(evInterest,FIN_COLOR) + seg(evInsTotal,INS_COLOR);
+    $('iceBar').innerHTML = seg(gasCar,'var(--seg-buy)') + seg(iceFuel,'var(--ice)') + seg(iceMaint,'var(--seg-maint)') + seg(iceInterest,FIN_COLOR) + seg(iceInsTotal,INS_COLOR);
+    $('evTot').textContent  = fmt0(evTotal);
+    $('iceTot').textContent = fmt0(iceTotal);
+
+    // ---- drivers ----
+    var distDiv = met ? KM : 1;   // canonical $/mile -> $/km when metric
+    var fuelWin = (evPerMile < icePerMile);
+    $('drFuel').innerHTML = '<span class="' + (fuelWin?'win-ev':'win-ice') + '">' +
+      (evPerMile/distDiv*100).toFixed(1) + '¢ EV · ' + (icePerMile/distDiv*100).toFixed(1) + '¢ ICE</span>';
+    $('drFuel').className = 'v';
+    var fuelGap = iceFuel - evFuel;
+    $('drFuelTot').textContent = (fuelGap>=0?'EV saves ':'ICE saves ') + fmt0(Math.abs(fuelGap));
+    $('drFuelTot').className = 'v ' + (fuelGap>=0?'win-ev':'win-ice');
+    var maintGap = iceMaint - evMaint; // + => EV cheaper to maintain
+    if (Math.round(maintGap) === 0){
+      $('drMaint').textContent = 'Even · $0';
+      $('drMaint').className = 'v';
+    } else if (maintGap > 0){
+      $('drMaint').textContent = 'EV saves ' + fmt0(maintGap);
+      $('drMaint').className = 'v win-ev';
+    } else {
+      $('drMaint').textContent = 'ICE saves ' + fmt0(-maintGap);
+      $('drMaint').className = 'v win-ice';
+    }
+    var insGap = iceInsTotal - evInsTotal; // + => EV cheaper to insure
+    if (Math.round(insGap) === 0){
+      $('drIns').textContent = 'Even · $0';
+      $('drIns').className = 'v';
+    } else if (insGap > 0){
+      $('drIns').textContent = 'EV saves ' + fmt0(insGap);
+      $('drIns').className = 'v win-ev';
+    } else {
+      $('drIns').textContent = 'ICE saves ' + fmt0(-insGap);
+      $('drIns').className = 'v win-ice';
+    }
+    if (evInterest <= 0 && iceInterest <= 0){
+      $('drFinance').textContent = 'Both cash · $0';
+      $('drFinance').className = 'v';
+    } else {
+      var finWin = evInterest < iceInterest; // less interest = better
+      $('drFinance').innerHTML = '<span class="' + (finWin?'win-ev':'win-ice') + '">EV ' +
+        fmt0(evInterest) + ' · ICE ' + fmt0(iceInterest) + '</span>';
+      $('drFinance').className = 'v';
+    }
+    var stickerGap = gasCar - evBuy; // + => EV's net price is lower (EV cheaper)
+    if (Math.round(stickerGap) === 0){
+      $('drSticker').textContent = 'Even · $0';
+      $('drSticker').className = 'v';
+    } else if (stickerGap > 0){
+      $('drSticker').textContent = 'EV cheaper by ' + fmt0(stickerGap);
+      $('drSticker').className = 'v win-ev';
+    } else {
+      $('drSticker').textContent = 'ICE cheaper by ' + fmt0(-stickerGap);
+      $('drSticker').className = 'v win-ice';
+    }
+
+    // ---- flags ----
+    var flags = [];
+    if (miles >= 18000){
+      var distTxt = Math.round(rawMiles).toLocaleString('en-US') + (met ? ' km/yr' : ' mi/yr');
+      flags.push(['ok','High mileage compounds the EV edge.','At ' + distTxt + ' the fuel-cost gap does the heavy lifting; the more you drive, the more the EV pulls ahead.']);
+    }
+    if (miles <= 6000 && delta > 0){
+      flags.push(['neutral','Low mileage weakens the case.','You barely drive enough to earn back the price premium through fuel savings; a cheaper used car of either type may beat both.']);
+    }
+    $('flags').innerHTML = flags.map(function(f){
+      return '<div class="flag ' + f[0] + '"><b>' + f[1] + '</b> ' + f[2] + '</div>';
+    }).join('');
+  }
+
+  // ---- theme toggle ----
+  var toggle = $('theme-toggle');
+  function syncToggle(){
+    var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    toggle.textContent = dark ? '☀️ Light' : '🌙 Dark';
+    toggle.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme');
+  }
+  toggle.addEventListener('click', function(){
+    var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (dark) document.documentElement.removeAttribute('data-theme');
+    else document.documentElement.setAttribute('data-theme','dark');
+    try{ localStorage.setItem('theme', dark ? 'light' : 'dark'); }catch(e){}
+    syncToggle();
+  });
+  syncToggle();
+
+  compute();
+})();
+</script>
+</body>
+</html>
