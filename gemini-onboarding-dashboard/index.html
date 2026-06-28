@@ -166,9 +166,50 @@
   .callout b{color:var(--ink)}
   .foot{text-align:center;color:var(--muted);font-size:12px;margin-top:26px}
   a.reset{color:var(--g2);cursor:pointer;font-weight:600;text-decoration:none}
+
+  /* ---------- dark mode ---------- */
+  [data-theme="dark"]{
+    color-scheme:dark;
+    --ink:#E6E8F0;
+    --muted:#9AA1B3;
+    --line:#2C3043;
+    --bg:#0E1018;
+    --card:#171A26;
+    --soft:#1F2435;
+    --shadow:0 1px 3px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.45);
+  }
+  /* active/hover states use --ink as a fill in light mode; give them a brand fill in dark */
+  [data-theme="dark"] .tab.active{background:var(--g2);color:#fff}
+  [data-theme="dark"] .chip.active{background:var(--g2);color:#fff;border-color:var(--g2)}
+  [data-theme="dark"] .copy:hover{background:var(--g2);color:#fff;border-color:var(--g2)}
+  /* hardcoded light values that must flip */
+  [data-theme="dark"] .ptext{color:#C7CCDB}
+  [data-theme="dark"] .task input{border-color:#3A3F55}
+  [data-theme="dark"] .chip:hover{border-color:#3A3F55}
+  [data-theme="dark"] .step .sc .tool{background:rgba(66,133,244,.16)}
+
+  #theme-toggle{
+    position:fixed;top:14px;right:14px;z-index:50;
+    font:600 12.5px/1 inherit;font-family:inherit;
+    background:var(--card);color:var(--ink);
+    border:1px solid var(--line);border-radius:999px;
+    padding:8px 13px;cursor:pointer;box-shadow:var(--shadow);
+  }
+  #theme-toggle:hover{border-color:var(--g2)}
+  #theme-toggle:focus-visible{outline:3px solid var(--g2);outline-offset:2px}
 </style>
+<script>
+  /* apply saved/OS theme before paint */
+  (function(){
+    var saved=null; try{ saved=localStorage.getItem('theme'); }catch(e){}
+    var dark = saved ? saved==='dark'
+      : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    if(dark) document.documentElement.setAttribute('data-theme','dark');
+  })();
+</script>
 </head>
 <body>
+<button id="theme-toggle" type="button" aria-label="Switch to dark mode">🌙 Dark</button>
 
 <header class="top">
   <div class="top-inner">
@@ -559,6 +600,23 @@ document.getElementById("resetBtn").addEventListener("click",async()=>{
   renderGems();
   updateRing();
 })();
+</script>
+<script>
+  (function(){
+    var root=document.documentElement, btn=document.getElementById('theme-toggle');
+    function label(){
+      var d=root.getAttribute('data-theme')==='dark';
+      btn.textContent=d?'☀️ Light':'🌙 Dark';
+      btn.setAttribute('aria-label', d?'Switch to light mode':'Switch to dark mode');
+    }
+    label();
+    btn.addEventListener('click',function(){
+      var d=root.getAttribute('data-theme')==='dark';
+      if(d){ root.removeAttribute('data-theme'); } else { root.setAttribute('data-theme','dark'); }
+      try{ localStorage.setItem('theme', d?'light':'dark'); }catch(e){}
+      label();
+    });
+  })();
 </script>
 </body>
 </html>
