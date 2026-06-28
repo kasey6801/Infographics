@@ -87,6 +87,7 @@
   .mbadge.opus{background:#6E3F1B;color:#EDBD98;}
   .mbadge.sonnet{background:#1A2E25;color:#59CF98;border:1px solid #1C5F40;}
   .mbadge.haiku{background:#1E1610;color:var(--accent2);border:1px solid #783C0F;}
+  .mbadge.fable{background:#3A2A14;color:#F0C868;border:1px solid #7A5A22;}
   .minfo{flex:1;}
   .mname{font-size:12px;font-weight:700;color:var(--text);}
   .mdesc{font-size:11px;color:var(--text-muted);margin-top:2px;}
@@ -252,6 +253,7 @@
   [data-theme="light"] .mbadge.opus{background:#FCF2EB;color:#AE3B29;}
   [data-theme="light"] .mbadge.sonnet{background:#E2F6ED;color:#22734D;border-color:#95E0BD;}
   [data-theme="light"] .mbadge.haiku{background:#FADDC7;color:#994B0F;border-color:#EE9856;}
+  [data-theme="light"] .mbadge.fable{background:#FBEFD0;color:#8A6712;border-color:#E6CE85;}
   [data-theme="light"] .mtag{background:#F3EDDD;border-color:#DBD5D1;color:#685C45;}
   [data-theme="light"] .cmd-panel{background:var(--surface);}
   [data-theme="light"] .cmd-card{background:#F3EDDD;}
@@ -457,30 +459,70 @@
   <!-- Model Selection -->
   <div class="stitle">Model Selection</div>
   <div class="panel" style="margin-bottom:26px">
-    <div class="ptitle"><span class="dot" style="background:var(--accent2)"></span>Available Models — Claude 4 Family &nbsp;<span style="font-size:10px;color:var(--text-dim);font-weight:400">Select via model picker (Web/Desktop) · <code>--model</code> flag or <code>/model</code> command (CLI)</span></div>
+    <div class="ptitle"><span class="dot" style="background:var(--accent2)"></span>Available Models &nbsp;<span style="font-size:10px;color:var(--text-dim);font-weight:400">Select via model picker (Web/Desktop) · <code>--model</code> flag or <code>/model</code> command (CLI)</span></div>
     <div class="model-row">
+      <div class="model-item">
+        <span class="mbadge fable">FABLE 5</span>
+        <div class="minfo">
+          <div class="mname">claude-fable-5 <span style="font-size:10px;color:var(--text-dim);font-weight:400">· most capable</span></div>
+          <div class="mdesc">Anthropic's most capable widely released model, for the most demanding reasoning and long-horizon agentic work. Thinking is always on.</div>
+          <span class="mtag">Adaptive thinking</span><span class="mtag">1M context</span><span class="mtag">128K output</span><span class="mtag">Premium cost</span>
+        </div>
+      </div>
       <div class="model-item sel">
         <span class="mbadge opus">OPUS 4.8</span>
         <div class="minfo">
-          <div class="mname">claude-opus-4-8 <span style="font-size:10px;color:var(--text-dim);font-weight:400">· default · most capable</span></div>
-          <div class="mdesc">Most capable — complex reasoning, long-horizon tasks, highest accuracy. Best for research synthesis, intricate architecture decisions, and multi-step agentic work.</div>
+          <div class="mname">claude-opus-4-8 <span style="font-size:10px;color:var(--text-dim);font-weight:400">· default</span></div>
+          <div class="mdesc">Most capable Opus. Complex reasoning, long-horizon tasks, and highest accuracy, for research synthesis, intricate architecture decisions, and multi-step agentic work.</div>
           <span class="mtag">Adaptive thinking</span><span class="mtag">1M context</span><span class="mtag">128K output</span><span class="mtag">Highest cost</span><span class="mtag">Recommended</span>
         </div>
         <div class="sel-dot"></div>
       </div>
       <div class="model-item">
+        <span class="mbadge opus">OPUS 4.7</span>
+        <div class="minfo">
+          <div class="mname">claude-opus-4-7 <span style="font-size:10px;color:var(--text-dim);font-weight:400">· previous Opus</span></div>
+          <div class="mdesc">Previous-generation Opus. Highly autonomous, with strong long-horizon agentic work, knowledge work, vision, and memory.</div>
+          <span class="mtag">Adaptive thinking</span><span class="mtag">1M context</span><span class="mtag">128K output</span>
+        </div>
+      </div>
+      <div class="model-item">
+        <span class="mbadge opus">OPUS 4.6</span>
+        <div class="minfo">
+          <div class="mname">claude-opus-4-6 <span style="font-size:10px;color:var(--text-dim);font-weight:400">· older Opus</span></div>
+          <div class="mdesc">Earlier Opus generation with adaptive thinking, strong reasoning, and solid agentic performance.</div>
+          <span class="mtag">Adaptive thinking</span><span class="mtag">1M context</span><span class="mtag">128K output</span>
+        </div>
+      </div>
+      <div class="model-item">
+        <span class="mbadge opus">OPUS 4.5</span>
+        <div class="minfo">
+          <div class="mname">claude-opus-4-5 <span style="font-size:10px;color:var(--text-dim);font-weight:400">· legacy, still callable</span></div>
+          <div class="mdesc">Legacy Opus, still available for teams pinned to this version for reproducibility.</div>
+          <span class="mtag">200K context</span><span class="mtag">Legacy</span>
+        </div>
+      </div>
+      <div class="model-item">
         <span class="mbadge sonnet">SONNET 4.6</span>
         <div class="minfo">
           <div class="mname">claude-sonnet-4-6 <span style="font-size:10px;color:var(--text-dim);font-weight:400">· balanced everyday option</span></div>
-          <div class="mdesc">Smart &amp; efficient — everyday development, code generation, analysis. Best balance of intelligence and speed for production workloads and interactive use.</div>
+          <div class="mdesc">Smart and efficient, for everyday development, code generation, and analysis. Best balance of intelligence and speed for production workloads and interactive use.</div>
           <span class="mtag">Adaptive thinking</span><span class="mtag">1M context</span><span class="mtag">64K output</span>
+        </div>
+      </div>
+      <div class="model-item">
+        <span class="mbadge sonnet">SONNET 4.5</span>
+        <div class="minfo">
+          <div class="mname">claude-sonnet-4-5 <span style="font-size:10px;color:var(--text-dim);font-weight:400">· legacy, still callable</span></div>
+          <div class="mdesc">Legacy Sonnet, still available. A solid speed and intelligence balance for teams pinned to this version.</div>
+          <span class="mtag">1M context</span><span class="mtag">64K output</span><span class="mtag">Legacy</span>
         </div>
       </div>
       <div class="model-item">
         <span class="mbadge haiku">HAIKU 4.5</span>
         <div class="minfo">
           <div class="mname">claude-haiku-4-5-20251001 <span style="font-size:10px;color:var(--text-dim);font-weight:400">· Fastest, lowest cost</span></div>
-          <div class="mdesc">Lightweight &amp; fast — high-volume tasks, real-time classification, and cost-sensitive pipelines.</div>
+          <div class="mdesc">Lightweight and fast, for high-volume tasks, real-time classification, and cost-sensitive pipelines.</div>
           <span class="mtag">Sub-second latency</span><span class="mtag">200K context</span><span class="mtag">64K output</span><span class="mtag">High throughput</span>
         </div>
       </div>
