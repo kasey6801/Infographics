@@ -7,6 +7,8 @@ its own.
 
 **Live site:** https://kasey6801.github.io/Infographics/
 
+**Design reference:** [`STYLE_GUIDE.md`](STYLE_GUIDE.md) — the shared field-guide look, palette, and dark-mode pattern for new pages.
+
 ## Pages
 
 - `index.html` — landing page linking to all guides
