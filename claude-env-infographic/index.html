@@ -7,7 +7,7 @@
 <title>Claude Environment Overview</title>
 <style>
   :root {
-    --bg:#17150F;--surface:#221E17;--surface2:#2A251C;--border:#403829;
+    --bg:#17150F;--surface:#221E17;--surface2:#2A251C;--border:#403829;--shadow:0 2px 0 rgba(0,0,0,.5);
     --accent:#CB6314;--accent2:#E87218;
     --blue:#E08F51;--purple:#DE8274;--green:#2D9C68;--teal:#2E9E6A;
     --text:#ECE3D0;--text-muted:#B3AA96;--text-dim:#847A64;
@@ -228,7 +228,7 @@
   #theme-toggle:hover{border-color:var(--accent2);}
 
   /* ── LIGHT MODE ── */
-  [data-theme="light"]{--bg:#E9E1CF;--surface:#F3EDDD;--surface2:#E1D8C2;--border:#C5BAA0;--text:#1C1A15;--text-muted:#4A463C;--text-dim:#6B6452;--web:#1B4F8A;--desktop:#B23A2E;--ide:#2E6149;}
+  [data-theme="light"]{--bg:#E9E1CF;--surface:#F3EDDD;--surface2:#E1D8C2;--border:#C5BAA0;--text:#1C1A15;--text-muted:#4A463C;--text-dim:#6B6452;--web:#1B4F8A;--desktop:#B23A2E;--ide:#2E6149;--shadow:0 2px 0 rgba(28,26,21,.14);}
   [data-theme="light"] .env-card{background:var(--surface);}
   [data-theme="light"] .env-card.web{background:#DEE8F3;border-color:#B9CFE6;}
   [data-theme="light"] .env-card.desktop{background:#F3DDD8;border-color:#E2B3AB;}
@@ -335,6 +335,9 @@
   [data-theme="light"] [style*="color:#95E0BD"]{color:#22734D !important;}
   [data-theme="light"] [style*="color:#EB8334"]{color:#994B0F !important;}
   [data-theme="light"] [style*="color:#EDBBB4"]{color:#AD3A29 !important;}
+  /* field-guide: bold ink borders + hard offset shadow on cards */
+  .env-card,.cc,.cc-example,.cmd-card,.cmd-panel,.custom-panel,.model-item,.plus-item,.sb-mock,.md-outer,.md-file,.md-beh-item,.md-decision,.scope-row,.invoke-item,.snippet-block{border:1.5px solid var(--text);}
+  .env-card,.cc,.cmd-card,.model-item,.plus-item,.sb-mock{box-shadow:var(--shadow);}
 </style>
 <script>
   /* apply saved theme before paint (default: dark) */
