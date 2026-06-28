@@ -336,8 +336,15 @@
   [data-theme="light"] [style*="color:#fbbf24"]{color:#a16207 !important;}
   [data-theme="light"] [style*="color:#f9a8d4"]{color:#be185d !important;}
 </style>
+<script>
+  /* apply saved theme before paint (default: dark) */
+  (function(){
+    try{ if(localStorage.getItem('theme')==='light'){ document.documentElement.setAttribute('data-theme','light'); } }catch(e){}
+  })();
+</script>
 </head>
 <body>
+<button id="theme-toggle" type="button" onclick="toggleTheme()" aria-label="Toggle light or dark mode" style="position:fixed;top:14px;right:14px;z-index:50">☀️ <span style="font-size:11px;font-weight:600">Light</span></button>
 <div class="page">
 
   <!-- Header -->
@@ -1199,11 +1206,19 @@
     var h = document.documentElement;
     var next = h.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
     h.setAttribute('data-theme', next);
+    try{ localStorage.setItem('theme', next); }catch(e){}
     var btn = document.getElementById('theme-toggle');
     if (btn) btn.innerHTML = next === 'light'
       ? '🌙 <span style="font-size:11px;font-weight:600">Dark</span>'
       : '☀️ <span style="font-size:11px;font-weight:600">Light</span>';
   };
+  /* set the toggle's initial label to match the active theme */
+  (function(){
+    var btn = document.getElementById('theme-toggle');
+    if (btn) btn.innerHTML = document.documentElement.getAttribute('data-theme') === 'light'
+      ? '🌙 <span style="font-size:11px;font-weight:600">Dark</span>'
+      : '☀️ <span style="font-size:11px;font-weight:600">Light</span>';
+  })();
 </script>
 
 <footer style="max-width:1140px;margin:0 auto;padding:18px 24px 40px;color:var(--text-dim);font-size:11px;text-align:center;border-top:1px solid var(--border)">Released under the <a href="https://github.com/kasey6801/Infographics/blob/main/LICENSE" target="_blank" rel="noopener" style="color:var(--accent2);text-decoration:underline">MIT License</a>.</footer>
