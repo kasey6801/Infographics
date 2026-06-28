@@ -264,9 +264,61 @@
     .rd .w{transition:none}
   }
   .rd:focus-visible{outline:2px solid var(--warp);outline-offset:2px}
+
+  /* ---------- dark mode ---------- */
+  [data-theme="dark"]{
+    --paper:#17150F;
+    --paper-2:#211C15;
+    --ink:#ECE3D0;
+    --ink-soft:#B3AA96;
+    --line:#3D3528;
+    --stamp-red:#E08A7C;
+    --seal-green:#69B294;
+    --warp:#F2914A;
+    --read:#E08A7C;
+    --hidden:#69B294;
+    --shadow:0 2px 0 rgba(0,0,0,.45);
+  }
+  [data-theme="dark"] body{
+    background-image:
+      radial-gradient(circle at 18% 12%, rgba(255,255,255,.04), transparent 40%),
+      radial-gradient(circle at 82% 78%, rgba(0,0,0,.28), transparent 45%);
+  }
+  /* keep the intentionally-dark panels dark (terminal / app mockup / emphasis) */
+  [data-theme="dark"] .filetab{background:#100D08;color:#E6DCC8}
+  [data-theme="dark"] .logline{background:#100D08;color:#E6DCC8}
+  [data-theme="dark"] .app-mode:not(.off){background:#100D08;color:#E6DCC8}
+  [data-theme="dark"] .catch{background:#221C13}
+  [data-theme="dark"] .catch h2{color:#ECE3D0}
+  [data-theme="dark"] .trade .chip{color:#E6DCC8}
+  /* fix hardcoded light surfaces */
+  [data-theme="dark"] .scn{background:#211C15}
+  [data-theme="dark"] .isp-note{background:rgba(255,255,255,.04)}
+  [data-theme="dark"] .lnk:hover,[data-theme="dark"] .lnk:focus-visible{background:#2A2419;box-shadow:0 6px 0 rgba(0,0,0,.4)}
+
+  #theme-toggle{
+    position:fixed;top:14px;right:14px;z-index:50;
+    font-family:var(--mono);font-size:.78rem;
+    background:var(--paper-2);color:var(--ink);
+    border:1.5px solid var(--ink);border-radius:8px;
+    padding:7px 12px;cursor:pointer;box-shadow:var(--shadow);
+    transition:transform .12s ease;
+  }
+  #theme-toggle:hover{transform:translateY(-1px)}
+  #theme-toggle:focus-visible{outline:3px solid var(--stamp-red);outline-offset:3px}
 </style>
+<script>
+  /* apply saved/OS theme before paint to avoid a flash of the wrong mode */
+  (function(){
+    var saved=null; try{ saved=localStorage.getItem('theme'); }catch(e){}
+    var dark = saved ? saved==='dark'
+      : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    if(dark) document.documentElement.setAttribute('data-theme','dark');
+  })();
+</script>
 </head>
 <body>
+  <button id="theme-toggle" type="button" aria-label="Switch to dark mode">🌙 Dark</button>
 
 <div class="wrap">
 
@@ -687,6 +739,23 @@
       el.addEventListener('keydown', function(e){
         if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); }
       });
+    });
+  })();
+</script>
+<script>
+  (function(){
+    var root=document.documentElement, btn=document.getElementById('theme-toggle');
+    function label(){
+      var d=root.getAttribute('data-theme')==='dark';
+      btn.textContent=d?'☀️ Light':'🌙 Dark';
+      btn.setAttribute('aria-label', d?'Switch to light mode':'Switch to dark mode');
+    }
+    label();
+    btn.addEventListener('click',function(){
+      var d=root.getAttribute('data-theme')==='dark';
+      if(d){ root.removeAttribute('data-theme'); } else { root.setAttribute('data-theme','dark'); }
+      try{ localStorage.setItem('theme', d?'light':'dark'); }catch(e){}
+      label();
     });
   })();
 </script>
