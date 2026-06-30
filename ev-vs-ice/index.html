@@ -234,11 +234,11 @@
         <h2><span class="n">1</span> How you drive</h2>
         <div class="field">
           <div class="row"><label for="miles" id="milesLab">Miles per year</label><span class="val" id="milesVal">12,000</span></div>
-          <input type="range" id="miles" min="2000" max="40000" step="500" value="12000">
+          <input type="range" id="miles" min="2000" max="100000" step="500" value="12000">
         </div>
         <div class="field">
           <div class="row"><label for="years">Years you'll keep it</label><span class="val" id="yearsVal">7</span></div>
-          <input type="range" id="years" min="1" max="15" step="1" value="7">
+          <input type="range" id="years" min="1" max="25" step="1" value="7">
         </div>
       </div>
 
@@ -432,8 +432,8 @@
     $('mpgLab').textContent   = met ? 'ICE fuel use L/100km'  : 'ICE car MPG';
     $('drFuelLab').textContent = met ? 'Cost to fuel, per km' : 'Cost to fuel, per mile';
     var m = $('miles');
-    if (met){ m.min = 3000; m.max = 64000; m.step = 1000; }
-    else    { m.min = 2000; m.max = 40000; m.step = 500;  }
+    if (met){ m.min = 3000; m.max = 160000; m.step = 1000; }
+    else    { m.min = 2000; m.max = 100000; m.step = 500;  }
     $('gas').step = met ? 0.02 : 0.05;
     $('mpg').step = met ? 0.1  : 1;
     $('eff').step = 0.1;
@@ -454,12 +454,12 @@
     setUnitUI(to);
     var met1 = (to === 'met');
     if (met1){
-      $('miles').value = clampN(Math.round(canMiles * KM / 1000) * 1000, 3000, 64000);
+      $('miles').value = clampN(Math.round(canMiles * KM / 1000) * 1000, 3000, 160000);
       $('gas').value   = (canGal / LPG).toFixed(2);
       $('eff').value   = (canEff * KM).toFixed(2);
       $('mpg').value   = (235.215 / canMpg).toFixed(1);
     } else {
-      $('miles').value = clampN(Math.round(canMiles / 500) * 500, 2000, 40000);
+      $('miles').value = clampN(Math.round(canMiles / 500) * 500, 2000, 100000);
       $('gas').value   = canGal.toFixed(2);
       $('eff').value   = canEff.toFixed(1);
       $('mpg').value   = Math.round(canMpg);
