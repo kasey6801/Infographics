@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer">
+<title>The Interaction Log: a field-guide explainer</title>
+<script>
+  /* set theme before paint to avoid a flash of the wrong mode */
+  (function(){
+    try{
+      var t = localStorage.getItem('theme');
+      if (t === 'dark' || (!t && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)){
+        document.documentElement.setAttribute('data-theme','dark');
+      }
+    }catch(e){}
+  })();
+</script>
+<style>
+  :root{
+    color-scheme:light;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --paper:#E9E1CF;
+    --paper-2:#E1D8C2;
+    --card:#F3EDDD;
+    --ink:#1C1A15;
+    --ink-soft:#4A463C;
+    --line:#C5BAA0;
+    --stamp-red:#B23A2E;
+    --seal-green:#2E6149;
+    --shadow:0 2px 0 rgba(28,26,21,.14);
+  }
+  [data-theme="dark"]{
+    color-scheme:dark;
+    --paper:#17150F;
+    --paper-2:#1F1B14;
+    --card:#221E17;
+    --ink:#ECE3D0;
+    --ink-soft:#B3AA96;
+    --line:#403829;
+    --stamp-red:#E08A7C;
+    --seal-green:#69B294;
+    --shadow:0 2px 0 rgba(0,0,0,.45);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.58;
+    -webkit-font-smoothing:antialiased;
+    background:
+      radial-gradient(1000px 560px at 12% -6%, rgba(255,255,255,.5), transparent 60%),
+      radial-gradient(900px 640px at 106% 108%, rgba(28,26,21,.08), transparent 58%),
+      var(--paper);
+    min-height:100vh;
+    padding:28px 0 64px;
+  }
+  [data-theme="dark"] body{
+    background:
+      radial-gradient(1000px 560px at 12% -6%, rgba(255,255,255,.04), transparent 60%),
+      radial-gradient(900px 640px at 106% 108%, rgba(0,0,0,.4), transparent 58%),
+      var(--paper);
+  }
+  .wrap{max-width:820px;margin:0 auto;padding:0 22px}
+
+  /* theme toggle */
+  #theme-toggle{
+    position:fixed;top:14px;right:14px;z-index:20;
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;
+    background:var(--card);color:var(--ink);
+    border:1.5px solid var(--ink);border-radius:8px;
+    padding:7px 11px;cursor:pointer;box-shadow:var(--shadow);
+    transition:transform .12s ease;
+  }
+  #theme-toggle:hover{transform:translateY(-1px)}
+  :focus-visible{outline:3px solid var(--stamp-red);outline-offset:2px}
+
+  /* header */
+  header{margin-bottom:26px}
+  .eyebrow{
+    font-family:var(--mono);font-size:.74rem;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--stamp-red);margin:0 0 10px;
+  }
+  h1{font-size:clamp(2rem,5vw,2.9rem);font-weight:900;letter-spacing:-.02em;line-height:1.04;margin:0}
+  h1 .accent{color:var(--stamp-red)}
+  .lede{font-size:1.08rem;color:var(--ink-soft);max-width:62ch;margin:.7rem 0 0}
+
+  /* panels */
+  .panel{
+    background:var(--card);border:1.5px solid var(--ink);border-radius:10px;
+    padding:18px 18px 20px;box-shadow:var(--shadow);
+  }
+  .panel + .panel{margin-top:16px}
+  .panel > h2{
+    font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--ink-soft);margin:0 0 14px;font-weight:700;
+    display:flex;align-items:center;gap:10px;
+  }
+  .panel > h2 .n{
+    color:#F3EDDD;background:#B23A2E;border-radius:6px;
+    width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;
+    font-size:11px;font-weight:700;flex:0 0 auto;
+  }
+  .panel p{margin:0 0 .7rem}
+  .panel p:last-child{margin-bottom:0}
+
+  code{
+    font-family:var(--mono);font-size:.86em;background:var(--paper-2);
+    border:1px solid var(--line);border-radius:3px;padding:.02em .35em;
+  }
+
+  /* inverted command line (stays dark in both themes) */
+  .cmd{
+    background:#1C1A15;color:#E9E1CF;border-radius:8px;border:1.5px solid #1C1A15;
+    padding:.7rem .9rem;font-family:var(--mono);font-size:.92rem;
+    display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;margin:.2rem 0 1rem;
+  }
+  .cmd .tok{color:#E08A7C;font-weight:700}
+  .cmd .arg{color:#B3AA96}
+
+  /* dark code block (stays dark in both themes) */
+  pre{
+    background:#1C1A15;color:#E9E1CF;border:1.5px solid #1C1A15;border-radius:8px;
+    padding:.9rem 1rem;overflow:auto;margin:.2rem 0 0;
+    font-family:var(--mono);font-size:.78rem;line-height:1.55;
+  }
+  pre .c{color:#8FA89B}
+
+  /* numbered steps */
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.6rem}
+  ol.steps li{counter-increment:s;position:relative;padding-left:2.3rem;line-height:1.5}
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.55rem;height:1.55rem;background:#B23A2E;color:#F3EDDD;border-radius:50%;
+    display:inline-flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:.8rem;font-weight:700;
+  }
+
+  /* rule / benefit lists */
+  ul.rules,ul.why{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.5rem}
+  ul.rules li,ul.why li{position:relative;padding-left:1.4rem;line-height:1.5}
+  ul.rules li::before{content:"\25A0";position:absolute;left:0;top:.02rem;color:var(--stamp-red);font-size:.66rem}
+  ul.why li::before{content:"\25B8";position:absolute;left:0;top:0;color:var(--seal-green);font-size:.82rem}
+
+  /* callouts under the anatomy sample */
+  .callouts{margin:.9rem 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.45rem}
+  .callouts li{font-size:.92rem;line-height:1.45;color:var(--ink-soft)}
+  .callouts b{color:var(--ink);font-family:var(--mono);font-size:.82rem;letter-spacing:.04em}
+
+  /* static sample entry (mirrors the real Interaction-Log.html, without the collapse behaviour) */
+  .sample{
+    background:var(--card);border:1.5px solid var(--ink);border-radius:8px;
+    box-shadow:var(--shadow);overflow:hidden;margin:.2rem 0 0;
+  }
+  .sample .fhead{
+    display:flex;align-items:center;gap:.6rem;padding:.8rem 1rem;
+    font-family:var(--mono);font-size:.84rem;font-weight:600;color:var(--ink);background:var(--paper-2);
+  }
+  .sample .chev{color:var(--stamp-red);font-size:.78rem;display:inline-block;transform:rotate(90deg)}
+  .sample .path{word-break:break-all}
+  .sample .count{margin-left:auto;font-size:.64rem;letter-spacing:.1em;color:var(--ink-soft);text-transform:uppercase;flex:0 0 auto}
+  .sample .fbody{padding:.1rem 1rem 1rem}
+  .sample .entry{padding:1rem 0 .1rem}
+  .sample .entry-date{
+    font-family:var(--mono);font-size:.8rem;font-weight:700;letter-spacing:.08em;color:var(--ink);
+    margin-bottom:.6rem;display:inline-block;border-bottom:2px solid var(--stamp-red);padding-bottom:.15rem;
+  }
+  .sample .lbl{
+    font-family:var(--mono);font-size:.64rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink-soft);margin:.9rem 0 .4rem;
+  }
+  .sample ol.prompts{list-style:none;counter-reset:p;display:flex;flex-direction:column;gap:.4rem;margin:0;padding:0}
+  .sample ol.prompts li{
+    counter-increment:p;position:relative;padding:.4rem .6rem .4rem 2.1rem;
+    background:var(--paper);border:1px solid var(--line);border-radius:6px;border-left:3px solid var(--stamp-red);
+    font-size:.9rem;color:var(--ink);
+  }
+  .sample ol.prompts li::before{
+    content:counter(p);position:absolute;left:.55rem;top:.4rem;
+    font-family:var(--mono);font-size:.72rem;font-weight:700;color:var(--stamp-red);
+  }
+  .sample ul.changes{list-style:none;display:flex;flex-direction:column;gap:.35rem;margin:0;padding:0}
+  .sample ul.changes li{position:relative;padding-left:1.2rem;font-size:.9rem}
+  .sample ul.changes li::before{content:"\25B8";position:absolute;left:0;top:0;color:var(--seal-green);font-size:.78rem}
+
+  footer{
+    margin-top:30px;border-top:1.5px solid var(--line);padding-top:16px;
+    color:var(--ink-soft);font-size:.85rem;line-height:1.6;
+  }
+  footer a{color:var(--stamp-red)}
+</style>
+</head>
+<body>
+  <button id="theme-toggle" type="button" aria-label="Switch color theme">🌙 Dark</button>
+  <div class="wrap">
+    <header>
+      <p class="eyebrow">Workflow · Activity log</p>
+      <h1>The Interaction <span class="accent">Log</span></h1>
+      <p class="lede">A single self-contained HTML file at the ClaudeDev root that records every
+      Claude working session. It groups activity by project folder, then by date, newest first,
+      and it stays current with one command.</p>
+    </header>
+
+    <main>
+      <section class="panel">
+        <h2><span class="n">1</span> What it is</h2>
+        <p>The Interaction Log lives as <code>Interaction-Log.html</code> in the ClaudeDev root.
+        It is one self-contained page: no server, no database, no external dependencies. It captures
+        what was worked on across every project in the folder, so the whole history opens straight
+        from disk in a browser.</p>
+        <p>Each logging run adds one combined entry for the session: the folder that changed most,
+        every prompt that was sent, and a short summary of what changed. Entries are grouped inside a
+        collapsible block per folder, and the newest folder and newest date always sit on top.</p>
+      </section>
+
+      <section class="panel">
+        <h2><span class="n">2</span> Anatomy of an entry</h2>
+        <p>One entry is three nested layers: a <b>folder</b> block holds one or more <b>dated</b>
+        sections, and each dated section holds the <b>prompts</b> and a <b>summary of changes</b>.
+        This is exactly how it renders in the log:</p>
+
+        <div class="sample" aria-hidden="true">
+          <div class="fhead">
+            <span class="chev">▸</span>
+            <span class="path">CC_infographics/Interaction-Log</span>
+            <span class="count">1 date</span>
+          </div>
+          <div class="fbody">
+            <div class="entry">
+              <div class="entry-date">2026-07-01</div>
+              <p class="lbl">Prompts</p>
+              <ol class="prompts">
+                <li>Create a new folder in CC_infographics named Interaction-Log.</li>
+                <li>Follow the style_guide and the pattern of ev-vs-ice.</li>
+              </ol>
+              <p class="lbl">Summary of changes</p>
+              <ul class="changes">
+                <li><code>Interaction-Log/index.html</code>: built the field-guide explainer.</li>
+                <li><code>index.html</code>: added a Workflow section with the new card.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <ul class="callouts">
+          <li><b>Folder block</b> · the project path, plus a count of how many dated entries it holds. In the real log it collapses on click.</li>
+          <li><b>Date section</b> · one per day, headed by the ISO date, newest at the top.</li>
+          <li><b>Prompts</b> · every prompt sent that day, verbatim and numbered.</li>
+          <li><b>Summary of changes</b> · green bullets, with files and identifiers wrapped in <code>code</code>.</li>
+        </ul>
+
+        <p style="margin-top:1rem">The markup behind that date section:</p>
+        <pre><span class="c">&lt;!-- inside .folder-body, newest date first --&gt;</span>
+&lt;section class="entry" data-date="2026-07-01"&gt;
+  &lt;h2 class="entry-date"&gt;2026-07-01&lt;/h2&gt;
+  &lt;p class="lbl"&gt;Prompts&lt;/p&gt;
+  &lt;ol class="prompts"&gt;
+    &lt;li&gt;Create a new folder in CC_infographics named Interaction-Log.&lt;/li&gt;
+  &lt;/ol&gt;
+  &lt;p class="lbl"&gt;Summary of changes&lt;/p&gt;
+  &lt;ul class="changes"&gt;
+    &lt;li&gt;&lt;code&gt;Interaction-Log/index.html&lt;/code&gt;: built the explainer.&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/section&gt;</pre>
+      </section>
+
+      <section class="panel">
+        <h2><span class="n">3</span> How to create it</h2>
+        <p>You do not edit the file by hand. Run the command and it does the rest:</p>
+        <div class="cmd"><span class="tok">/Interaction-log</span> <span class="arg">[optional note]</span></div>
+        <p>It reads the current session and updates <code>Interaction-Log.html</code> in five moves:</p>
+        <ol class="steps">
+          <li>Capture today's date, checked live and never hardcoded, and the primary folder: the one
+          that changed most, written as a path relative to the ClaudeDev root.</li>
+          <li>Gather every prompt from the session in order and verbatim, plus a short bullet list of
+          what changed.</li>
+          <li>Find that folder's <code>&lt;details&gt;</code> block. If it exists, move it to the top of
+          the log; if not, create one and insert it first.</li>
+          <li>Inside the folder, find the section for today. Append the new prompts and changes if it is
+          present, or prepend a fresh dated section if it is not.</li>
+          <li>Refresh the folder's date count, then report one line: folder, date, and how many prompts
+          and changes were logged.</li>
+        </ol>
+        <p style="margin-top:1rem">If <code>Interaction-Log.html</code> does not exist yet, the command
+        first creates it from a built-in base template, so the very first run just works.</p>
+      </section>
+
+      <section class="panel">
+        <h2><span class="n">4</span> House rules</h2>
+        <ul class="rules">
+          <li>HTML-escape everything logged: <code>&amp;</code> becomes <code>&amp;amp;</code>,
+          <code>&lt;</code> becomes <code>&amp;lt;</code>, <code>&gt;</code> becomes <code>&amp;gt;</code>.</li>
+          <li>Wrap file paths and identifiers in <code>&lt;code&gt;</code> so they read as code.</li>
+          <li>No em dashes in the summary prose; use commas, colons, periods, or middots.</li>
+          <li>Newest first, always: newest folder at the top of the log, newest date at the top of its folder.</li>
+          <li>No external or network resources, ever. The page stays fully self-contained.</li>
+          <li>Do not commit or push. The ClaudeDev root is not a git repository.</li>
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2><span class="n">5</span> Why it's used</h2>
+        <ul class="why">
+          <li>One browsable, searchable record of work across every ClaudeDev project, held in a single file.</li>
+          <li>Accountability: the exact prompts and the resulting changes are captured together, per session.</li>
+          <li>Structure that scales: collapsible folders keep it tidy, and newest-first keeps recent work in view.</li>
+          <li>Portable and private: no backend, no trackers, opens straight from disk, and it matches the
+          field-guide look of the rest of the collection.</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer>
+      <p>Part of a self-contained field-guide collection: no CDN, no web fonts, no runtime dependencies.</p>
+      <p>Released under the <a href="https://github.com/kasey6801/Infographics/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>.</p>
+    </footer>
+  </div>
+  <script>
+    (function(){
+      var root=document.documentElement;
+      var btn=document.getElementById('theme-toggle');
+      function label(){
+        var dark=root.getAttribute('data-theme')==='dark';
+        btn.textContent=dark ? '☀️ Light' : '🌙 Dark';
+        btn.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+      }
+      label();
+      btn.addEventListener('click', function(){
+        var dark=root.getAttribute('data-theme')==='dark';
+        if(dark){ root.removeAttribute('data-theme'); }
+        else{ root.setAttribute('data-theme','dark'); }
+        try{ localStorage.setItem('theme', dark ? 'light' : 'dark'); }catch(e){}
+        label();
+      });
+    })();
+  </script>
+</body>
+</html>
