@@ -12,9 +12,9 @@ so there is no calculator and no live simulator. There is no server and no netwo
 
 ## 1. What the page documents
 
-The Interaction Log itself is a separate file, `Interaction-Log.html`, kept at the ClaudeDev root.
-That log is a running, self-contained record of Claude working sessions across every project in the
-folder. This page explains it in three beats that map to the user's request: what it is, how to
+The Interaction Log itself is a separate file, `Interaction-Log.html`, kept at the root of the
+workspace you want to track. That log is a running, self-contained record of Claude working sessions
+across every project in that workspace. This page explains it in three beats: what it is, how to
 create it, and why it is used.
 
 The log groups activity by project folder, then by date, newest first. Each logging run adds one
@@ -37,7 +37,7 @@ A single `index.html` with three inline parts and no external dependencies:
 
 The five panels:
 
-1. **What it is.** The log as a single self-contained page at the ClaudeDev root, grouped by folder
+1. **What it is.** The log as a single self-contained page at your workspace root, grouped by folder
    then date, newest first, with no backend.
 2. **Anatomy of an entry.** A static replica of a real entry (folder header, dated section, numbered
    prompts, green-bulleted changes) followed by short callouts and the underlying markup in a dark
@@ -52,11 +52,11 @@ The five panels:
 
 ## 3. How the log gets built (the command)
 
-The page describes the behaviour of `/Interaction-log`, defined in
-`.claude/commands/Interaction-log.md` at the ClaudeDev root. On each run the command:
+The page describes the behaviour of `/Interaction-log`, defined as a slash command (for example, a
+`.claude/commands/Interaction-log.md` file in your workspace). On each run the command:
 
 1. Captures today's date, checked live and never hardcoded, and the primary folder: the one that
-   changed most this session, written as a path relative to the ClaudeDev root. If several folders
+   changed most this session, written as a path relative to your workspace root. If several folders
    were touched, the others are recorded inside the change summary, and the run still produces one
    combined entry.
 2. Gathers every prompt from the session in order and verbatim, plus a short bullet list of what
@@ -84,7 +84,7 @@ controls), so the first run works with no setup.
 - No em dashes in the summary prose; use commas, colons, periods, or middots.
 - Newest first, always: newest folder at the top of the log, newest date at the top of its folder.
 - No external or network resources, ever. The page stays fully self-contained.
-- Do not commit or push. The ClaudeDev root is not a git repository.
+- Do not commit or push. The command leaves version control to you, since the log may sit outside a git repository.
 
 ---
 

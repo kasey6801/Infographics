@@ -199,7 +199,7 @@
     <header>
       <p class="eyebrow">Workflow · Activity log</p>
       <h1>The Interaction <span class="accent">Log</span></h1>
-      <p class="lede">A single self-contained HTML file at the ClaudeDev root that records every
+      <p class="lede">A single self-contained HTML file at your workspace root that records every
       Claude working session. It groups activity by project folder, then by date, newest first,
       and it stays current with one command.</p>
     </header>
@@ -207,9 +207,9 @@
     <main>
       <section class="panel">
         <h2><span class="n">1</span> What it is</h2>
-        <p>The Interaction Log lives as <code>Interaction-Log.html</code> in the ClaudeDev root.
+        <p>The Interaction Log lives as <code>Interaction-Log.html</code> at your workspace root.
         It is one self-contained page: no server, no database, no external dependencies. It captures
-        what was worked on across every project in the folder, so the whole history opens straight
+        what was worked on across every project in that workspace, so the whole history opens straight
         from disk in a browser.</p>
         <p>Each logging run adds one combined entry for the session: the folder that changed most,
         every prompt that was sent, and a short summary of what changed. Entries are grouped inside a
@@ -274,7 +274,7 @@
         <p>It reads the current session and updates <code>Interaction-Log.html</code> in five moves:</p>
         <ol class="steps">
           <li>Capture today's date, checked live and never hardcoded, and the primary folder: the one
-          that changed most, written as a path relative to the ClaudeDev root.</li>
+          that changed most, written as a path relative to your workspace root.</li>
           <li>Gather every prompt from the session in order and verbatim, plus a short bullet list of
           what changed.</li>
           <li>Find that folder's <code>&lt;details&gt;</code> block. If it exists, move it to the top of
@@ -297,14 +297,14 @@
           <li>No em dashes in the summary prose; use commas, colons, periods, or middots.</li>
           <li>Newest first, always: newest folder at the top of the log, newest date at the top of its folder.</li>
           <li>No external or network resources, ever. The page stays fully self-contained.</li>
-          <li>Do not commit or push. The ClaudeDev root is not a git repository.</li>
+          <li>Do not commit or push. The command leaves version control to you, since the log may sit outside a git repository.</li>
         </ul>
       </section>
 
       <section class="panel">
         <h2><span class="n">5</span> Why it's used</h2>
         <ul class="why">
-          <li>One browsable, searchable record of work across every ClaudeDev project, held in a single file.</li>
+          <li>One browsable, searchable record of work across every project in your workspace, held in a single file.</li>
           <li>Accountability: the exact prompts and the resulting changes are captured together, per session.</li>
           <li>Structure that scales: collapsible folders keep it tidy, and newest-first keeps recent work in view.</li>
           <li>Portable and private: no backend, no trackers, opens straight from disk, and it matches the
