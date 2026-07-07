@@ -32,7 +32,7 @@ Both files share this section order. Each section has a theme emoji in **both** 
 | # | id | Nav label | Heading |
 |---|-----|-----------|---------|
 | 1 | `tldr` | 📋 Overview | 📋 TL;DR |
-| 1b | (no id) | — | ⚠️ Key Caveats (moved from below the Timeline to directly below the TL;DR, July 6, 2026; its stale "CPSP unresolved" line was corrected in the same move) |
+| 1b | `caveats` | — | ⚠️ Key Caveats (moved from below the Timeline to directly below the TL;DR, July 6, 2026; its stale "CPSP unresolved" line was corrected in the same move) |
 | 2 | `invest` | 💹 Investment Landscape | 💹 Investment Landscape: Publicly-Traded Exposure to the Portfolio |
 | 3 | `latest` | ⚡ Latest | ⚡ Latest Developments — June 26, 2026 |
 | 3b | `framing` | (not in nav) | 📌 Key Strategic Framing: The Baseline and the Contested 2% (added July 6, 2026 — gives the formerly untitled baseline/2%-accounting bridge between the Latest blocks and the Arctic section its own h2 so it participates in section collapsing; the June 28 Latest note's "Key Strategic Framing section below" cross-reference now resolves to it) |
@@ -88,6 +88,7 @@ Palette intent: navy/blue = primary/structure; teal = allied-operators; amber/mi
 - `.section-nav{position:sticky;top:0;z-index:100}` — the sticky nav. **This is why scroll offset matters.**
 - `h2[id],div[id],section[id]{scroll-margin-top:56px}` — makes anchored jumps clear the sticky nav.
 - `main>.container>h2:not(.latest-header)` — boxed section headers (added July 6, 2026): #EBF4FF background, 1px #C7DBF4 border, 4px `var(--blue)` left accent, 4px radius, same shape as `h2.latest-header` (which keeps its amber palette). #EBF4FF/#C7DBF4 are user-specified accents outside the token list; each section keeps its own theme emoji.
+- `h2#tldr,h2#caveats,h2#invest` — pink override (user-specified July 6, 2026): #F2CCFC background with #E3AEF2 border and #A21CAF left accent/chevron for the TL;DR, Key Caveats, and Investment Landscape headers.
 - `.callout` / `.callout-kf` (key finding) / `.callout-warn` (red, investment disclaimer) / `.callout-note` — blockquotes become these.
 - `.data-table` — applied to every `<table>`.
 - `.icon-win`/`.icon-loss`/`.icon-warn` — wrap ✅/❌/⚠️ inline icons.
