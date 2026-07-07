@@ -34,6 +34,7 @@ Both files share this section order. Each section has a theme emoji in **both** 
 | 1 | `tldr` | 📋 Overview | 📋 TL;DR |
 | 2 | `invest` | 💹 Investment Landscape | 💹 Investment Landscape: Publicly-Traded Exposure to the Portfolio |
 | 3 | `latest` | ⚡ Latest | ⚡ Latest Developments — June 26, 2026 |
+| 3b | `framing` | (not in nav) | 📌 Key Strategic Framing: The Baseline and the Contested 2% (added July 6, 2026 — gives the formerly untitled baseline/2%-accounting bridge between the Latest blocks and the Arctic section its own h2 so it participates in section collapsing; the June 28 Latest note's "Key Strategic Framing section below" cross-reference now resolves to it) |
 | 4 | `arctic` | ❄️ Arctic & Dual-Use 1.5% | ❄️ Arctic & Dual-Use Infrastructure: The 1.5% Question |
 | 5 | `table` | 🗂️ Domain Summary Table | 🗂️ Domain Summary Table |
 | 6 | `natospend` | 📊 NATO Spend | 📊 NATO Defence Spending by Country (% of GDP, 2020–2026) |
@@ -86,13 +87,14 @@ Palette intent: navy/blue = primary/structure; teal = allied-operators; amber/mi
 ### Key CSS rules to know
 - `.section-nav{position:sticky;top:0;z-index:100}` — the sticky nav. **This is why scroll offset matters.**
 - `h2[id],div[id],section[id]{scroll-margin-top:56px}` — makes anchored jumps clear the sticky nav.
+- `main>.container>h2:not(.latest-header)` — boxed section headers (added July 6, 2026): #EBF4FF background, 1px #C7DBF4 border, 4px `var(--blue)` left accent, 4px radius, same shape as `h2.latest-header` (which keeps its amber palette). #EBF4FF/#C7DBF4 are user-specified accents outside the token list; each section keeps its own theme emoji.
 - `.callout` / `.callout-kf` (key finding) / `.callout-warn` (red, investment disclaimer) / `.callout-note` — blockquotes become these.
 - `.data-table` — applied to every `<table>`.
 - `.icon-win`/`.icon-loss`/`.icon-warn` — wrap ✅/❌/⚠️ inline icons.
 - Domain-table tab system classes: `.table-controls .tc-btn`, `.col-economic .col-us .col-origin .col-allied` (column tints).
 - NATO chart card: `.natochart-card .ncc-controls .ncc-btn .ncc-canvas-wrap .ncc-legend .ncc-leg-item .ncc-sw .ncc-dash .ncc-note .ncc-sources .ncc-method`.
 
-### The three `<script>` IIFEs (all balanced, all guard `typeof Chart`)
+### The four `<script>` IIFEs (all balanced; A/B guard `typeof Chart`)
 
 **A. Spend-destination doughnut** (`spendChart2` canvas, `setScenario2()` global)
 - Toggle between TKMS and Hanwha CPSP scenarios.
@@ -111,6 +113,13 @@ Palette intent: navy/blue = primary/structure; teal = allied-operators; amber/mi
 - `scrollToId(id)` measures live `.section-nav` height and scrolls with that offset + 8px.
 - `setView(name)` toggles the domain table's 3 column views via `data-view` attributes and `Set` membership.
 - Global click handler catches any in-body `<a href="#...">` and routes through `scrollToId`.
+
+**D. Section-collapse IIFE** (added July 6, 2026; generalized to ALL sections same day; sits after script C, before the footer)
+- Runtime progressive enhancement: at load, walks every `h2` that is a direct child of `main > .container` (`:scope > h2` — every document section, including each dated Latest-Developments block), moves its following siblings up to the next `h2` into a generated `<div class="sec-body">`, adds class `sec-toggle` to the h2, and makes it a click/Enter/Space toggle with `role="button"`, `tabindex="0"`, `aria-expanded`, `aria-controls`.
+- **Default state (per user, July 6, 2026):** every section starts COLLAPSED except `h2#tldr` — the page loads as the TL;DR plus a scannable list of boxed section titles. (`id="latest"` no longer affects defaults; it remains the nav anchor, and nav jumps auto-expand their target.) A `.collapsed` class on both h2 and body drives the CSS (`.sec-body.collapsed{display:none}` + inline rotating `▾` chevron via `h2.sec-toggle::after`, amber-tinted on latest headers).
+- Injects **"Expand all / Collapse all"** links (`span.nav-tools`) at the right end of the sticky nav.
+- Monkey-patches `window.scrollToId` so nav/anchor jumps into a collapsed section expand it first.
+- **The `/cad-defense-update` authoring format is intentionally unchanged** — updates keep writing plain `h2.latest-header + <p>… + callout-kf + <hr />` blocks; the IIFE wraps whatever it finds, so new dated blocks become collapsible automatically. Every section must have an `h2` title to participate (the `framing` h2 was added for this reason). No-JS and print render fully expanded (`@media print` forces `.sec-body{display:block}` and hides the chevron).
 
 ### Domain Summary Table (the most complex component)
 - 11 columns × 23 data rows. **Verified aligned: 11 `<col>` = 11 `<th>` = 11 `<td>`/row, all 23 rows uniform.**
