@@ -32,6 +32,7 @@ Both files share this section order. Each section has a theme emoji in **both** 
 | # | id | Nav label | Heading |
 |---|-----|-----------|---------|
 | 1 | `tldr` | 📋 Overview | 📋 TL;DR |
+| 1b | (no id) | — | ⚠️ Key Caveats (moved from below the Timeline to directly below the TL;DR, July 6, 2026; its stale "CPSP unresolved" line was corrected in the same move) |
 | 2 | `invest` | 💹 Investment Landscape | 💹 Investment Landscape: Publicly-Traded Exposure to the Portfolio |
 | 3 | `latest` | ⚡ Latest | ⚡ Latest Developments — June 26, 2026 |
 | 3b | `framing` | (not in nav) | 📌 Key Strategic Framing: The Baseline and the Contested 2% (added July 6, 2026 — gives the formerly untitled baseline/2%-accounting bridge between the Latest blocks and the Arctic section its own h2 so it participates in section collapsing; the June 28 Latest note's "Key Strategic Framing section below" cross-reference now resolves to it) |
@@ -46,7 +47,6 @@ Both files share this section order. Each section has a theme emoji in **both** 
 | 12 | (md only) | — | 🍁 Regional Impact Overview |
 | 13 | (md only) | — | 🪶 Indigenous and Reconciliation Dimensions |
 | 14 | `timeline` | 🗓️ Timeline | 🗓️ Program Timeline |
-| 15 | (md only) | — | ⚠️ Key Caveats |
 | 16 | `tracker` | 🔗 Live Sources | 🔗 Live Source Tracker |
 | 17 | `reading` | (not in nav) | 📚 Further Reading (APA 7th Edition) |
 
