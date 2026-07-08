@@ -11,7 +11,7 @@ A complete chess game and teaching tool in one self-contained HTML file:
 
 - **Play** against an engine at four strength levels (Novice to Strong), as White or Black.
 - **Tutor mode** draws the top three candidate moves as arrows on the board on your turn,
-  each with a short plain-language explanation and a score in pawns.
+  each with a short explanation and a score in pawns.
 - **Post-game report** replays your finished game, compares every move against the engine's
   preferred move, grades each one (Best, Good, Inaccuracy, Mistake, Blunder), and gives each
   side an accuracy percentage.
@@ -41,11 +41,10 @@ When the tutor moved into the Infographics collection, the plan changed delibera
 
 The reasons: this collection's design principle is one self-contained HTML file per page with
 no external dependencies, the audience is "five users, not five thousand" learning basics,
-and 8 MB of GPL-licensed binary is a lot of weight for one card. The trade-off is honest:
-this engine is far weaker than Stockfish (roughly beginner-to-club strength depending on
-level) and its analysis is approximate rather than authoritative. For teaching beginners,
-that is enough: it reliably spots hanging pieces, missed captures, and short tactics, which
-is most of what beginner feedback is about. If lichess-grade analysis is ever wanted, the
+and 8 MB of GPL-licensed binary is a lot of weight for one card. The trade-off: this engine
+is much weaker than Stockfish (roughly beginner-to-club strength depending on level) and its
+analysis is approximate. For teaching beginners that is enough: it spots hanging pieces,
+missed captures, and short tactics, which is most of what beginner feedback is about. If lichess-grade analysis is ever wanted, the
 kickoff spec's separate-repo plan remains the right home for it.
 
 ## Architecture
@@ -62,14 +61,14 @@ Everything lives in `index.html`, in four blocks:
    promotion picker, the game controller, tutor arrows and explanations, and the report.
 4. **The theme toggle script**, identical to every other page in the collection.
 
-The single-file trick worth knowing: the engine block executes normally when the page loads,
+How the single file supports a worker: the engine block executes normally when the page loads,
 which gives the UI synchronous access to move legality and notation. The application then
 reads that same block's `textContent` and feeds it to `new Worker(URL.createObjectURL(new
 Blob([...])))`, so searches run off the main thread without a second copy of the engine and
 without an external file. If the worker cannot be created, the app falls back to running the
 same functions on the main thread in small timed chunks.
 
-## How the engine works, in plain language
+## How the engine works
 
 - **Board representation:** the 0x88 scheme, a 128-slot array where a single bit test tells
   you whether a square is off the board. Standard, compact, and fast enough.
@@ -101,23 +100,22 @@ For each move you played, the loss is how much better the engine's preferred mov
 depth 3, clamped at 10 pawns: Best is a loss of 0.2 pawns or less, Good up to 0.49,
 Inaccuracy up to 1.49, Mistake up to 2.99, Blunder 3.0 and above. Accuracy per move is
 `100 * e^(-loss/350)` (loss in centipawns), averaged per side. This is this page's own
-formula on this engine's own scale, deliberately labeled as not comparable to lichess or
+formula on this engine's own scale, labeled as not comparable to lichess or
 chess.com accuracy numbers. Once a position is already completely decided (a swing of ten
-pawns or more), the remaining moves are marked "decided" and left ungraded, because piling
-blunders onto a lost position teaches nothing.
+pawns or more), the remaining moves are marked "decided" and left ungraded.
 
 ## Correctness evidence
 
-Hand-written move generators fail in famous ways: en passant discovering a check on your own
-king, castling through an attacked square, castling rights surviving a rook capture. The
-standard defense is perft: count every legal move sequence to a fixed depth and compare
+Hand-written move generators have well-known failure modes: en passant discovering a check
+on your own king, castling through an attacked square, castling rights surviving a rook
+capture. The standard check is perft: count every legal move sequence to a fixed depth and compare
 against published node counts. This engine passed the full suite before any UI was built,
 byte-identical to the code that ships in the page:
 
 | Position | Depth and expected nodes | Result |
 |---|---|---|
 | Start position | d1 20 · d2 400 · d3 8,902 · d4 197,281 · d5 4,865,609 | all pass |
-| Kiwipete (castling and pin torture) | d1 48 · d2 2,039 · d3 97,862 · d4 4,085,603 | all pass |
+| Kiwipete (castling and pins) | d1 48 · d2 2,039 · d3 97,862 · d4 4,085,603 | all pass |
 | CPW Position 3 (en passant pin) | d1 14 · d2 191 · d3 2,812 · d4 43,238 · d5 674,624 | all pass |
 | CPW Position 4 (promotions, rights by capture) | d1 6 · d2 264 · d3 9,467 · d4 422,333 | all pass |
 | CPW Position 5 (promotion and discovery) | d1 44 · d2 1,486 · d3 62,379 · d4 2,103,487 | all pass |

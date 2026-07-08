@@ -267,9 +267,9 @@
     <header>
       <p class="eyebrow">Games &amp; Education · Chess</p>
       <h1>Chess Tutor</h1>
-      <p class="lede">Play against a from-scratch JavaScript engine that coaches while you play:
-      candidate-move arrows with plain-language explanations, four strength levels, and a
-      post-game accuracy report. Fully self-contained: no libraries, no downloads, no
+      <p class="lede">Play against a JavaScript engine written from scratch for this page:
+      candidate-move arrows with short explanations, four strength levels, and a
+      post-game accuracy report. Self-contained: no libraries, no downloads, no
       tracking.</p>
     </header>
 
@@ -339,21 +339,19 @@
 
       <section class="howto">
         <h2>How the tutor works</h2>
-        <p>The engine behind the board is written from scratch in plain JavaScript, right in
-        this page: no chess library, no downloaded engine, no server. It searches a few moves
+        <p>The engine behind the board is written from scratch in JavaScript, in this page:
+        no chess library, no downloaded engine, no server. It searches a few moves
         ahead (deeper at higher strength levels) and scores positions by material and piece
         placement. Its move generator was validated against the standard perft test suite,
         including the classic castling and en-passant trap positions.</p>
-        <p>Tutor suggestions are honest by construction: every explanation is derived from
-        facts the engine can verify on the board (a capture, a check, a piece left undefended)
-        and from its own numbers. The score shown next to each suggestion is in pawns, from
-        your point of view.</p>
+        <p>Every tutor explanation is derived from facts the engine can verify on the board
+        (a capture, a check, a piece left undefended) and from its own numbers. The score
+        shown next to each suggestion is in pawns, from your point of view.</p>
         <p>The post-game report replays your game, compares every move you made against the
         engine's preferred move, and grades the difference: inaccuracy, mistake, or blunder.
         The accuracy percentage is this page's own formula on the engine's own scale, so it is
         not comparable to lichess or chess.com numbers. Once a game is completely decided, the
-        remaining moves are graded gently: piling blunders onto a lost position teaches
-        nothing.</p>
+        remaining moves are marked but not graded.</p>
       </section>
     </main>
 
@@ -1331,7 +1329,7 @@ function explainLine(line, lines, idx) {
   var hangAfter = listHanging(st, us);
   unmakeMove(st, m);
   var safeNow = !toAtt || !!toDef;
-  if (m.flags & FLAG_CASTLE) out.push('Castles: tucks the king away and connects the rooks.');
+  if (m.flags & FLAG_CASTLE) out.push('Castles, moving the king to safety and connecting the rooks.');
   if (victim) out.push('Captures the ' + PIECE_NAMES[victim] + ' on ' + squareName(m.to) + '.');
   if (m.promo === QUEEN) out.push('Promotes to a new queen.');
   else if (m.promo) out.push('Promotes to a ' + PIECE_NAMES[m.promo] + '.');
@@ -1351,7 +1349,7 @@ function explainLine(line, lines, idx) {
   }
   if (!out.length && (pieceType === KNIGHT || pieceType === BISHOP) &&
       (m.from >> 4) === (us === WHITE ? 0 : 7)) {
-    out.push('Develops the ' + PIECE_NAMES[pieceType] + ' toward the action.');
+    out.push('Develops the ' + PIECE_NAMES[pieceType] + ' off the back rank.');
   }
   if (!out.length && CENTER_SQS.indexOf(m.to) >= 0) out.push('Fights for the center.');
   if (!out.length) out.push('Keeps the position balanced.');
