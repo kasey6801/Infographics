@@ -33,8 +33,8 @@ When the tutor moved into the Infographics collection, the plan changed delibera
 
 | Kickoff spec | What was built instead |
 |---|---|
-| chess.js for rules | Original move generator, written from scratch |
-| Stockfish lite WASM (~7 MB) | Original minimax search, ~40 KB of readable source |
+| chess.js for rules | Original move generator |
+| Stockfish lite WASM (~7 MB) | Original minimax search, about 40 KB of source |
 | Multi-file site, `js/` + `engine/` folders | One self-contained `index.html` |
 | Separate repo `chess-tutor` on GitHub Pages | A folder in this collection |
 | GPL-3.0 license file shipped alongside | Nothing vendored, MIT-clean |
@@ -126,13 +126,13 @@ driver that plays a full random game through the real click path, exercises the 
 picker, undo, board flip, and the report, and finally a headless-Chrome check that the Web
 Worker path delivers tutor arrows and engine replies in a real browser.
 
-## Regenerate this page from scratch
+## Regenerate this page
 
 Paste the following into Claude Code (or a comparable coding agent):
 
 > Build a complete interactive chess tutor as ONE self-contained HTML file with no external
-> dependencies, no CDN, no web fonts, and no build step. Write the chess engine from scratch
-> in plain JavaScript: 0x88 board representation, pseudo-legal move generation filtered by
+> dependencies, no CDN, no web fonts, and no build step. Write an original chess engine
+> in JavaScript: 0x88 board representation, pseudo-legal move generation filtered by
 > make/unmake king-safety checks, full rules (castling, en passant, promotions, fifty-move,
 > threefold repetition, insufficient material), FEN parsing and SAN generation with proper
 > disambiguation, evaluation from material plus piece-square tables, and negamax search with

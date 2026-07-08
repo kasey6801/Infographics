@@ -17,7 +17,7 @@ its own.
 - `claude-env-infographic/` — *Claude Environment* — interface reference: web, desktop, IDE/CLI (folder: `index.html` + explainer `.md`)
 - `book-club-skill-guide/` — *The Book Club Skill* — install &amp; use a Claude reading-log skill (folder: `index.html` + explainer `.md`)
 - `CAD-NATO-Defense-Spending/` — *Canadian NATO Defense Spending* — review of Canada's 2025-2026 military procurement through NATO obligations (folder: `index.html` + explainer `.md`)
-- `CC_games_and_education/Chess_tutor/` · *Chess Tutor*: playable chess game with an engine written from scratch, tutor arrows, and a post-game accuracy report (folder: `index.html` + explainer `.md`)
+- `CC_games_and_education/Chess_tutor/` · *Chess Tutor*: playable chess game with its own JavaScript engine, tutor arrows, and a post-game accuracy report (folder: `index.html` + explainer `.md`)
 - `how-this-landing-page-was-made.html` — *How this landing page was made* (a generic GitHub Pages walkthrough; no companion `.md`)
 - `about.html` — about the collection and its design principle
 
