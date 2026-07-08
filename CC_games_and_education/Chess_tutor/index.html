@@ -164,6 +164,20 @@
   .hint-san{font-family:var(--mono);font-weight:700;color:var(--ink)}
   .hint-score{font-family:var(--mono);font-size:.78rem;color:var(--ink-soft)}
   .tutor-empty{font-size:.88rem;color:var(--ink-soft);margin:0}
+  .tutor-book{
+    font-size:.85rem;color:var(--ink-soft);margin:0 0 10px;padding-bottom:8px;
+    border-bottom:1px dashed var(--line)
+  }
+  #tutor-list .hint-text{flex:1;min-width:0}
+  #tutor-list summary{cursor:pointer;list-style:none}
+  #tutor-list summary::-webkit-details-marker{display:none}
+  #tutor-list summary:focus-visible{outline:3px solid var(--stamp-red);outline-offset:2px;border-radius:4px}
+  #tutor-list .more-label{font-family:var(--mono);font-size:.7rem;color:var(--stamp-red);margin-left:6px;white-space:nowrap}
+  #tutor-list .more-label::after{content:'More ▾'}
+  #tutor-list details[open] .more-label::after{content:'Less ▴'}
+  #tutor-list .hint-more{
+    margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);font-size:.86rem
+  }
 
   #movelist{
     list-style:none;margin:0;padding:0;font-family:var(--mono);font-size:.84rem;
@@ -316,6 +330,7 @@
 
           <div class="panel-box" id="tutor-panel">
             <p class="panel-label">Tutor suggestions</p>
+            <p class="tutor-book" id="tutor-book" hidden></p>
             <ol id="tutor-list"></ol>
             <p class="tutor-empty" id="tutor-empty">Arrows appear here on your turn: green is
             the engine's top choice, red and grey are the runners-up.</p>
@@ -1031,6 +1046,52 @@ function analyzePosition(state, played, depth) {
            loss: loss, decided: Math.abs(best.score) >= 1000 };
 }
 
+/* ===== E9.5 EXPECTED LINE (pv by shallow re-search) =====
+   The continuation shown to the user. Re-searching at decreasing depth keeps
+   negamax untouched; the line can differ from the one behind the root score,
+   so narration about the outcome must come from the root score, not from the
+   end position of this line. */
+
+function pvForMove(state, rootMove, depth) {
+  var sans = [], made = [];
+  makeMove(state, rootMove);
+  made.push(rootMove);
+  for (var d = depth - 1; d >= 1; d--) {
+    var legal = generateLegalMoves(state);
+    if (!legal.length) break;
+    var best = searchRoot(state, { depth: d, multipv: 1, noise: 0, qsearch: true })[0];
+    if (!best) break;
+    var matched = null;
+    for (var i = 0; i < legal.length; i++) {
+      if (legal[i].from === best.from && legal[i].to === best.to &&
+          (legal[i].promo || 0) === (best.promo || 0)) { matched = legal[i]; break; }
+    }
+    if (!matched) break;
+    sans.push(best.san);
+    makeMove(state, matched);
+    made.push(matched);
+  }
+  var endFen = toFEN(state);
+  for (var j = made.length - 1; j >= 0; j--) unmakeMove(state, made[j]);
+  return { sans: sans, endFen: endFen };
+}
+
+function attachPvs(state, lines, depth) {
+  var legal = generateLegalMoves(state);
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i], matched = null;
+    for (var k = 0; k < legal.length; k++) {
+      if (legal[k].from === line.from && legal[k].to === line.to &&
+          (legal[k].promo || 0) === (line.promo || 0)) { matched = legal[k]; break; }
+    }
+    if (!matched) continue;
+    var r = pvForMove(state, matched, depth);
+    line.pv = r.sans;
+    line.pvEndFen = r.endFen;
+  }
+  return lines;
+}
+
 /* ===== E10. WORKER SHIM (inert on the main thread and under node) ===== */
 
 if (typeof importScripts === 'function' && typeof document === 'undefined') {
@@ -1039,6 +1100,7 @@ if (typeof importScripts === 'function' && typeof document === 'undefined') {
     if (msg.type === 'search') {
       var state = parseFEN(msg.fen);
       var lines = searchRoot(state, msg).slice(0, msg.multipv || 1);
+      if (msg.wantPv) attachPvs(state, lines, msg.depth);
       self.postMessage({ id: msg.id, type: 'result', lines: lines });
     } else if (msg.type === 'analyze') {
       var perMove = [];
@@ -1067,6 +1129,7 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     makeMove: makeMove, unmakeMove: unmakeMove,
     sanForMove: sanForMove, gameStatus: gameStatus, insufficientMaterial: insufficientMaterial,
     evaluate: evaluate, searchRoot: searchRoot, analyzePosition: analyzePosition,
+    pvForMove: pvForMove, attachPvs: attachPvs,
     negamax: negamax
   };
 }
@@ -1097,6 +1160,7 @@ var promoInner = document.getElementById('promo-inner');
 var movelistEl = document.getElementById('movelist');
 var tutorListEl = document.getElementById('tutor-list');
 var tutorEmptyEl = document.getElementById('tutor-empty');
+var tutorBookEl = document.getElementById('tutor-book');
 var colorSelect = document.getElementById('color-select');
 var levelSelect = document.getElementById('level-select');
 var tutorToggle = document.getElementById('tutor-toggle');
@@ -1160,7 +1224,9 @@ function syncRun(msg, cb, prog) {
   if (msg.type === 'search') {
     setTimeout(function () {
       var st = parseFEN(msg.fen);
-      cb(searchRoot(st, msg).slice(0, msg.multipv || 1));
+      var lines = searchRoot(st, msg).slice(0, msg.multipv || 1);
+      if (msg.wantPv) attachPvs(st, lines, msg.depth);
+      cb(lines);
     }, 30);
   } else {
     var out = [], i = 0, gen = G.generation;
@@ -1308,71 +1374,448 @@ function findLegal(line) {
   return null;
 }
 
-function explainLine(line, lines, idx) {
-  var st = G.state, m = findLegal(line);
-  if (!m) return '';
-  var us = st.turn, pieceType = m.piece > 0 ? m.piece : -m.piece;
-  var out = [];
-  if (line.score >= MATE - 1000) {
-    var n = Math.max(1, Math.ceil((MATE - line.score) / 2));
-    out.push(n === 1 ? 'Forces checkmate next move.' : 'Forces checkmate in ' + n + ' moves.');
+/* squares attacked by the piece standing on sq */
+function attacksFrom(board, sq) {
+  var p = board[sq], out = [];
+  if (!p) return out;
+  var type = p > 0 ? p : -p, us = p > 0 ? 1 : -1, i, t;
+  if (type === PAWN) {
+    t = sq + 15 * us; if (!(t & 0x88)) out.push(t);
+    t = sq + 17 * us; if (!(t & 0x88)) out.push(t);
+  } else if (type === KNIGHT || type === KING) {
+    var offs = type === KNIGHT ? KNIGHT_OFFS : KING_OFFS;
+    for (i = 0; i < 8; i++) { t = sq + offs[i]; if (!(t & 0x88)) out.push(t); }
+  } else {
+    var rays = type === BISHOP ? BISHOP_OFFS : type === ROOK ? ROOK_OFFS : KING_OFFS;
+    for (i = 0; i < rays.length; i++) {
+      t = sq + rays[i];
+      while (!(t & 0x88)) { out.push(t); if (board[t]) break; t += rays[i]; }
+    }
   }
+  return out;
+}
+
+/* enemy non-pawn pieces pinned to the enemy king by our sliders (absolute pins) */
+function absolutePins(st, us) {
+  var them = -us, ksq = them === WHITE ? st.wk : st.bk, pins = [];
+  var rays = [17, 15, -17, -15, 16, -16, 1, -1];
+  for (var i = 0; i < 8; i++) {
+    var off = rays[i], diag = i < 4, t = ksq + off, blocker = -1;
+    while (!(t & 0x88)) {
+      var p = st.board[t];
+      if (p) {
+        if (blocker < 0) {
+          if ((p > 0) === (them > 0)) { blocker = t; t += off; continue; }
+          break;
+        }
+        var type = p > 0 ? p : -p;
+        if ((p > 0) === (us > 0) &&
+            (type === QUEEN || (diag && type === BISHOP) || (!diag && type === ROOK))) {
+          if (Math.abs(st.board[blocker]) !== PAWN) pins.push(blocker);
+        }
+        break;
+      }
+      t += off;
+    }
+  }
+  return pins;
+}
+
+/* candidate discovered-attack pairs through m.from, computed in the before-state;
+   each pair is confirmed later in the after-state before it is claimed */
+function discoveredTargets(st, m, us) {
+  var pairs = [], rays = [17, 15, -17, -15, 16, -16, 1, -1];
+  for (var i = 0; i < 8; i++) {
+    var off = rays[i], diag = i < 4;
+    var t = m.from + off, slider = -1;
+    while (!(t & 0x88)) {
+      var p = st.board[t];
+      if (p) {
+        var type = p > 0 ? p : -p;
+        if ((p > 0) === (us > 0) &&
+            (type === QUEEN || (diag && type === BISHOP) || (!diag && type === ROOK))) slider = t;
+        break;
+      }
+      t += off;
+    }
+    if (slider < 0) continue;
+    t = m.from - off;
+    var target = -1;
+    while (!(t & 0x88)) {
+      var q = st.board[t];
+      if (q) { if ((q > 0) !== (us > 0)) target = t; break; }
+      t -= off;
+    }
+    if (target < 0 || target === m.to) continue;
+    pairs.push({ slider: slider, target: target });
+  }
+  return pairs;
+}
+
+/* no enemy pawns on this file or the neighbors, strictly ahead of sq */
+function isPassed(st, sq, us) {
+  var f = sq & 7, r = sq >> 4;
+  for (var df = -1; df <= 1; df++) {
+    var nf = f + df;
+    if (nf < 0 || nf > 7) continue;
+    if (us === WHITE) {
+      for (var r1 = r + 1; r1 <= 7; r1++) if (st.board[r1 * 16 + nf] === -PAWN) return false;
+    } else {
+      for (var r2 = r - 1; r2 >= 0; r2--) if (st.board[r2 * 16 + nf] === PAWN) return false;
+    }
+  }
+  return true;
+}
+
+function materialOf(st, color) {
+  var total = 0;
+  for (var sq = 0; sq < 120; sq++) {
+    if (sq & 0x88) { sq += 7; continue; }
+    var p = st.board[sq];
+    if (!p || ((p > 0) !== (color > 0))) continue;
+    var t = p > 0 ? p : -p;
+    if (t !== KING) total += VALUES[t];
+  }
+  return total;
+}
+
+/* Ordered list of verifiable features for a suggested line. Each entry is
+   { key, sentence, clause }; the clause is a lowercase verb phrase reused by
+   the comparison sentence. Every claim is checked on the board. */
+function detectFeatures(line) {
+  var st = G.state, m = findLegal(line);
+  if (!m) return [];
+  var us = st.turn, them = -us;
+  var pieceType = m.piece > 0 ? m.piece : -m.piece;
+  var name = PIECE_NAMES[pieceType];
+  var movedType = m.promo || pieceType;
   var victim = (m.flags & FLAG_EP) ? PAWN : Math.abs(st.board[m.to]);
-  var fromAtt = smallestAttackerType(st, m.from, -us);
+
+  var fromAtt = smallestAttackerType(st, m.from, them);
   var fromDef = smallestAttackerType(st, m.from, us);
   var wasInDanger = fromAtt && (!fromDef || VALUES[fromAtt] < VALUES[pieceType]);
   var hangBefore = listHanging(st, us);
+  var pinsBefore = absolutePins(st, us);
+  var discPairs = discoveredTargets(st, m, us);
+  var wasPassed = pieceType === PAWN && isPassed(st, m.from, us);
+  var lead = materialOf(st, us) - materialOf(st, them);
+
   makeMove(st, m);
   var givesCheck = inCheck(st);
-  var toAtt = smallestAttackerType(st, m.to, -us);
+  var toAtt = smallestAttackerType(st, m.to, them);
   var toDef = smallestAttackerType(st, m.to, us);
-  var hangAfter = listHanging(st, us);
-  unmakeMove(st, m);
   var safeNow = !toAtt || !!toDef;
-  if (m.flags & FLAG_CASTLE) out.push('Castles, moving the king to safety and connecting the rooks.');
-  if (victim) out.push('Captures the ' + PIECE_NAMES[victim] + ' on ' + squareName(m.to) + '.');
-  if (m.promo === QUEEN) out.push('Promotes to a new queen.');
-  else if (m.promo) out.push('Promotes to a ' + PIECE_NAMES[m.promo] + '.');
-  if (givesCheck && line.score < MATE - 1000) out.push('Gives check, forcing a reply.');
-  if (!victim && wasInDanger && safeNow) {
-    out.push('Moves the ' + PIECE_NAMES[pieceType] + ' out of danger.');
-  }
-  if (out.length < 2) {
-    for (var i = 0; i < hangBefore.length; i++) {
-      var s = hangBefore[i];
-      if (s !== m.from && hangAfter.indexOf(s) < 0) {
-        var saved = st.board[s];
-        out.push('Defends the ' + PIECE_NAMES[saved > 0 ? saved : -saved] + ' on ' + squareName(s) + '.');
-        break;
+  var hangAfter = listHanging(st, us);
+
+  var prongs = [];
+  if (safeNow) {
+    var hits = attacksFrom(st.board, m.to);
+    for (var a = 0; a < hits.length; a++) {
+      var q = st.board[hits[a]];
+      if (!q || (q > 0) === (us > 0)) continue;
+      var qt = q > 0 ? q : -q;
+      if (qt === KING || VALUES[qt] > VALUES[movedType] ||
+          smallestAttackerType(st, hits[a], them) === 0) {
+        prongs.push({ sq: hits[a], type: qt });
       }
     }
+    prongs.sort(function (x, y) {
+      return (y.type === KING ? 100000 : VALUES[y.type]) -
+             (x.type === KING ? 100000 : VALUES[x.type]);
+    });
   }
-  if (!out.length && (pieceType === KNIGHT || pieceType === BISHOP) &&
+
+  var discovered = [];
+  for (var d = 0; d < discPairs.length; d++) {
+    if (attacksFrom(st.board, discPairs[d].slider).indexOf(discPairs[d].target) < 0) continue;
+    var tp = st.board[discPairs[d].target];
+    if (!tp) continue;
+    var tType = tp > 0 ? tp : -tp;
+    if (tType === KING || VALUES[tType] >= VALUES[ROOK] ||
+        smallestAttackerType(st, discPairs[d].target, them) === 0) {
+      discovered.push({ sq: discPairs[d].target, type: tType });
+    }
+  }
+  var discCheck = givesCheck && !(m.flags & FLAG_CASTLE) &&
+    discovered.some(function (dd) { return dd.type === KING; });
+
+  var newPins = [];
+  var pinsAfter = absolutePins(st, us);
+  for (var p2 = 0; p2 < pinsAfter.length; p2++) {
+    if (pinsBefore.indexOf(pinsAfter[p2]) < 0) {
+      var pp = st.board[pinsAfter[p2]];
+      if (pp) newPins.push({ sq: pinsAfter[p2], type: pp > 0 ? pp : -pp });
+    }
+  }
+
+  var fileInfo = null;
+  if ((pieceType === ROOK || pieceType === QUEEN) && (m.from & 7) !== (m.to & 7)) {
+    var ff = m.to & 7, own = 0, enemy = 0;
+    for (var fr = 0; fr < 8; fr++) {
+      var fp = st.board[fr * 16 + ff];
+      if (fp === PAWN * us) own++; else if (fp === -PAWN * us) enemy++;
+    }
+    if (!own && !enemy) fileInfo = { file: FILES[ff], open: true };
+    else if (!own) fileInfo = { file: FILES[ff], open: false };
+  }
+
+  var passedNow = pieceType === PAWN && !m.promo && isPassed(st, m.to, us);
+  var rescued = null;
+  for (var h = 0; h < hangBefore.length; h++) {
+    var hs = hangBefore[h];
+    if (hs !== m.from && hangAfter.indexOf(hs) < 0) {
+      var hp = st.board[hs];
+      if (hp) { rescued = { sq: hs, type: hp > 0 ? hp : -hp }; break; }
+    }
+  }
+  unmakeMove(st, m);
+
+  var feats = [];
+  if (line.score >= MATE - 1000) {
+    var n = Math.max(1, Math.ceil((MATE - line.score) / 2));
+    feats.push({ key: 'mate',
+      sentence: n === 1 ? 'Forces checkmate next move.' : 'Forces checkmate in ' + n + ' moves.',
+      clause: 'forces checkmate' });
+  }
+  if (victim) feats.push({ key: 'capture',
+    sentence: 'Captures the ' + PIECE_NAMES[victim] + ' on ' + squareName(m.to) + '.',
+    clause: 'captures the ' + PIECE_NAMES[victim] + ' on ' + squareName(m.to) });
+  if (m.promo) feats.push({ key: 'promo',
+    sentence: m.promo === QUEEN ? 'Promotes to a new queen.'
+                                : 'Promotes to a ' + PIECE_NAMES[m.promo] + '.',
+    clause: 'promotes' });
+  if (givesCheck && line.score < MATE - 1000) feats.push({ key: 'check',
+    sentence: discCheck ? 'Moving away uncovers a discovered check.'
+                        : 'Gives check, forcing a reply.',
+    clause: discCheck ? 'gives a discovered check' : 'gives check' });
+  if (m.flags & FLAG_CASTLE) feats.push({ key: 'castle',
+    sentence: 'Castles, moving the king to safety and connecting the rooks.',
+    clause: 'castles' });
+  if (prongs.length >= 2) {
+    var n0 = prongs[0].type === KING ? 'the king'
+           : 'the ' + PIECE_NAMES[prongs[0].type] + ' on ' + squareName(prongs[0].sq);
+    var n1 = prongs[1].type === KING ? 'the king'
+           : 'the ' + PIECE_NAMES[prongs[1].type] + ' on ' + squareName(prongs[1].sq);
+    feats.push({ key: 'fork', sentence: 'Forks ' + n0 + ' and ' + n1 + '.',
+                 clause: 'forks two pieces' });
+  } else if (prongs.length === 1 && prongs[0].type !== KING &&
+             VALUES[prongs[0].type] > VALUES[movedType]) {
+    feats.push({ key: 'attack',
+      sentence: 'Attacks the ' + PIECE_NAMES[prongs[0].type] + ' on ' +
+                squareName(prongs[0].sq) + '.',
+      clause: 'attacks the ' + PIECE_NAMES[prongs[0].type] });
+  }
+  if (newPins.length) feats.push({ key: 'pin',
+    sentence: 'Pins the ' + PIECE_NAMES[newPins[0].type] + ' on ' +
+              squareName(newPins[0].sq) + ' against the king.',
+    clause: 'pins the ' + PIECE_NAMES[newPins[0].type] });
+  var discAttack = null;
+  for (var d2 = 0; d2 < discovered.length; d2++) {
+    if (discovered[d2].type !== KING) { discAttack = discovered[d2]; break; }
+  }
+  if (discAttack) feats.push({ key: 'discovered',
+    sentence: 'Moving away uncovers an attack on the ' + PIECE_NAMES[discAttack.type] +
+              ' on ' + squareName(discAttack.sq) + '.',
+    clause: 'uncovers an attack on the ' + PIECE_NAMES[discAttack.type] });
+  if (!victim && wasInDanger && safeNow) feats.push({ key: 'escape',
+    sentence: 'Moves the ' + name + ' out of danger.',
+    clause: 'moves the ' + name + ' out of danger' });
+  if (rescued) feats.push({ key: 'defend',
+    sentence: 'Defends the ' + PIECE_NAMES[rescued.type] + ' on ' + squareName(rescued.sq) + '.',
+    clause: 'defends the ' + PIECE_NAMES[rescued.type] + ' on ' + squareName(rescued.sq) });
+  if (lead >= 200 && victim && Math.abs(VALUES[victim] - VALUES[movedType]) <= 50 && toAtt) {
+    feats.push({ key: 'trade',
+      sentence: victim === pieceType
+        ? 'Offers a trade of ' + PIECE_NAMES[victim] + 's while you are ahead in material.'
+        : 'Offers an even trade while you are ahead in material.',
+      clause: 'trades while ahead in material' });
+  }
+  if (fileInfo) feats.push({ key: 'openfile',
+    sentence: 'Moves the ' + name + ' to the ' + (fileInfo.open ? 'open' : 'half-open') +
+              ' ' + fileInfo.file + '-file.',
+    clause: 'takes the ' + (fileInfo.open ? 'open' : 'half-open') + ' ' + fileInfo.file + '-file' });
+  if (passedNow) feats.push({ key: 'passed',
+    sentence: (wasPassed ? 'Advances the passed pawn to ' : 'Creates a passed pawn on ') +
+              squareName(m.to) + '.',
+    clause: wasPassed ? 'advances a passed pawn' : 'creates a passed pawn' });
+  if (!feats.length && (pieceType === KNIGHT || pieceType === BISHOP) &&
       (m.from >> 4) === (us === WHITE ? 0 : 7)) {
-    out.push('Develops the ' + PIECE_NAMES[pieceType] + ' off the back rank.');
+    feats.push({ key: 'develop',
+      sentence: 'Develops the ' + name + ' off the back rank.',
+      clause: 'develops a ' + name });
   }
-  if (!out.length && CENTER_SQS.indexOf(m.to) >= 0) out.push('Fights for the center.');
-  if (!out.length) out.push('Keeps the position balanced.');
-  if (idx === 0 && lines.length > 1) {
-    var gap = lines[0].score - lines[1].score;
-    if (gap >= 100) out.push('Clearly the best move here.');
-    else if (gap <= 30) out.push('The top choices are close.');
+  if (!feats.length && CENTER_SQS.indexOf(m.to) >= 0) {
+    feats.push({ key: 'center', sentence: 'Fights for the center.',
+                 clause: 'fights for the center' });
   }
-  return out.slice(0, 2).join(' ');
+  if (!feats.length) {
+    feats.push({ key: 'quiet', sentence: 'Keeps the position balanced.',
+                 clause: 'keeps the position balanced' });
+  }
+  return feats;
 }
 
-function scoreText(score, forColor) {
-  var s = forColor === BLACK ? score : score; /* scores arrive from the mover's perspective */
-  if (s >= MATE - 1000) return '#' + Math.max(1, Math.ceil((MATE - s) / 2));
-  if (s <= -MATE + 1000) return '#-' + Math.max(1, Math.ceil((MATE + s) / 2));
-  var pawns = s / 100;
+/* SAN sequence with move numbers; the first move belongs to the opponent,
+   since the pv starts after the suggested move */
+function formatPv(sans, st) {
+  var moveNo = st.fullmove + (st.turn === BLACK ? 1 : 0);
+  var color = -st.turn;
+  var parts = [];
+  for (var i = 0; i < sans.length; i++) {
+    if (color === WHITE) parts.push(moveNo + '.' + sans[i]);
+    else { parts.push(parts.length === 0 ? moveNo + '...' + sans[i] : sans[i]); moveNo++; }
+    color = -color;
+  }
+  return parts.join(' ');
+}
+
+/* outcome phrase from the exact root score; the displayed line is re-searched
+   and can differ, so the outcome never comes from that line's end position */
+function closingClause(score) {
+  if (score >= MATE - 1000) return 'forcing checkmate';
+  if (score <= -(MATE - 1000)) return 'though the opponent can force checkmate';
+  if (score >= 150) return 'keeping a clear advantage';
+  if (score >= 50) return 'with a small edge';
+  if (score >= -49) return 'with a balanced position';
+  if (score >= -149) return 'with a small disadvantage';
+  return 'though the opponent keeps a clear advantage';
+}
+
+function scoreText(score) {
+  if (score >= MATE - 1000) return '#' + Math.max(1, Math.ceil((MATE - score) / 2));
+  if (score <= -MATE + 1000) return '#-' + Math.max(1, Math.ceil((MATE + score) / 2));
+  var pawns = score / 100;
   return (pawns > 0 ? '+' : '') + pawns.toFixed(1);
+}
+
+/* ---- opening book: positions up to 8 plies, keyed by placement + side to move
+   so different move orders reaching the same position match ---- */
+
+function bookKey(st) { return toFEN(st).split(' ').slice(0, 2).join(' '); }
+
+var BOOK = {}, BOOK_COLLISIONS = 0;
+
+var BOOK_LINES = [
+  ["Open Game", "e4 e5", "Both sides stake a claim in the center."],
+  ["Italian Game", "e4 e5 Nf3 Nc6 Bc4", "White develops quickly and aims the bishop at f7."],
+  ["Two Knights Defense", "e4 e5 Nf3 Nc6 Bc4 Nf6", "Black counterattacks e4 before defending f7."],
+  ["Giuoco Piano", "e4 e5 Nf3 Nc6 Bc4 Bc5", "Both bishops take active diagonals; play often turns on c3 and d4."],
+  ["Ruy Lopez", "e4 e5 Nf3 Nc6 Bb5", "White pressures the knight that defends the e5 pawn."],
+  ["Ruy Lopez, Morphy Defense", "e4 e5 Nf3 Nc6 Bb5 a6", "Black asks the bishop to retreat or trade on c6."],
+  ["Scotch Game", "e4 e5 Nf3 Nc6 d4", "White opens the center at once."],
+  ["Petrov Defense", "e4 e5 Nf3 Nf6", "Black counterattacks e4 instead of defending e5."],
+  ["Philidor Defense", "e4 e5 Nf3 d6", "Black defends e5 with a pawn and accepts a modest setup."],
+  ["Four Knights Game", "e4 e5 Nf3 Nc6 Nc3 Nf6", "Both sides develop knights before committing the center."],
+  ["Vienna Game", "e4 e5 Nc3", "White develops the queenside knight first and keeps the f-pawn option."],
+  ["King's Gambit", "e4 e5 f4", "White offers a pawn to open the f-file toward the king."],
+  ["Sicilian Defense", "e4 c5", "Black fights for d4 with a wing pawn and unbalances the game."],
+  ["Sicilian, Open", "e4 c5 Nf3 d6 d4 cxd4 Nxd4", "White trades the d-pawn for open lines and fast development."],
+  ["Sicilian, Alapin", "e4 c5 c3", "White prepares d4 with pawn support."],
+  ["Sicilian, Closed", "e4 c5 Nc3", "White develops without opening the center."],
+  ["French Defense", "e4 e6", "Black plans d5 and accepts a blocked light-squared bishop."],
+  ["French, Advance", "e4 e6 d4 d5 e5", "White gains space; Black attacks the pawn chain at its base with c5."],
+  ["Caro-Kann Defense", "e4 c6", "Black prepares d5 while keeping the bishop's diagonal open."],
+  ["Caro-Kann, Advance", "e4 c6 d4 d5 e5", "White gains space; Black develops the bishop before playing e6."],
+  ["Scandinavian Defense", "e4 d5", "Black challenges e4 at once and accepts early queen play."],
+  ["Pirc Defense", "e4 d6 d4 Nf6", "Black lets White build the center and plans to strike it with pieces."],
+  ["Modern Defense", "e4 g6", "Black fianchettoes and delays contact in the center."],
+  ["Alekhine Defense", "e4 Nf6", "Black invites the pawns forward to attack them later."],
+  ["Queen's Pawn Game", "d4 d5", "Both sides contest the center; White often follows with c4."],
+  ["Queen's Gambit", "d4 d5 c4", "White offers the c-pawn to pull Black's central pawn aside."],
+  ["Queen's Gambit Accepted", "d4 d5 c4 dxc4", "Black takes the pawn and concedes the center for activity."],
+  ["Queen's Gambit Declined", "d4 d5 c4 e6", "Black keeps the center solid at the cost of the c8 bishop."],
+  ["Slav Defense", "d4 d5 c4 c6", "Black supports d5 while keeping the bishop's diagonal open."],
+  ["Semi-Slav", "d4 d5 c4 c6 Nc3 e6", "Black builds a pawn triangle and aims for a later dxc4."],
+  ["London System", "d4 d5 Bf4", "White develops the bishop outside the pawn chain and builds a set structure."],
+  ["Trompowsky Attack", "d4 Nf6 Bg5", "White threatens to trade on f6 and double Black's pawns."],
+  ["Catalan Opening", "d4 Nf6 c4 e6 g3", "White fianchettoes and presses the long diagonal against d5."],
+  ["King's Indian Defense", "d4 Nf6 c4 g6", "Black concedes the center, planning a later e5 or c5 break."],
+  ["Nimzo-Indian Defense", "d4 Nf6 c4 e6 Nc3 Bb4", "Black pins the knight and fights for e4 with pieces."],
+  ["Queen's Indian Defense", "d4 Nf6 c4 e6 Nf3 b6", "Black controls e4 with a queenside fianchetto."],
+  ["Grünfeld Defense", "d4 Nf6 c4 g6 Nc3 d5", "Black strikes the center at once and plays against White's pawns."],
+  ["Benoni Defense", "d4 Nf6 c4 c5", "Black provokes d5 and plays against the pawn wedge."],
+  ["Benko Gambit", "d4 Nf6 c4 c5 d5 b5", "Black offers a pawn for lasting queenside pressure."],
+  ["Dutch Defense", "d4 f5", "Black fights for e4 with a flank pawn and accepts a looser kingside."],
+  ["English Opening", "c4", "White fights for d5 from the side."],
+  ["Réti Opening", "Nf3 d5 c4", "White challenges d5 without occupying the center."],
+  ["King's Indian Attack", "Nf3 d5 g3", "White sets up a kingside fianchetto system against most replies."],
+  ["Bird's Opening", "f4", "White grabs e5 from the side and accepts a looser king."],
+  ["Nimzo-Larsen Attack", "b3", "White fianchettoes the queenside bishop toward e5."],
+  ["Polish Opening", "b4", "White grabs queenside space at once."]
+];
+
+function buildBook() {
+  for (var i = 0; i < BOOK_LINES.length; i++) {
+    var st = parseFEN(START_FEN);
+    var sans = BOOK_LINES[i][1].split(' ');
+    var ok = true;
+    for (var j = 0; j < sans.length && ok; j++) {
+      var legal = generateLegalMoves(st), mv = null;
+      for (var k = 0; k < legal.length; k++) {
+        if (sanForMove(st, legal[k], legal) === sans[j]) { mv = legal[k]; break; }
+      }
+      if (mv) makeMove(st, mv); else ok = false;
+    }
+    if (!ok) { BOOK_COLLISIONS++; continue; }
+    var key = bookKey(st);
+    if (BOOK[key] && BOOK[key].name !== BOOK_LINES[i][0]) BOOK_COLLISIONS++;
+    BOOK[key] = { name: BOOK_LINES[i][0], plan: BOOK_LINES[i][2] };
+  }
+}
+
+/* factual contrast between the top suggestion and runner-up i */
+function comparisonSentence(lines, i, featsAll) {
+  var r = lines[i];
+  if (r.score <= -(MATE - 1000)) return r.san + ' allows checkmate.';
+  var gap = (lines[0].score - r.score) / 100;
+  var rTop = featsAll[i].length ? featsAll[i][0] : null;
+  if (!rTop) return null;
+  var shared = featsAll[0].some(function (f) { return f.key === rTop.key; });
+  var start = r.san + (shared ? ' also ' : ' ') + rTop.clause;
+  if (gap < 0.1) return start + ' and scores about the same.';
+  return start + (shared ? '' : ' instead') + '; it scores ' + gap.toFixed(1) + ' pawns lower.';
+}
+
+function buildHintHtml(lines, i, featsAll) {
+  var line = lines[i], feats = featsAll[i];
+  var lead = feats[0].sentence;
+  var more = [];
+  for (var f = 1; f < feats.length && f < 4; f++) more.push(feats[f].sentence);
+  if (line.pv && line.pv.length) {
+    more.push('Expected line: ' + formatPv(line.pv, G.state) + ', ' +
+              closingClause(line.score) + '.');
+  }
+  if (i === 0) {
+    for (var r = 1; r < lines.length && r <= 2; r++) {
+      var cs = comparisonSentence(lines, r, featsAll);
+      if (cs) more.push(cs);
+    }
+  }
+  var m = findLegal(line);
+  if (m) {
+    makeMove(G.state, m);
+    var bkAfter = BOOK[bookKey(G.state)];
+    unmakeMove(G.state, m);
+    var bkNow = BOOK[bookKey(G.state)];
+    if (bkAfter && (!bkNow || bkNow.name !== bkAfter.name)) {
+      more.push('This enters the ' + bkAfter.name + '.');
+    }
+  }
+  var head = '<span class="hint-san">' + line.san + '</span> ' +
+             '<span class="hint-score">(' + scoreText(line.score) + ')</span> ' + lead;
+  if (!more.length) return head;
+  return '<details><summary>' + head +
+         '<span class="more-label" aria-hidden="true"></span></summary>' +
+         '<div class="hint-more">' + more.join(' ') + '</div></details>';
 }
 
 function maybeTutor() {
   clearArrows();
   tutorListEl.innerHTML = '';
   tutorEmptyEl.style.display = '';
+  var bk = G.phase === 'playerTurn' ? BOOK[bookKey(G.state)] : null;
+  tutorBookEl.hidden = !bk;
+  if (bk) tutorBookEl.textContent = 'Book: ' + bk.name + '. ' + bk.plan;
   if (!G.tutorOn) { tutorEmptyEl.textContent = 'Tutor arrows are off.'; return; }
   if (G.phase !== 'playerTurn') {
     tutorEmptyEl.textContent = 'Arrows appear here on your turn: green is the engine’s top choice, red and grey are the runners-up.';
@@ -1380,20 +1823,22 @@ function maybeTutor() {
   }
   tutorEmptyEl.textContent = 'Thinking about your best options…';
   var fen = toFEN(G.state), gen = G.generation;
-  send({ type: 'search', fen: fen, depth: 3, multipv: 3, noise: 0, qsearch: true }, function (lines) {
+  send({ type: 'search', fen: fen, depth: 3, multipv: 3, noise: 0, qsearch: true,
+         wantPv: true }, function (lines) {
     if (gen !== G.generation || G.phase !== 'playerTurn' || toFEN(G.state) !== fen) return;
     G.tutorLines = lines;
     drawArrows(lines);
     tutorEmptyEl.style.display = 'none';
     tutorListEl.innerHTML = '';
-    for (var i = 0; i < lines.length; i++) {
+    var featsAll = [];
+    for (var i = 0; i < lines.length; i++) featsAll.push(detectFeatures(lines[i]));
+    for (var j = 0; j < lines.length; j++) {
       var li = document.createElement('li');
       var chip = document.createElement('span');
-      chip.className = 'hint-chip c' + (i + 1);
+      chip.className = 'hint-chip c' + (j + 1);
       var txt = document.createElement('div');
-      txt.innerHTML = '<span class="hint-san">' + lines[i].san + '</span> ' +
-        '<span class="hint-score">(' + scoreText(lines[i].score, G.playerColor) + ')</span><br>' +
-        explainLine(lines[i], lines, i);
+      txt.className = 'hint-text';
+      txt.innerHTML = buildHintHtml(lines, j, featsAll);
       li.appendChild(chip); li.appendChild(txt);
       tutorListEl.appendChild(li);
     }
@@ -1729,6 +2174,7 @@ tutorToggle.addEventListener('change', function () {
 });
 
 makeWorker();
+buildBook();
 newGame();
 </script>
 <script>

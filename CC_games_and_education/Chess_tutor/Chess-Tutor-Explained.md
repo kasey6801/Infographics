@@ -10,8 +10,11 @@ from a single prompt.
 A complete chess game and teaching tool in one self-contained HTML file:
 
 - **Play** against an engine at four strength levels (Novice to Strong), as White or Black.
-- **Tutor mode** draws the top three candidate moves as arrows on the board on your turn,
-  each with a short explanation and a score in pawns.
+- **Tutor mode** draws the top three candidate moves as arrows on the board on your turn.
+  Each suggestion shows one summary sentence with its score in pawns, and a More disclosure
+  expands the full narrative: tactical and positional features of the move, the engine's
+  expected continuation, a comparison with the runner-up moves, and the opening name when
+  the position is in the built-in book.
 - **Post-game report** replays your finished game, compares every move against the engine's
   preferred move, grades each one (Best, Good, Inaccuracy, Mistake, Blunder), and gives each
   side an accuracy percentage.
@@ -54,9 +57,10 @@ Everything lives in `index.html`, in four blocks:
 1. **Inline CSS** following the site style guide: the shared palette variables, the
    `[data-theme="dark"]` overrides, and the board (an 8x8 CSS grid with coordinate labels,
    Unicode piece glyphs, and highlight overlays).
-2. **`<script id="engine-src">`, the engine core** (sections E1 to E10 in the source). Pure
-   JavaScript with zero DOM access, so the exact same text runs in three places: the page's
-   main thread, a Web Worker, and node for the test suite.
+2. **`<script id="engine-src">`, the engine core** (sections E1 to E10 in the source,
+   including E9.5, the expected-line search). Pure JavaScript with zero DOM access, so the
+   exact same text runs in three places: the page's main thread, a Web Worker, and node for
+   the test suite.
 3. **The application script** (sections A0 to A9): board rendering, click-to-move input, the
    promotion picker, the game controller, tutor arrows and explanations, and the report.
 4. **The theme toggle script**, identical to every other page in the collection.
@@ -85,14 +89,34 @@ same functions on the main thread in small timed chunks.
   and the report always analyze clean at depth 3, whatever the opponent level, so advice
   quality never degrades just because you chose an easy opponent.
 
-## Tutor honesty rules
+## Tutor suggestions in detail
 
-Every explanation is assembled only from facts the engine can verify on the board: the move
-is a capture, gives check, castles, promotes, moves an attacked piece to safety, defends a
-hanging piece, develops a minor piece, or fights for a center square. The ranking phrases
-("clearly the best move here", "the top choices are close") come from the score gap between
-the first and second candidates. Nothing is ever claimed that is not derived from a detected
-feature or from the engine's own numbers.
+Every explanation is assembled only from facts the engine can verify on the board. Nothing
+is claimed that is not derived from a detected feature or from the engine's own numbers.
+
+**Feature detection.** Each suggested move is checked for: checkmate, captures, promotions,
+checks and discovered checks, castling, forks (the moved piece attacks two or more profitable
+targets from a safe square), absolute pins against the king, discovered attacks, moving an
+attacked piece to safety, defending a hanging piece, trading pieces while ahead in material,
+placing a rook or queen on an open or half-open file, creating or advancing a passed pawn,
+developing a minor piece, and fighting for the center. Fork and attack claims are gated: the
+landing square must be safe and each target must be the king, worth more than the attacker,
+or undefended.
+
+**Expected line.** The engine replays its preferred continuation by re-searching at
+decreasing depth after the suggested move, then prints it in standard notation ("Expected
+line: 1...Nc6 2.Nf3"). The closing phrase ("with a small edge", "keeping a clear advantage")
+comes from the exact search score of the suggestion, not from the displayed line, because
+the re-searched line can differ from the one behind the score.
+
+**Comparisons.** The top suggestion is contrasted with the runners-up using their own
+detected features and the score gap: "Nf3 also develops a knight and scores about the same"
+or "d4 fights for the center instead; it scores 0.6 pawns lower."
+
+**Opening book.** A built-in book of 46 named openings (positions up to 8 plies, keyed by
+piece placement and side to move so transpositions match) labels the current position
+("Book: Ruy Lopez. White pressures the knight that defends the e5 pawn.") and notes when a
+suggested move enters a named opening.
 
 ## Report grading
 
@@ -121,10 +145,14 @@ byte-identical to the code that ships in the page:
 | CPW Position 5 (promotion and discovery) | d1 44 · d2 1,486 · d3 62,379 · d4 2,103,487 | all pass |
 
 On top of perft: unit checks for FEN round-trips and SAN edge cases (castling both sides,
-`exd6` en passant, `e8=Q+`, mate suffixes, `Nbd2`-style disambiguation), then an end-to-end
-driver that plays a full random game through the real click path, exercises the promotion
-picker, undo, board flip, and the report, and finally a headless-Chrome check that the Web
-Worker path delivers tutor arrows and engine replies in a real browser.
+`exd6` en passant, `e8=Q+`, mate suffixes, `Nbd2`-style disambiguation); checks that the
+expected-line search restores the position exactly, produces only legal continuations, and
+returns an empty line after an immediate mate; unit positions for each tutor detector (fork,
+pin, discovered check, open file, passed pawn, favorable trade) and for opening-book
+transpositions; then an end-to-end driver that plays a full random game through the real
+click path, exercises the promotion picker, undo, board flip, and the report; and finally a
+headless-Chrome check that the Web Worker path delivers tutor arrows, expected lines, and
+engine replies in a real browser.
 
 ## Regenerate this page
 
@@ -148,9 +176,14 @@ Paste the following into Claude Code (or a comparable coding agent):
 > textContent via a Blob URL, with a synchronous chunked fallback. Features: play as either
 > color against four strength levels (depth 1 to 4, with root-score noise of 120/60/20/0
 > centipawns and no quiescence at level 1); tutor mode that requests the top three moves
-> (multipv) at depth 3 and draws them as SVG arrows with rule-based explanations derived
-> only from verifiable board facts (captures, checks, escapes, defenses, development,
-> center) plus the engine's scores; and a post-game report that grades every move by its
+> (multipv) at depth 3 and draws them as SVG arrows, each with a one-sentence summary and an
+> expandable narrative built only from verifiable board facts (captures, checks and
+> discovered checks, forks and pins with safety gates, escapes, defenses, favorable trades,
+> open files, passed pawns, development, center) plus the engine's scores, an expected
+> continuation obtained by re-searching at decreasing depth with an outcome phrase taken
+> from the exact root score, a factual comparison of the top move against the runners-up,
+> and an opening name from a built-in 46-line book keyed by placement and side to move; and
+> a post-game report that grades every move by its
 > centipawn loss against the engine's choice at depth 3 (Best <= 20, Good <= 49, Inaccuracy
 > <= 149, Mistake <= 299, Blunder >= 300, clamped at 1000, with positions already beyond
 > 1000 marked "decided" and ungraded) and shows per-side accuracy as the mean of
