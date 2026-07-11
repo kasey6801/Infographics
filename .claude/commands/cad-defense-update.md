@@ -36,7 +36,14 @@ protocol exactly. The target report is: **$ARGUMENTS**
   readout** where one exists: `pm.gc.ca`, `canada.ca`, `nato.int` (incl. press-conference
   **transcripts**), `consilium.europa.eu`, `gov.uk`, national MoD sites, and official company
   press releases for industry items. Fall back to reputable defence press (Reuters, Defense News,
-  Naval News, Breaking Defense, Janes, Korea Times, etc.) only where no official readout exists.
+  Naval News, Breaking Defense, Janes, Korea Times, **POLITICO / POLITICO Europe (`politico.eu`)**,
+  etc.) only where no official readout exists.
+- **`politico.eu` caveat:** it is a standing reference for European defence-policy items, but it
+  **blocks Claude's fetcher outright** (not just a 403, the fetch fails). Reconstruct the story via
+  `WebSearch`, syndications, and any Pro-headline variant, then **cross-reference the underlying
+  claim to an official source** (EU/US/NATO/national) before citing. Cite POLITICO for the
+  reporting and pair it with the official source for the substance; label anything that rests on
+  POLITICO alone as reported, not confirmed.
 - **Verify every embedded URL resolves before inclusion.** A bot-blocked **403** = treat as live
   (page exists); a **404** = drop to the authoritative domain's landing page rather than guess a
   slug. Confirm canonical URLs via `WebSearch` with `allowed_domains` when unsure.
