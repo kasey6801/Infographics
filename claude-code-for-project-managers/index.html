@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer">
+<title>Code as a Project Management Tool: A Guide for Project Managers</title>
+<script>
+(function(){try{var t=localStorage.getItem('theme');if(!t){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}if(t==='dark'){document.documentElement.setAttribute('data-theme','dark');}}catch(e){}})();
+</script>
+<style>
+:root{
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  --paper:#E9E1CF; --paper-2:#E1D8C2; --card:#F3EDDD;
+  --ink:#1C1A15; --ink-soft:#4A463C; --line:#C5BAA0;
+  --stamp-red:#B23A2E; --seal-green:#2E6149;
+  --shadow:0 2px 0 rgba(28,26,21,.14);
+}
+[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#17150F; --paper-2:#1F1B14; --card:#221E17;
+  --ink:#ECE3D0; --ink-soft:#B3AA96; --line:#403829;
+  --stamp-red:#E08A7C; --seal-green:#69B294;
+  --shadow:0 2px 0 rgba(0,0,0,.45);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);color:var(--ink);line-height:1.6;min-height:100vh;
+  background:radial-gradient(1100px 620px at 12% -8%, rgba(255,255,255,.55), transparent 60%),
+             radial-gradient(1000px 680px at 108% 112%, rgba(28,26,21,.10), transparent 60%),var(--paper);
+  padding:2.4rem 0 4rem;}
+[data-theme="dark"] body{background:radial-gradient(1100px 620px at 12% -8%, rgba(255,255,255,.04), transparent 60%),
+  radial-gradient(1000px 680px at 108% 112%, rgba(0,0,0,.35), transparent 60%),var(--paper);}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px}
+#theme-toggle{position:fixed;top:14px;right:14px;z-index:50;font-family:var(--mono);font-size:.72rem;
+  letter-spacing:.08em;text-transform:uppercase;background:var(--card);color:var(--ink);
+  border:1.5px solid var(--ink);border-radius:6px;box-shadow:var(--shadow);padding:.42rem .6rem;cursor:pointer;}
+#theme-toggle:hover{transform:translateY(-1px)}
+:focus-visible{outline:2px solid var(--stamp-red);outline-offset:2px}
+.eyebrow{font-family:var(--mono);font-size:.72rem;font-weight:600;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--stamp-red);margin-bottom:.5rem;}
+h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;letter-spacing:-.02em;line-height:1.1;margin-bottom:.6rem;}
+.intro{color:var(--ink-soft);max-width:62ch;margin-bottom:1.6rem;}
+h2{font-size:1.08rem;font-weight:800;margin:1.5rem 0 .55rem;}
+h3{font-family:var(--mono);font-size:.7rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-soft);margin:1rem 0 .4rem;}
+p{margin-bottom:.7rem;max-width:68ch;}
+ul{padding-left:1.25rem;margin-bottom:.8rem;max-width:66ch;}
+li{margin-bottom:.3rem;}
+.card{background:var(--card);border:1.5px solid var(--ink);border-radius:8px;
+  box-shadow:var(--shadow);padding:1.15rem 1.4rem;margin-bottom:1.1rem;}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.7rem;margin:.9rem 0 .3rem;}
+.tile{background:var(--paper-2);border:1.5px solid var(--ink);border-radius:6px;
+  box-shadow:var(--shadow);padding:.65rem .7rem;text-align:center;}
+.tile .n{font-size:1.55rem;font-weight:900;color:var(--stamp-red);line-height:1.1;}
+.tile .l{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink-soft);margin-top:.25rem;}
+table{width:100%;border-collapse:collapse;font-size:.86rem;margin:.5rem 0 .3rem;}
+th,td{text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--line);vertical-align:top;}
+th{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);}
+.note{background:var(--paper-2);border-left:4px solid var(--stamp-red);border-radius:6px;
+  padding:.7rem 1rem;font-size:.85rem;color:var(--ink-soft);margin:.9rem 0;}
+.callout{background:var(--paper-2);border-left:4px solid var(--seal-green);border-radius:6px;
+  padding:.75rem 1rem;font-size:.88rem;margin:.9rem 0;}
+.callout .co-label{font-family:var(--mono);font-size:.66rem;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--seal-green);margin-bottom:.3rem;}
+blockquote{border-left:3px solid var(--line);padding:.15rem 0 .15rem .9rem;margin:.6rem 0 .9rem;
+  color:var(--ink-soft);font-size:.92rem;max-width:64ch;font-style:italic;}
+code{font-family:var(--mono);font-size:.84em;background:var(--paper-2);border:1px solid var(--line);
+  border-radius:4px;padding:.06rem .32rem;}
+.steps{list-style:none;padding-left:0;counter-reset:step;max-width:none;}
+.steps li{counter-increment:step;position:relative;padding-left:2.6rem;margin-bottom:.75rem;}
+.steps li::before{content:counter(step);position:absolute;left:0;top:.1rem;width:1.8rem;height:1.8rem;
+  border-radius:50%;background:#B23A2E;color:#F3EDDD;font-family:var(--mono);font-weight:700;
+  font-size:.85rem;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);}
+a{color:var(--stamp-red)} a:hover{text-decoration:underline}
+footer{margin-top:2rem;border-top:1.5px solid var(--ink);padding-top:1.1rem;}
+.hang{padding-left:2.2rem;text-indent:-2.2rem;margin-bottom:.55rem;font-size:.9rem;max-width:none;}
+@media print{#theme-toggle{display:none}}
+</style>
+</head>
+<body>
+<button id="theme-toggle" aria-label="Toggle dark mode">🌙 Dark</button>
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">Field Guide &middot; For Project Managers &middot; 2026-07-12</p>
+  <h1>Code as a Project Management Tool</h1>
+  <p class="intro">An overview of the <a href="https://github.com/kasey6801/learn-by-building/blob/main/ClaudeCode-Getting-Started/ClaudeCode-Getting-Started_v1.2.md" target="_blank" rel="noopener">Claude Code Project Process Guide (v1.2)</a>, written for project managers who have never treated code as a working tool. The short version: you do not need to become a programmer. The guide is a project management process that happens to produce software, and the skills it depends on are the ones you already have.</p>
+</header>
+
+<section class="card">
+  <h2 style="margin-top:0">The premise: you manage, the AI executes</h2>
+  <p>Claude Code is an AI assistant that reads plain English instructions and carries them out on your computer: creating files, writing and running code, tracking changes, and publishing finished work. You type <em>"Create a project folder with an archive and a release subfolder"</em> and it happens. No command syntax is required of you at any point.</p>
+  <p>The guide is explicit about the division of labor: <strong>you decide what to build; Claude executes.</strong> The skills that determine success are breaking problems into steps, defining success precisely, and testing results critically. That is a project manager's core competence, not a developer's.</p>
+  <div class="tiles">
+    <div class="tile"><div class="n">0</div><div class="l">commands to memorize</div></div>
+    <div class="tile"><div class="n">1</div><div class="l">design phase before any code</div></div>
+    <div class="tile"><div class="n">4</div><div class="l">documents that record activity and build understanding</div></div>
+    <div class="tile"><div class="n">2</div><div class="l">working modes: with or without a terminal</div></div>
+  </div>
+</section>
+
+<section class="card">
+  <h2 style="margin-top:0">The toolkit, in project terms</h2>
+  <p>Four tools appear throughout the guide. None of them requires prior experience.</p>
+  <table>
+    <tr><th>Tool</th><th>What it is</th><th>Project-office equivalent</th></tr>
+    <tr><td><strong>VS Code</strong></td><td>A free editor where your project files live and where you work</td><td>The workspace</td></tr>
+    <tr><td><strong>Claude Code</strong></td><td>The AI assistant that turns your instructions into working software</td><td>The specialist you direct</td></tr>
+    <tr><td><strong>GitHub</strong></td><td>A website that stores the project, its full change history, and its releases</td><td>The system of record</td></tr>
+    <tr><td><strong>The terminal</strong></td><td>A text channel for giving the computer direct commands (optional)</td><td>Going direct instead of delegating</td></tr>
+  </table>
+  <p style="margin-top:.7rem">The guide offers two working modes. <strong>Option A</strong>, the Claude Code desktop app, requires no terminal at all: you type instructions and Claude handles everything internally. <strong>Option B</strong> pairs the Claude Code extension with the VS Code terminal for more visibility into each step. You can start with A and switch freely.</p>
+  <div class="note">The guide's terminal section is a reference for understanding what Claude is doing on your behalf, not a list of commands you are expected to learn. In most cases you describe what you want and Claude determines and runs the correct command.</div>
+</section>
+
+<section class="card">
+  <h2 style="margin-top:0">You already run this process</h2>
+  <p>The heart of the guide is a documentation discipline, and every piece of it maps to a practice you use now. The names change; the logic does not.</p>
+  <table>
+    <tr><th>PM practice</th><th>Guide artifact</th><th>How it works</th></tr>
+    <tr><td><strong>Change control</strong></td><td><code>CHANGE_LOG.md</code></td><td>Every change gets a numbered entry with the files affected and exact reversal steps. Nothing changes silently.</td></tr>
+    <tr><td><strong>Prioritized backlog</strong></td><td><code>Backlog.md</code></td><td>Requests are queued at P0 (critical) through P3 (nice-to-have). Before any change, Claude asks: implement now, or backlog?</td></tr>
+    <tr><td><strong>Definition of done</strong></td><td>Acceptance criteria</td><td>Every backlog item records how you will know it is done and correct, written before work starts. This prevents work that is technically correct but answers the wrong question.</td></tr>
+    <tr><td><strong>Quality audits</strong></td><td>QC rounds (<code>QC.md</code>)</td><td>Recurring checks for consistency, dead code, stale references, and security issues, logged with sequential numbers and resolutions.</td></tr>
+    <tr><td><strong>Risk management</strong></td><td>Security practices</td><td>Credentials live in one excluded file and never appear in chat. Files are archived before deletion. An automated security review runs before publishing.</td></tr>
+    <tr><td><strong>Knowledge management</strong></td><td><code>DESIGN_NOTES.md</code></td><td>A single living document records what every file does, which decisions were made, and which alternatives were rejected and why.</td></tr>
+    <tr><td><strong>Effort tracking</strong></td><td><code>EFFORT_INVESTMENT.md</code></td><td>Session time and delivered changes are summarized at milestones.</td></tr>
+  </table>
+  <div class="callout">
+    <div class="co-label">Why this matters</div>
+    Most software projects accumulate invisible debt: undocumented decisions, forgotten reasons for past choices, stale references. The process exists to prevent that, and it is the same reason a project office keeps a decision log. Documented rejected alternatives also act as a guardrail: the AI cannot re-propose an approach the record already rules out.
+  </div>
+</section>
+
+<section class="card">
+  <h2 style="margin-top:0">Step 0: plan before anything is built</h2>
+  <p>Version 1.2 of the guide adds a design-first phase, grounded in Dave Rensin's Elephant-Goldfish Model of AI-assisted development. The central claim: when an AI can implement anything quickly, <strong>the design document replaces source code as the highest-leverage artifact</strong>. Quality of thinking before the build determines quality of the build. For a project manager, this is planning before execution, formalized into five gates.</p>
+  <ol class="steps">
+    <li><strong>The no-code rule.</strong> Open a design conversation with the AI where no code is written. Ask it to challenge your assumptions and probe the edges of the problem. Expect 20 to 30 minutes of productive disagreement.</li>
+    <li><strong>Write the design document.</strong> Four sections: the problem in plain English, the technical plan in prose, the alternatives considered and rejected, and a file-by-file implementation plan.</li>
+    <li><strong>Goldfish Comprehension Test.</strong> Hand the document to a fresh AI session with no prior context. If it can explain the system accurately from the document alone, the document is complete. If it has questions, the document has gaps.</li>
+    <li><strong>Adversarial design review.</strong> Ask another fresh session to find every flaw, faulty assumption, and missed edge case. Roughly 30 percent of findings will be significant. Update and repeat.</li>
+    <li><strong>Implementation readiness check.</strong> Ask a final fresh session, acting as the implementer, whether the document contains everything needed to build it right on the first pass.</li>
+  </ol>
+  <div class="callout">
+    <div class="co-label">The PM parallel</div>
+    Step 0 is a charter, an independent peer review, and a gate review, compressed into an afternoon. The Goldfish test is the same test a good handover document must pass: a person (or session) with no background can pick up the work and proceed.
+  </div>
+</section>
+
+<section class="card">
+  <h2 style="margin-top:0">Working with an AI that does what you ask</h2>
+  <p>The guide's most important safety note is behavioral, not technical: <strong>Claude executes instructions literally and immediately.</strong> It does not second-guess your intent. Ask it to delete files and it deletes them. Vague instructions produce actions that may be technically correct but not what you meant. The mitigations are habits any PM will recognize as scope and change discipline:</p>
+  <ul>
+    <li><strong>Read before you approve.</strong> Claude asks permission before consequential actions (deleting files, publishing, installing software). Treat each prompt as a gate review, not a click-through.</li>
+    <li><strong>Ask in stages.</strong> Break large requests into steps and review each result. "Create the folder structure" before "create all the files."</li>
+    <li><strong>Backlog when unsure.</strong> If you are not certain a change is right, queue it instead of implementing it. Time to think is built into the process.</li>
+    <li><strong>Archive before deleting.</strong> Copy to the archive folder first. A built-in safety net.</li>
+    <li><strong>Commit regularly.</strong> Version control is the undo button. Every committed state can be recovered.</li>
+    <li><strong>Credentials are permanent damage.</strong> A token pasted into chat is compromised the moment you send it. Store credentials in a <code>.env</code> file that never leaves your machine, and refer to them by name.</li>
+  </ul>
+  <p>The guide also flags a subtler risk: over long sessions an AI drifts toward agreeing with you. It supplies a reset prompt that tells the assistant its highest use is to challenge your thinking. Managing that drift is part of effective use, and it matters most during planning.</p>
+</section>
+
+<section class="card">
+  <h2 style="margin-top:0">Choosing a first project</h2>
+  <p>The guide recommends starting with something that solves a problem you already understand, affects only you, and has a one-sentence definition of success: <em>"This is done when it can [X]."</em> Just as important is knowing when not to build:</p>
+  <table>
+    <tr><th>Code when</th><th>Do not code when</th></tr>
+    <tr><td>The exact tool does not exist</td><td>A free tool already solves the problem</td></tr>
+    <tr><td>Existing tools charge for something simple</td><td>The problem only needs solving once</td></tr>
+    <tr><td>You need specific behaviour</td><td>Maintenance will exceed the value</td></tr>
+    <tr><td>You want to learn</td><td>An existing solution is close enough</td></tr>
+  </table>
+  <p style="margin-top:.7rem">That is a build-versus-buy decision, and the guide's summary line belongs on a wall: <strong>a 10-line solution that works is always better than a 1000-line solution that almost works.</strong> Process depth scales with the project: a first project needs only a change log and backlog; the full process applies from the third project on.</p>
+</section>
+
+<section class="card">
+  <h2 style="margin-top:0">Getting started</h2>
+  <p>The setup path in the guide, condensed. Steps 1 through 4 are one-time installs; step 6 automates everything after that.</p>
+  <ol class="steps">
+    <li>Install <a href="https://code.visualstudio.com" target="_blank" rel="noopener">VS Code</a> (free, all platforms).</li>
+    <li>Install the Claude Code extension from the VS Code Extensions panel, or use the Claude Code desktop app if you prefer to skip VS Code entirely at first.</li>
+    <li>Install <a href="https://nodejs.org" target="_blank" rel="noopener">Node.js</a> (the LTS version).</li>
+    <li>Create a free <a href="https://github.com" target="_blank" rel="noopener">GitHub</a> account and generate a Personal Access Token. Store it in a <code>.env</code> file in your project folder; this is the only credential Claude needs to publish on your behalf.</li>
+    <li>Install the free <a href="https://github.com/kasey6801/claude-skills" target="_blank" rel="noopener">/new-project skill</a>, a one-command shortcut that sets up the entire structure described above.</li>
+    <li>Type <code>/new-project</code>, select Mode A, and Claude builds the folders, the archive documents, the exclusions file, and (optionally) the GitHub repository for you.</li>
+  </ol>
+  <div class="note">If a session ever crashes or loses context mid-task, the guide includes a recovery prompt: point a new session at <code>CLAUDE.md</code>, <code>DESIGN_NOTES.md</code>, and <code>CHANGE_LOG.md</code> and ask it to report project state before continuing. If the documents are current, recovery takes under a minute. Current documentation is the continuity plan.</div>
+</section>
+
+<footer>
+  <h2 style="margin-top:0">Source and references</h2>
+  <p class="hang">Kasey6801. (2026). <em>Claude Code: Project process guide v1.2</em>. GitHub. <a href="https://github.com/kasey6801/learn-by-building/blob/main/ClaudeCode-Getting-Started/ClaudeCode-Getting-Started_v1.2.md" target="_blank" rel="noopener">https://github.com/kasey6801/learn-by-building/blob/main/ClaudeCode-Getting-Started/ClaudeCode-Getting-Started_v1.2.md</a></p>
+  <p class="hang">Rensin, D. (2026). <em>Elephants, goldfish, and the new golden age of software engineering</em>. Medium. <a href="https://drensin.medium.com/elephants-goldfish-and-the-new-golden-age-of-software-engineering-c33641a48874" target="_blank" rel="noopener">https://drensin.medium.com/elephants-goldfish-and-the-new-golden-age-of-software-engineering-c33641a48874</a></p>
+  <p>Released under the <a href="https://github.com/kasey6801/Infographics/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>.</p>
+  <p style="margin-top:.9rem;font-family:var(--mono);font-size:.7rem;letter-spacing:.06em;color:var(--ink-soft)">Infographics collection &middot; claude-code-for-project-managers &middot; 2026-07-12</p>
+</footer>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('theme-toggle');
+  function label(){btn.textContent=root.getAttribute('data-theme')==='dark'?'☀️ Light':'🌙 Dark';}
+  label();
+  btn.addEventListener('click',function(){
+    if(root.getAttribute('data-theme')==='dark'){root.removeAttribute('data-theme');try{localStorage.setItem('theme','light');}catch(e){}}
+    else{root.setAttribute('data-theme','dark');try{localStorage.setItem('theme','dark');}catch(e){}}
+    label();
+  });
+})();
+</script>
+</body>
+</html>
