@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer">
+<title>The pdu-claim-info skill: turn learning content into PDU claims with Claude</title>
+<style>
+  :root{
+    color-scheme:light;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --paper:#E9E1CF;
+    --paper-2:#E1D8C2;
+    --card:#F3EDDD;
+    --ink:#1C1A15;
+    --ink-soft:#4A463C;
+    --line:#C5BAA0;
+    --stamp-red:#B23A2E;
+    --seal-green:#2E6149;
+    --shadow:0 2px 0 rgba(28,26,21,.14);
+  }
+  [data-theme="dark"]{
+    color-scheme:dark;
+    --paper:#17150F;
+    --paper-2:#1F1B14;
+    --card:#221E17;
+    --ink:#ECE3D0;
+    --ink-soft:#B3AA96;
+    --line:#403829;
+    --stamp-red:#E08A7C;
+    --seal-green:#69B294;
+    --shadow:0 2px 0 rgba(0,0,0,.45);
+  }
+  [data-theme="dark"] body{
+    background-image:
+      radial-gradient(circle at 18% 12%, rgba(255,255,255,.04), transparent 40%),
+      radial-gradient(circle at 82% 78%, rgba(0,0,0,.25), transparent 45%);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:
+      radial-gradient(circle at 18% 12%, rgba(255,255,255,.35), transparent 40%),
+      radial-gradient(circle at 82% 78%, rgba(28,26,21,.05), transparent 45%);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:0 22px}
+
+  header{padding:64px 0 26px;border-bottom:2px solid var(--ink)}
+  .eyebrow{
+    font-family:var(--mono);font-size:.78rem;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--stamp-red);margin:0 0 12px
+  }
+  h1{font-size:clamp(1.9rem,5vw,2.8rem);line-height:1.1;margin:0 0 14px;letter-spacing:-.01em;font-weight:850}
+  .lede{font-size:1.08rem;color:var(--ink-soft);max-width:62ch;margin:0}
+
+  main{padding:36px 0 12px}
+  h2{
+    font-family:var(--mono);font-size:.8rem;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--stamp-red);
+    margin:44px 0 14px;padding-top:8px
+  }
+  h2:first-of-type{margin-top:0}
+  h3{font-size:1.02rem;margin:20px 0 8px}
+  p{margin:0 0 14px}
+  .muted{color:var(--ink-soft)}
+  a{color:var(--stamp-red)}
+  a:focus-visible{outline:3px solid var(--stamp-red);outline-offset:3px}
+
+  code{
+    font-family:var(--mono);font-size:.88em;
+    background:rgba(28,26,21,.07);border-radius:4px;padding:1px 5px
+  }
+  [data-theme="dark"] code{background:rgba(236,227,208,.1)}
+  pre{
+    background:#1C1A15;color:#E9E1CF;
+    border-radius:8px;box-shadow:var(--shadow);
+    padding:14px 16px;overflow-x:auto;
+    font-family:var(--mono);font-size:.82rem;line-height:1.55;
+    margin:0 0 14px
+  }
+  pre code{background:none;padding:0;color:inherit;font-size:1em}
+  [data-theme="dark"] pre{border:1.5px solid var(--line)}
+
+  /* GitHub pointer panel */
+  .repo{
+    background:var(--ink);color:var(--paper);
+    border-radius:8px;box-shadow:var(--shadow);
+    padding:20px 22px;margin:20px 0
+  }
+  [data-theme="dark"] .repo{background:#0E0C08;color:#ECE3D0;border:1.5px solid var(--line)}
+  .repo .kind{
+    font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;
+    text-transform:uppercase;opacity:.75;margin:0 0 8px
+  }
+  .repo p{margin:0 0 10px;font-size:.96rem}
+  .repo p:last-child{margin-bottom:0}
+  .repo a{color:#E9C46A}
+  .repo .btn{
+    display:inline-block;margin-top:4px;
+    background:#B23A2E;color:#F3EDDD;text-decoration:none;
+    font-family:var(--mono);font-size:.85rem;letter-spacing:.04em;
+    border-radius:6px;padding:9px 16px
+  }
+  .repo .btn:hover{filter:brightness(1.08)}
+  .repo .btn:focus-visible{outline:3px solid #E9C46A;outline-offset:3px}
+
+  /* numbered steps */
+  .steps{list-style:none;counter-reset:step;margin:20px 0;padding:0}
+  .steps > li{
+    counter-increment:step;position:relative;padding:0 0 20px 52px
+  }
+  .steps > li::before{
+    content:counter(step);
+    position:absolute;left:0;top:0;
+    width:34px;height:34px;border-radius:50%;
+    background:#B23A2E;color:#F3EDDD;
+    font-family:var(--mono);font-weight:700;font-size:.95rem;
+    display:flex;align-items:center;justify-content:center
+  }
+  .steps b{display:block;margin-bottom:2px}
+  .steps p{margin:0 0 8px;font-size:.94rem;color:var(--ink-soft)}
+  .steps p:last-child{margin-bottom:0}
+
+  /* prompt example chips */
+  .prompts{list-style:none;margin:14px 0;padding:0;display:grid;gap:10px}
+  .prompts li{
+    background:var(--card);border:1.5px solid var(--line);border-left:4px solid var(--seal-green);
+    border-radius:6px;box-shadow:var(--shadow);
+    padding:10px 14px;font-size:.93rem;color:var(--ink-soft)
+  }
+  .prompts li b{color:var(--ink);font-family:var(--mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:2px}
+
+  /* data table */
+  table{width:100%;border-collapse:collapse;margin:18px 0;font-size:.92rem}
+  th,td{border:1.5px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{
+    background:var(--paper-2);font-family:var(--mono);font-size:.7rem;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)
+  }
+  td.num{font-family:var(--mono);white-space:nowrap}
+  .table-scroll{overflow-x:auto}
+
+  /* sample output card */
+  .sample{
+    background:var(--card);border:1.5px solid var(--line);border-radius:8px;
+    box-shadow:var(--shadow);padding:16px 18px 14px;margin:16px 0
+  }
+  .sample .kind{
+    font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--seal-green);margin:0 0 6px
+  }
+  .sample h3{margin:0 0 6px}
+  .sample p{margin:0 0 8px;font-size:.94rem;color:var(--ink-soft)}
+  .sample .verdict{
+    margin-top:10px;padding-top:10px;border-top:1px solid var(--line);
+    font-family:var(--mono);font-size:.8rem;color:var(--ink)
+  }
+  .sample .verdict b{color:var(--stamp-red)}
+
+  ul.plain{margin:0 0 14px;padding-left:20px}
+  ul.plain li{margin-bottom:8px}
+
+  footer{border-top:2px solid var(--ink);margin-top:44px;padding:22px 0 60px;color:var(--ink-soft);font-size:.88rem}
+  footer a{color:var(--stamp-red)}
+
+  #theme-toggle{
+    position:fixed;top:14px;right:14px;z-index:10;
+    font-family:var(--mono);font-size:.78rem;
+    background:var(--card);color:var(--ink);
+    border:1.5px solid var(--line);border-radius:8px;
+    padding:7px 12px;cursor:pointer;box-shadow:var(--shadow);
+    transition:transform .12s ease;
+  }
+  #theme-toggle:hover{transform:translateY(-1px)}
+  #theme-toggle:focus-visible{outline:3px solid var(--stamp-red);outline-offset:3px}
+</style>
+<script>
+  (function(){
+    var root=document.documentElement, saved=null;
+    try{ saved=localStorage.getItem('theme'); }catch(e){}
+    var dark = saved ? saved==='dark'
+      : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    root.dataset.theme = dark ? 'dark' : 'light';
+  })();
+</script>
+</head>
+<body>
+  <button id="theme-toggle" type="button" aria-label="Switch to dark mode">🌙 Dark</button>
+  <div class="wrap">
+    <header>
+      <p class="eyebrow">Claude skill · How-to</p>
+      <h1>Turn learning content into PDU claims: the pdu-claim-info skill</h1>
+      <p class="lede">A free, open-source Claude skill for PMI-certified project managers.
+      Paste a webinar transcript, article, or course description and get back a complete
+      PDU claim analysis: category strength ratings, claiming options, and fields ready to
+      paste into CCRS. This guide shows you how to install it and use it, and is a gentle
+      first step into agentic AI if you have only used LLMs as chatbots.</p>
+    </header>
+
+    <main>
+      <h2>What it is, and why "agentic" matters</h2>
+      <p>A Claude <b>skill</b> is a set of standing instructions saved as a file. You write
+      the process once (or install one someone else wrote), and Claude applies it
+      automatically whenever your request matches. That is the practical difference between
+      a chatbot and an agent: instead of you prompting step by step, the agent recognizes
+      the work, runs a multi-step process, and hands you a finished product.</p>
+      <p><code>pdu-claim-info</code> encodes the process of a careful continuing-education
+      advisor. Give it any professional learning content and it evaluates the material
+      against all three PMI Talent Triangle categories (Ways of Working, Power Skills,
+      Business Acumen), rates each with evidence, proposes claiming options on the standard
+      0.25 / 0.5 / 0.75 / 1.0 PDU scale, and drafts the CCRS entry with APA citations. You
+      do not even need to ask about PDUs: submitting the content is the trigger.</p>
+
+      <h2>Get the skill</h2>
+      <div class="repo">
+        <p class="kind">GitHub · free and open source</p>
+        <p>The skill lives in the <b>kasey6801/claude-skills</b> repository, alongside its
+        documentation, install instructions, and a packaged one-file bundle.</p>
+        <p><a class="btn" href="https://github.com/kasey6801/claude-skills#pdu-claim-info" target="_blank" rel="noopener">Get pdu-claim-info on GitHub →</a></p>
+      </div>
+
+      <h3>Option A: install the packaged .skill bundle</h3>
+      <p class="muted" style="font-size:.92rem">One file. Download it and open it in your
+      Claude client (Claude Code or Cowork) to install.</p>
+      <pre><code>curl -L -o pdu-claim-info.skill \
+  https://github.com/kasey6801/claude-skills/raw/main/skills/dist/pdu-claim-info.skill</code></pre>
+
+      <h3>Option B: copy the source folder into a project</h3>
+      <p class="muted" style="font-size:.92rem">Installs for the current project only. Use
+      <code>~/.claude/skills</code> instead to make it available everywhere.</p>
+      <pre><code>mkdir -p .claude/skills
+git clone --depth 1 https://github.com/kasey6801/claude-skills.git /tmp/cs \
+  && cp -r /tmp/cs/skills/pdu-claim-info .claude/skills/ \
+  && rm -rf /tmp/cs</code></pre>
+      <p>Either way the skill ends up at <code>.claude/skills/pdu-claim-info/SKILL.md</code>.
+      No API keys, no configuration, nothing to run.</p>
+
+      <h2>Use it in four steps</h2>
+      <ol class="steps">
+        <li>
+          <b>Drop learning content into a Claude conversation.</b>
+          <p>A video transcript, an article, a course description, podcast episode notes, a
+          conference session abstract, or just a sentence saying what you read or watched.
+          No special format, no explicit PDU question needed.</p>
+          <ul class="prompts">
+            <li><b>Paste a transcript</b>"Here's the transcript of a webinar I watched: [paste]"</li>
+            <li><b>Mention a reading</b>"I just finished reading the PMI Standard for AI in PPPM, about 6 hours over the week."</li>
+            <li><b>Ask directly</b>"Can I claim PDUs for this podcast episode? [link or notes]"</li>
+          </ul>
+        </li>
+        <li>
+          <b>Let the skill run.</b>
+          <p>Claude recognizes the content and triggers the skill on its own. On the very
+          first run it also fetches the live PMI CCR Handbook, saves the requirements to
+          memory, and prompts you to refresh them once per calendar year, so the guidance
+          tracks the current rules instead of stale training data.</p>
+        </li>
+        <li>
+          <b>Save the analysis as a knowledge asset.</b>
+          <p>After every analysis the skill offers to turn it into a file you keep. You
+          choose the format and the file type:</p>
+          <ul class="prompts">
+            <li><b>Infographic</b>A visual one-pager: PDU breakdown, category strengths, and the top claiming option</li>
+            <li><b>Report</b>A structured written document with every section of the analysis</li>
+            <li><b>Presentation</b>Up to 3 slides covering the key takeaways</li>
+          </ul>
+          <p>Each is available as Markdown (.md), PDF (.pdf), or PowerPoint (.pptx). The
+          first time you save one, the skill asks where assets should live (for example a
+          <code>PDU_Claims</code> folder in your workspace), then remembers that folder and
+          saves there automatically from then on. Files are named
+          <code>PDU_&lt;content-slug&gt;_&lt;date&gt;.&lt;ext&gt;</code> so they sort
+          chronologically, one folder of evidence per claim, ready for a PMI audit.</p>
+        </li>
+        <li>
+          <b>Review, pick an option, and file the claim yourself.</b>
+          <p>The report rates each Talent Triangle category, lays out claiming options with
+          a plain statement of when each makes sense, and drafts the CCRS entry fields. It
+          also flags anything it could not verify, like a video's upload date. You confirm
+          those, pick an option, and submit at
+          <a href="https://ccrs.pmi.org" target="_blank" rel="noopener">ccrs.pmi.org</a>.
+          The skill never touches CCRS: preparation is the agent's job, the claim is yours.</p>
+        </li>
+      </ol>
+
+      <h2>What every report contains</h2>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr><th scope="col">Section</th><th scope="col">What you get</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Executive summary</td><td>Two to three sentences: what the content is and the primary PDU verdict</td></tr>
+            <tr><td>Category analysis</td><td>Ways of Working, Power Skills, and Business Acumen each rated Strong, Moderate, Weak, or None, with the specific segments that justify the rating</td></tr>
+            <tr><td>Claiming options</td><td>Three options (for example full split, single category, session-by-session) with PDU values on the 0.25 / 0.5 / 0.75 / 1.0 scale and the CCRS path</td></tr>
+            <tr><td>CCRS entry fields</td><td>Title, provider, description, and PDU value, ready to paste</td></tr>
+            <tr><td>Resources &amp; citations</td><td>PMI CCR Handbook and CCRS links plus APA-formatted references</td></tr>
+            <tr><td>Verify-before-filing flags</td><td>Anything inferred rather than confirmed, called out explicitly</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>A real example</h2>
+      <p>Output from an actual run, summarized. A 40-45 minute Stanford GSB leadership
+      podcast went in; this came back:</p>
+      <div class="sample">
+        <p class="kind">Input: podcast panel · ~40-45 min</p>
+        <h3>Think Fast, Talk Smart Live: Leadership Communication Panel</h3>
+        <p>The skill rated Power Skills <b>Strong</b> (feedback frameworks, inviting
+        dissent, listening), Ways of Working and Business Acumen <b>Weak</b>, and warned
+        that stretching the weak categories "would be over-claiming." It recommended 0.75
+        PDU rather than a rounded-up 1.0, to match the actual runtime, and flagged the
+        episode's publication date as unverified.</p>
+        <p class="verdict"><b>Verdict: 0.75 PDU · Power Skills</b> · CCRS &gt; Education &gt; Self-Directed Learning</p>
+      </div>
+      <p>The same process handled a 297-page PMI standard (6.0 PDUs split across all three
+      categories) and two hour-long webinars (1.0 PDU each, Business Acumen) on the same
+      day: 8.75 audit-ready PDUs from one afternoon of pasting content.</p>
+
+      <h2>The rules it works against</h2>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr><th scope="col">Certification</th><th scope="col">Cycle</th><th scope="col">Total PDUs</th><th scope="col">Minimum per category</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>PMP</td><td>3 years</td><td class="num">60</td><td class="num">8</td></tr>
+            <tr><td>PMI-ACP</td><td>3 years</td><td class="num">30</td><td class="num">4</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="muted" style="font-size:.9rem">Power Skills and Business Acumen PDUs count
+      toward multiple PMI certifications at once if you hold more than one. Requirements
+      per the PMI CCR Handbook; the skill keeps a live-fetched copy and refreshes it
+      annually.</p>
+
+      <h2>Links</h2>
+      <ul class="plain">
+        <li><a href="https://github.com/kasey6801/claude-skills#pdu-claim-info" target="_blank" rel="noopener">pdu-claim-info on GitHub</a> · the skill, docs, and install options</li>
+        <li><a href="https://ccrs.pmi.org" target="_blank" rel="noopener">CCRS</a> · PMI's system where you file the claims</li>
+        <li><a href="https://www.pmi.org/-/media/pmi/documents/public/pdf/certifications/ccr-certification-requirements-handbook-new.pdf" target="_blank" rel="noopener">PMI CCR Handbook</a> · the rules the skill applies</li>
+        <li><a href="https://claude.com/skills" target="_blank" rel="noopener">Skills from Anthropic</a> · learn more about what Claude skills are and what they can do</li>
+        <li><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude skills documentation</a> · how skills work and how to write your own</li>
+      </ul>
+    </main>
+
+    <footer>
+      <p>The skill prepares claims; you verify dates, choose an option, and submit them.
+      PDU guidance reflects the PMI CCR Handbook as fetched by the skill (April 2026
+      edition at the time of writing).</p>
+      <p>Released under the <a href="https://github.com/kasey6801/Infographics/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>.</p>
+    </footer>
+  </div>
+  <script>
+    (function(){
+      var root=document.documentElement;
+      var btn=document.getElementById('theme-toggle');
+      function label(){
+        var dark=root.dataset.theme==='dark';
+        btn.textContent=dark ? '☀️ Light' : '🌙 Dark';
+        btn.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+      }
+      label();
+      btn.addEventListener('click', function(){
+        var next=root.dataset.theme==='dark' ? 'light' : 'dark';
+        root.dataset.theme=next;
+        try{ localStorage.setItem('theme', next); }catch(e){}
+        label();
+      });
+    })();
+  </script>
+</body>
+</html>

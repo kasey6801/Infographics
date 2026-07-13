@@ -18,6 +18,7 @@ its own.
 - `book-club-skill-guide/` — *The Book Club Skill* — install &amp; use a Claude reading-log skill (folder: `index.html` + explainer `.md`)
 - `CAD-NATO-Defense-Spending/` — *Canadian NATO Defense Spending* — review of Canada's 2025-2026 military procurement through NATO obligations (folder: `index.html` + explainer `.md`)
 - `CC_games_and_education/Chess_tutor/` · *Chess Tutor*: playable chess game with its own JavaScript engine, tutor arrows, and a post-game accuracy report (folder: `index.html` + explainer `.md`)
+- `pdu-claims-with-claude/` — *LLM.PPPM* — install &amp; use the pdu-claim-info Claude skill that turns learning content into PMI PDU claim analyses (folder: `index.html` + explainer `.md`)
 - `how-this-landing-page-was-made.html` — *How this landing page was made* (a generic GitHub Pages walkthrough; no companion `.md`)
 - `about.html` — about the collection and its design principle
 
@@ -33,6 +34,7 @@ built. These files lay out the step-by-step process used to create the guide, pl
 - `book-club-skill-guide/Book-Club-Skill-Explained.md` — accompanies `book-club-skill-guide/index.html`
 - `CAD-NATO-Defense-Spending/CONTEXT_AND_REBUILD_GUIDE.md` — accompanies `CAD-NATO-Defense-Spending/index.html`
 - `CC_games_and_education/Chess_tutor/Chess-Tutor-Explained.md`: accompanies `CC_games_and_education/Chess_tutor/index.html`
+- `pdu-claims-with-claude/PDU-Claims-With-Claude-Explained.md` — accompanies `pdu-claims-with-claude/index.html`
 
 On the landing page, each guide's card links to its explained file via the
 "How this was made (.md) →" link (which opens GitHub's rendered view).
