@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer">
+<title>PMI Talent Triangle: Ways of Working, Power Skills, Business Acumen</title>
+<script>
+(function(){try{var t=localStorage.getItem('theme');if(!t){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}if(t==='dark'){document.documentElement.setAttribute('data-theme','dark');}}catch(e){}})();
+</script>
+<style>
+:root{
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  --paper:#E9E1CF; --paper-2:#E1D8C2; --card:#F3EDDD;
+  --ink:#1C1A15; --ink-soft:#4A463C; --line:#C5BAA0;
+  --stamp-red:#B23A2E; --seal-green:#2E6149;
+  --shadow:0 2px 0 rgba(28,26,21,.14);
+}
+[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#17150F; --paper-2:#1F1B14; --card:#221E17;
+  --ink:#ECE3D0; --ink-soft:#B3AA96; --line:#403829;
+  --stamp-red:#E08A7C; --seal-green:#69B294;
+  --shadow:0 2px 0 rgba(0,0,0,.45);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);color:var(--ink);line-height:1.6;min-height:100vh;
+  background:radial-gradient(1100px 620px at 12% -8%, rgba(255,255,255,.55), transparent 60%),
+             radial-gradient(1000px 680px at 108% 112%, rgba(28,26,21,.10), transparent 60%),var(--paper);
+  padding:2.4rem 0 4rem;}
+[data-theme="dark"] body{background:radial-gradient(1100px 620px at 12% -8%, rgba(255,255,255,.04), transparent 60%),
+  radial-gradient(1000px 680px at 108% 112%, rgba(0,0,0,.35), transparent 60%),var(--paper);}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px}
+#theme-toggle{position:fixed;top:14px;right:14px;z-index:50;font-family:var(--mono);font-size:.72rem;
+  letter-spacing:.08em;text-transform:uppercase;background:var(--card);color:var(--ink);
+  border:1.5px solid var(--ink);border-radius:6px;box-shadow:var(--shadow);padding:.42rem .6rem;cursor:pointer;}
+#theme-toggle:hover{transform:translateY(-1px)}
+:focus-visible{outline:2px solid var(--stamp-red);outline-offset:2px}
+.eyebrow{font-family:var(--mono);font-size:.72rem;font-weight:600;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--stamp-red);margin-bottom:.5rem;}
+h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;letter-spacing:-.02em;line-height:1.1;margin-bottom:.6rem;}
+.intro{color:var(--ink-soft);max-width:62ch;margin-bottom:1.6rem;}
+h2{font-size:1.08rem;font-weight:800;margin:1.5rem 0 .55rem;}
+h3{font-family:var(--mono);font-size:.7rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-soft);margin:1rem 0 .4rem;}
+p{margin-bottom:.7rem;max-width:68ch;}
+ul{padding-left:1.25rem;margin-bottom:.8rem;max-width:66ch;}
+li{margin-bottom:.3rem;}
+.card{background:var(--card);border:1.5px solid var(--ink);border-radius:8px;
+  box-shadow:var(--shadow);padding:1.15rem 1.4rem;margin-bottom:1.1rem;}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.7rem;margin:.9rem 0 .3rem;}
+.tile{background:var(--paper-2);border:1.5px solid var(--ink);border-radius:6px;
+  box-shadow:var(--shadow);padding:.65rem .7rem;text-align:center;}
+.tile .n{font-size:1.55rem;font-weight:900;color:var(--stamp-red);line-height:1.1;}
+.tile .l{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink-soft);margin-top:.25rem;}
+details{background:var(--card);border:1.5px solid var(--ink);border-radius:8px;
+  box-shadow:var(--shadow);margin-bottom:.9rem;overflow:hidden;}
+details>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:.6rem;
+  padding:.85rem 1.2rem;font-family:var(--mono);font-size:.85rem;font-weight:700;
+  letter-spacing:.04em;background:var(--paper-2);}
+details>summary::-webkit-details-marker{display:none}
+details>summary:hover{color:var(--stamp-red)}
+details>summary .chev{color:var(--stamp-red);font-size:.8rem;transition:transform .16s ease;}
+details[open]>summary .chev{transform:rotate(90deg)}
+details .inner{padding:1rem 1.3rem 1.1rem;}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem;margin:.4rem 0 .9rem;}
+.chip{font-family:var(--mono);font-size:.7rem;letter-spacing:.03em;background:var(--paper-2);
+  border:1px solid var(--line);border-radius:999px;padding:.2rem .6rem;color:var(--ink);}
+.was{display:inline-block;font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--seal-green);border:1px solid var(--seal-green);
+  border-radius:999px;padding:.12rem .55rem;margin-left:.5rem;vertical-align:middle;}
+.toolbar{display:flex;gap:.5rem;margin:.2rem 0 1rem;}
+.toolbar button{font-family:var(--mono);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;
+  background:transparent;color:var(--ink-soft);border:1.5px solid var(--line);border-radius:6px;
+  padding:.32rem .6rem;cursor:pointer;}
+.toolbar button:hover{border-color:var(--ink);color:var(--ink)}
+figure{margin:1.1rem 0;background:var(--card);border:1.5px solid var(--ink);border-radius:8px;
+  box-shadow:var(--shadow);padding:1rem;overflow-x:auto;}
+figcaption{font-size:.85rem;color:var(--ink-soft);margin-top:.6rem;max-width:none;line-height:1.55;}
+table{width:100%;border-collapse:collapse;font-size:.86rem;margin:.5rem 0 .3rem;}
+th,td{text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--line);vertical-align:top;}
+th{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);}
+.note{background:var(--paper-2);border-left:4px solid var(--stamp-red);border-radius:6px;
+  padding:.7rem 1rem;font-size:.85rem;color:var(--ink-soft);margin:.9rem 0;}
+.callout{background:var(--paper-2);border-left:4px solid var(--seal-green);border-radius:6px;
+  padding:.75rem 1rem;font-size:.88rem;margin:.9rem 0;}
+.callout .co-label{font-family:var(--mono);font-size:.66rem;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--seal-green);margin-bottom:.3rem;}
+a{color:var(--stamp-red)} a:hover{text-decoration:underline}
+footer{margin-top:2rem;border-top:1.5px solid var(--ink);padding-top:1.1rem;}
+.hang{padding-left:2.2rem;text-indent:-2.2rem;margin-bottom:.55rem;font-size:.9rem;max-width:none;}
+.svg-tri{fill:var(--paper-2);stroke:var(--ink);}
+.svg-hub{fill:var(--card);stroke:var(--ink);}
+.svg-chip{fill:var(--stamp-red);}
+.svg-chip-text{fill:#F3EDDD;}
+.svg-shadow{fill:var(--ink);opacity:.16;}
+[data-theme="dark"] .svg-chip{fill:#B23A2E;}
+[data-theme="dark"] .svg-shadow{opacity:.45;fill:#000;}
+.svg-ink{fill:var(--ink);} .svg-soft{fill:var(--ink-soft);}
+svg text{font-family:var(--sans);}
+@media print{
+  #theme-toggle,.toolbar{display:none}
+  details{display:block} details>summary{pointer-events:none}
+}
+</style>
+</head>
+<body>
+<button id="theme-toggle" aria-label="Toggle dark mode">🌙 Dark</button>
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">An Introduction &middot; 2026-07-12</p>
+  <h1>The PMI Talent Triangle</h1>
+  <p class="intro">PMI's Talent Triangle names the three skill sets that together make a complete project professional: <strong>Ways of Working</strong>, <strong>Power Skills</strong>, and <strong>Business Acumen</strong>. This document provides an overview: what the category means, the specific skills PMI counts in it, where the <em>PMBOK Guide</em> develops it, and what typically qualifies for PDUs.</p>
+</header>
+
+<section class="card">
+  <h2 style="margin-top:0">What the Talent Triangle is</h2>
+  <p>PMI introduced the Talent Triangle in 2015 after concluding, from research with employers, that technical delivery skill alone does not predict project success; organizations were asking for practitioners who could also lead people and speak the language of the business (Bell, n.d.). PMI frames the triangle as its answer to a modern landscape that "requires a broader, cross-functional skill set that combines specialized expertise with high-demand capabilities," focused on Ways of Working, Power Skills, and Business Acumen (Project Management Institute [PMI], 2026, p. 6).</p>
+  <p>In 2022 PMI renamed all three sides to reflect how the profession had changed (Bell, n.d.):</p>
+  <ul>
+    <li>Technical Project Management became <strong>Ways of Working</strong></li>
+    <li>Leadership became <strong>Power Skills</strong></li>
+    <li>Strategic and Business Management became <strong>Business Acumen</strong></li>
+  </ul>
+  <p>The triangle also structures certification maintenance. Every Education PDU is claimed in one of the three categories, and certification holders "must earn a minimum number of PDUs in each of the skill areas" (PMI, 2026, p. 6). For PMP, that means 8 in each category per 3-year cycle.</p>
+  <p>The <em>PMBOK Guide</em> Eighth Edition names all three categories directly. <em>The Standard for Project Management</em>, bound in the same volume, lists ways of working, power skills, and business acumen among the competencies of the project management team, alongside social responsibilities and results (PMI, 2025, Standard pp. 29-31). The two parts are paginated separately, so citations in this document mark Standard or Guide pages. Beyond the competency model, the volume's structures sort by triangle category:</p>
+  <ul>
+    <li><strong>People-facing:</strong> the Be an Accountable Leader and Build an Empowered Culture principles (Standard pp. 46-48, 53-55) and the Stakeholders and Resources performance domains (Guide pp. 67-92)</li>
+    <li><strong>Delivery-facing:</strong> the Project Life Cycles section on predictive, adaptive, and hybrid approaches (Standard pp. 57-74), the Scope, Schedule, and Risk domains (Guide pp. 35-58, 92-102), and the Tailoring section (Guide pp. 103-112)</li>
+    <li><strong>Business-facing:</strong> the system for value delivery (Standard pp. 13-17), the Focus on Value principle (Standard pp. 40-42), and the Governance and Finance domains (Guide pp. 10-35, 58-67)</li>
+  </ul>
+  <p>Each category section below names its specific anchors.</p>
+  <div class="tiles">
+    <div class="tile"><div class="n">3</div><div class="l">categories</div></div>
+    <div class="tile"><div class="n">8/8/8</div><div class="l">PMP minimums per cycle</div></div>
+    <div class="tile"><div class="n">2015</div><div class="l">triangle introduced</div></div>
+    <div class="tile"><div class="n">2022</div><div class="l">categories renamed</div></div>
+  </div>
+</section>
+
+<figure>
+  <svg viewBox="0 0 640 440" role="img" aria-label="The PMI Talent Triangle: Ways of Working at the top, Power Skills at the bottom left, and Business Acumen at the bottom right, each with representative skills, surrounding the project professional at the center">
+    <title>The PMI Talent Triangle</title>
+    <path d="M309.8 122.3 L140.2 327.7 Q130 340 146 340 L494 340 Q510 340 499.8 327.7 L330.2 122.3 Q320 110 309.8 122.3 Z" class="svg-tri" stroke-width="2.5" stroke-linejoin="round"/>
+    <circle cx="320" cy="250" r="76" class="svg-hub" stroke-width="1.5"/>
+    <text x="320" y="237" text-anchor="middle" font-size="13.5" font-weight="700" class="svg-ink">The project</text>
+    <text x="320" y="253" text-anchor="middle" font-size="13.5" font-weight="700" class="svg-ink">professional</text>
+    <text x="320" y="271" text-anchor="middle" font-size="9" class="svg-soft">delivery + people + business</text>
+
+    <rect x="242" y="43" width="156" height="34" rx="8" class="svg-shadow"/>
+    <rect x="240" y="40" width="156" height="34" rx="8" class="svg-chip"/>
+    <text x="318" y="62" text-anchor="middle" font-size="14" font-weight="700" class="svg-chip-text">Ways of Working</text>
+    <text x="318" y="91" text-anchor="middle" font-size="10.5" class="svg-soft">agile &#183; hybrid &#183; design thinking</text>
+    <text x="318" y="104" text-anchor="middle" font-size="10.5" class="svg-soft">risk &#183; schedule &#183; scope management</text>
+
+    <rect x="57" y="355" width="146" height="34" rx="8" class="svg-shadow"/>
+    <rect x="55" y="352" width="146" height="34" rx="8" class="svg-chip"/>
+    <text x="128" y="374" text-anchor="middle" font-size="14" font-weight="700" class="svg-chip-text">Power Skills</text>
+    <text x="128" y="404" text-anchor="middle" font-size="10.5" class="svg-soft">communication &#183; leadership</text>
+    <text x="128" y="417" text-anchor="middle" font-size="10.5" class="svg-soft">negotiation &#183; emotional intelligence</text>
+
+    <rect x="432" y="355" width="158" height="34" rx="8" class="svg-shadow"/>
+    <rect x="430" y="352" width="158" height="34" rx="8" class="svg-chip"/>
+    <text x="509" y="374" text-anchor="middle" font-size="14" font-weight="700" class="svg-chip-text">Business Acumen</text>
+    <text x="509" y="404" text-anchor="middle" font-size="10.5" class="svg-soft">strategic planning &#183; market awareness</text>
+    <text x="509" y="417" text-anchor="middle" font-size="10.5" class="svg-soft">benefits realization &#183; compliance</text>
+  </svg>
+  <figcaption><strong>Figure 1. The PMI Talent Triangle.</strong> Each corner lists sample skills, using PMI's own skill names from the official Talent Triangle flyer (PMI, n.d.). These are the same three categories that set the PDU minimums in the CCR handbook (PMI, 2026, p. 6). The names changed in 2022: Technical Project Management became Ways of Working, Leadership became Power Skills, and Strategic and Business Management became Business Acumen (Bell, n.d.).</figcaption>
+</figure>
+
+<div class="toolbar">
+  <button type="button" id="open-all">Expand all</button>
+  <button type="button" id="close-all">Collapse all</button>
+</div>
+
+<details>
+  <summary><span class="chev" aria-hidden="true">&#9656;</span>Ways of Working<span class="was">was: Technical Project Management</span></summary>
+  <div class="inner">
+    <p><strong>Overview:</strong> apply the right technique at the right time (Bell, n.d.).</p>
+    <p>Ways of Working covers delivery methods and technical project management skill: selecting a waterfall, agile, or hybrid approach, estimating, scheduling, risk management, scope management, and performance measurement.</p>
+    <p>PMI broadened the name from Technical Project Management because teams mix approaches and different projects require different methods (Bell, n.d.).</p>
+    <h3>Skills PMI counts here</h3>
+    <div class="chips">
+      <span class="chip">Predictive delivery</span><span class="chip">Agile &amp; hybrid</span>
+      <span class="chip">Agile estimating</span><span class="chip">Scope management</span>
+      <span class="chip">Scheduling</span><span class="chip">Risk management</span>
+      <span class="chip">Performance management</span><span class="chip">PM tooling</span>
+    </div>
+    <h3>Where the PMBOK develops it</h3>
+    <p>The Standard defines the ways of working competency as applying the right standards, methodologies, and frameworks: predictive, adaptive, and hybrid approaches, brainstorming techniques, and change management techniques (PMI, 2025, Standard p. 31). Its Project Life Cycles section develops the predictive-to-adaptive spectrum and the factors that drive the choice of approach (Standard pp. 57-74). In the Guide, the Scope, Schedule, and Risk performance domains carry the technical delivery content (Guide pp. 35-58, 92-102), Tailoring has its own section (Guide pp. 103-112), and the Tools and Techniques section catalogs specific methods from the critical path method to estimation (Guide pp. 145-215).</p>
+    <h3>Typical qualifying PDU content</h3>
+    <p>Agile and hybrid framework training, scheduling and estimation techniques, risk management, DevOps and delivery practices, PM tooling, AI-assisted delivery methods.</p>
+  </div>
+</details>
+
+<details>
+  <summary><span class="chev" aria-hidden="true">&#9656;</span>Power Skills<span class="was">was: Leadership</span></summary>
+  <div class="inner">
+    <p><strong>Overview:</strong> the human-centered skills that foster teamwork, trust, and information sharing toward shared goals (Bell, n.d.).</p>
+    <p>Power Skills covers interpersonal skills: communication, leadership, negotiation, conflict management, coaching, and emotional intelligence, applied to stakeholders and team members who typically do not report to the project manager.</p>
+    <p>PMI renamed the category from Leadership to Power Skills as automation shifted the differentiating skills toward interpersonal work (Aldridge, 2023). One study cited by Project Management Academy attributes 85 percent of job success to people skills and 15 percent to hard skills (Aldridge, 2023, citing Harvard University, the Carnegie Foundation, and the Stanford Research Center).</p>
+    <div class="callout">
+      <p class="co-label">Spotlight: Organizational Change Management</p>
+      <p style="margin-bottom:0">Organizational change management (OCM) is the discipline for the people side of change. Prosci research finds initiatives with excellent change management are seven times more likely to meet objectives (Prosci, n.d.). The human side of leading change sits in Power Skills; the methodology side counts under Ways of Working. Training is available from both Prosci and PMI.</p>
+    </div>
+    <h3>Skills PMI counts here</h3>
+    <div class="chips">
+      <span class="chip">Leadership</span><span class="chip">Communication</span>
+      <span class="chip">Active listening</span><span class="chip">Emotional intelligence</span>
+      <span class="chip">Negotiation</span><span class="chip">Conflict management</span>
+      <span class="chip">Coaching &amp; mentoring</span><span class="chip">Influencing</span>
+      <span class="chip">Adaptability</span><span class="chip">Problem-solving</span>
+      <span class="chip">Teamwork</span><span class="chip">Brainstorming</span>
+      <span class="chip">Interpersonal skills</span>
+    </div>
+    <p style="font-size:.8rem;color:var(--ink-soft)">The thirteen skills listed for this category by Aldridge (2023).</p>
+    <h3>Where the PMBOK develops it</h3>
+    <p>The Standard defines the power skills competency as the people skills a project management team applies, with adaptability and emotional intelligence as its examples: critical thinking and sound judgment, team motivation, and negotiation and conflict resolution (PMI, 2025, Standard p. 30). Two of the six principles are people principles: Be an Accountable Leader (Standard pp. 46-48) and Build an Empowered Culture (Standard pp. 53-55). In the Guide, the Stakeholders performance domain covers identifying, engaging, and communicating with stakeholders (Guide pp. 67-78), the Lead the Team process covers motivation, feedback, and high-performing teams (Guide pp. 84-86), and the Tools and Techniques section details conflict management, emotional intelligence, and leadership (Guide pp. 156-157, 169-170, 176-179).</p>
+    <h3>Typical qualifying PDU content</h3>
+    <p>Leadership and communication training, feedback and coaching techniques, negotiation and conflict resolution, team building, psychological safety, cross-cultural and distributed team leadership, the human side of change.</p>
+  </div>
+</details>
+
+<details>
+  <summary><span class="chev" aria-hidden="true">&#9656;</span>Business Acumen<span class="was">was: Strategic &amp; Business Mgmt</span></summary>
+  <div class="inner">
+    <p><strong>Overview:</strong> connect project work to organizational value through an understanding of business goals, industry trends, and market shifts (Aldridge, n.d.).</p>
+    <p>Business Acumen covers the organizational and commercial context of project work: strategy alignment, finance, benefits realization, governance, and industry knowledge. It supports strategic decision-making and recommendations aligned with organizational goals (Bell, n.d.).</p>
+    <h3>Skills PMI counts here</h3>
+    <div class="chips">
+      <span class="chip">Benefits management &amp; realization</span><span class="chip">Strategic planning &amp; alignment</span>
+      <span class="chip">Business models &amp; structures</span><span class="chip">Competitive analysis</span>
+      <span class="chip">Market awareness</span><span class="chip">Industry domain knowledge</span>
+      <span class="chip">Customer relationships</span><span class="chip">Legal &amp; regulatory compliance</span>
+      <span class="chip">Function-specific knowledge</span>
+    </div>
+    <p style="font-size:.8rem;color:var(--ink-soft)">The nine skill areas listed for this category by Aldridge (n.d.).</p>
+    <h3>Where the PMBOK develops it</h3>
+    <p>The Standard defines the business acumen competency as strategic thinking and alignment within the organizational context: setting project selection criteria, applying industry knowledge, and performing business case development and financial analysis (PMI, 2025, Standard p. 31). It frames projects as part of a system for value delivery, in which portfolios, programs, and projects exist to create value for the organization and its stakeholders (Standard pp. 13-17), and its Focus on Value principle makes value the ultimate success indicator of a project (Standard pp. 40-42). In the Guide, the Governance performance domain ties projects to strategy and the business case (Guide pp. 10-35), and the Finance domain covers cost estimating, budgeting, and financial measures such as return on investment and net present value (Guide pp. 58-67).</p>
+    <h3>Typical qualifying PDU content</h3>
+    <p>Finance for project managers (ROI, NPV, margins, cash flow), strategy and benefits realization, portfolio governance, industry and regulatory knowledge, organizational AI and technology strategy. PDUs here can come from courses, digital media, reading, or teaching others (Aldridge, n.d.).</p>
+  </div>
+</details>
+
+<section class="card">
+  <h2 style="margin-top:0">Quick comparison</h2>
+  <table>
+    <tr><th>Category</th><th>Core question</th><th>Primary PMBOK anchors</th></tr>
+    <tr><td><strong>Ways of Working</strong></td><td>How do we deliver this well?</td><td>Ways of working competency (Standard p. 31), Project Life Cycles (Standard pp. 57-74), Scope, Schedule, and Risk domains (Guide pp. 35-58, 92-102), Tailoring (Guide pp. 103-112)</td></tr>
+    <tr><td><strong>Power Skills</strong></td><td>How do we lead and engage the people?</td><td>Power skills competency (Standard p. 30), Accountable Leader and Empowered Culture principles (Standard pp. 46-48, 53-55), Stakeholders domain (Guide pp. 67-78), Lead the Team (Guide pp. 84-86)</td></tr>
+    <tr><td><strong>Business Acumen</strong></td><td>Why does this matter to the organization?</td><td>Business acumen competency (Standard p. 31), Focus on Value principle (Standard pp. 40-42), Governance and Finance domains (Guide pp. 10-35, 58-67)</td></tr>
+  </table>
+  <div class="note">PMBOK citations reference the Eighth Edition (2025), verified against a licensed PMI member copy.</div>
+</section>
+
+<footer>
+  <h2 style="margin-top:0">References</h2>
+  <p class="hang">Aldridge, E. (2023, July 31). <em>What are power skills?</em> Project Management Academy. <a href="https://projectmanagementacademy.net/resources/blog/what-are-power-skills/" target="_blank" rel="noopener">https://projectmanagementacademy.net/resources/blog/what-are-power-skills/</a></p>
+  <p class="hang">Aldridge, E. (n.d.). <em>Business acumen skills</em>. Project Management Academy. <a href="https://projectmanagementacademy.net/resources/blog/business-acumen-skills/" target="_blank" rel="noopener">https://projectmanagementacademy.net/resources/blog/business-acumen-skills/</a></p>
+  <p class="hang">Bell, M. (n.d.). <em>What are the three components of the PMI Talent Triangle?</em> Project Management Academy. <a href="https://projectmanagementacademy.net/resources/blog/what-are-the-three-components-of-the-pmi-talent-triangle/" target="_blank" rel="noopener">https://projectmanagementacademy.net/resources/blog/what-are-the-three-components-of-the-pmi-talent-triangle/</a></p>
+  <p class="hang">Project Management Institute. (n.d.). <em>The PMI Talent Triangle</em> [Flyer]. <a href="https://www.pmi.org/-/media/pmi/documents/public/pdf/certifications/talent-triangle-flyer.pdf" target="_blank" rel="noopener">https://www.pmi.org/-/media/pmi/documents/public/pdf/certifications/talent-triangle-flyer.pdf</a></p>
+  <p class="hang">Project Management Institute. (2025). <em>The standard for project management and a guide to the project management body of knowledge (PMBOK guide)</em> (8th ed.). Project Management Institute.</p>
+  <p class="hang">Project Management Institute. (2026). <em>Continuing certification requirements (CCR) handbook</em>. <a href="https://www.pmi.org/-/media/pmi/documents/public/pdf/certifications/ccr-certification-requirements-handbook-new.pdf" target="_blank" rel="noopener">https://www.pmi.org/-/media/pmi/documents/public/pdf/certifications/ccr-certification-requirements-handbook-new.pdf</a></p>
+  <p class="hang">Prosci. (n.d.). <em>Use the ADKAR model for change success</em>. <a href="https://www.prosci.com/blog/adkar-model" target="_blank" rel="noopener">https://www.prosci.com/blog/adkar-model</a></p>
+  <p style="margin-top:.9rem;font-family:var(--mono);font-size:.7rem;letter-spacing:.06em;color:var(--ink-soft)">Infographics collection &middot; pmi-talent-triangle &middot; 2026-07-12</p>
+</footer>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('theme-toggle');
+  function label(){btn.textContent=root.getAttribute('data-theme')==='dark'?'☀️ Light':'🌙 Dark';}
+  label();
+  btn.addEventListener('click',function(){
+    if(root.getAttribute('data-theme')==='dark'){root.removeAttribute('data-theme');try{localStorage.setItem('theme','light');}catch(e){}}
+    else{root.setAttribute('data-theme','dark');try{localStorage.setItem('theme','dark');}catch(e){}}
+    label();
+  });
+  document.getElementById('open-all').addEventListener('click',function(){
+    document.querySelectorAll('details').forEach(function(d){d.open=true;});
+  });
+  document.getElementById('close-all').addEventListener('click',function(){
+    document.querySelectorAll('details').forEach(function(d){d.open=false;});
+  });
+})();
+</script>
+</body>
+</html>
