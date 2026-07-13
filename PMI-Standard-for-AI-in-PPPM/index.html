@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer">
+<title>Overview: The Standard for AI in Portfolio, Program, and Project Management (PMI, 2026)</title>
+<script>
+(function(){try{var t=localStorage.getItem('theme');if(!t){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}if(t==='dark'){document.documentElement.setAttribute('data-theme','dark');}}catch(e){}})();
+</script>
+<style>
+:root{
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  --paper:#E9E1CF; --paper-2:#E1D8C2; --card:#F3EDDD;
+  --ink:#1C1A15; --ink-soft:#4A463C; --line:#C5BAA0;
+  --stamp-red:#B23A2E; --seal-green:#2E6149;
+  --shadow:0 2px 0 rgba(28,26,21,.14);
+}
+[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#17150F; --paper-2:#1F1B14; --card:#221E17;
+  --ink:#ECE3D0; --ink-soft:#B3AA96; --line:#403829;
+  --stamp-red:#E08A7C; --seal-green:#69B294;
+  --shadow:0 2px 0 rgba(0,0,0,.45);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);color:var(--ink);line-height:1.6;min-height:100vh;
+  background:radial-gradient(1100px 620px at 12% -8%, rgba(255,255,255,.55), transparent 60%),
+             radial-gradient(1000px 680px at 108% 112%, rgba(28,26,21,.10), transparent 60%),var(--paper);
+  padding:2.4rem 0 4rem;}
+[data-theme="dark"] body{background:radial-gradient(1100px 620px at 12% -8%, rgba(255,255,255,.04), transparent 60%),
+  radial-gradient(1000px 680px at 108% 112%, rgba(0,0,0,.35), transparent 60%),var(--paper);}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px}
+#theme-toggle{position:fixed;top:14px;right:14px;z-index:50;font-family:var(--mono);font-size:.72rem;
+  letter-spacing:.08em;text-transform:uppercase;background:var(--card);color:var(--ink);
+  border:1.5px solid var(--ink);border-radius:6px;box-shadow:var(--shadow);padding:.42rem .6rem;cursor:pointer;}
+#theme-toggle:hover{transform:translateY(-1px)}
+:focus-visible{outline:2px solid var(--stamp-red);outline-offset:2px}
+.eyebrow{font-family:var(--mono);font-size:.72rem;font-weight:600;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--stamp-red);margin-bottom:.5rem;}
+h1{font-size:clamp(1.7rem,4.5vw,2.35rem);font-weight:900;letter-spacing:-.02em;line-height:1.12;margin-bottom:.6rem;}
+.meta{color:var(--ink-soft);font-size:.92rem;margin-bottom:1.6rem;max-width:68ch;}
+h2{font-size:1.15rem;font-weight:800;margin:2rem 0 .6rem;}
+h3{font-family:var(--mono);font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-soft);margin:1.15rem 0 .45rem;}
+h4{font-size:.95rem;font-weight:700;margin:.9rem 0 .25rem;}
+p{margin-bottom:.7rem;}
+ul{padding-left:1.25rem;margin-bottom:.8rem;}
+li{margin-bottom:.35rem;}
+strong{font-weight:700}
+a{color:var(--stamp-red)} a:hover{text-decoration:underline}
+
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.7rem;margin:1rem 0 .4rem;}
+.tile{background:var(--card);border:1.5px solid var(--ink);border-radius:6px;
+  box-shadow:var(--shadow);padding:.7rem .7rem;text-align:center;}
+.tile .num{font-size:1.7rem;font-weight:900;color:var(--stamp-red);line-height:1.1;}
+.tile .lbl{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink-soft);margin-top:.3rem;}
+
+.glance-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:.8rem;margin:1rem 0;}
+.glance-card{background:var(--card);border:1.5px solid var(--ink);border-radius:8px;
+  box-shadow:var(--shadow);padding:.85rem 1rem;transition:transform .12s ease,box-shadow .12s ease;}
+.glance-card:hover{transform:translateY(-2px);box-shadow:0 4px 0 rgba(28,26,21,.14);}
+[data-theme="dark"] .glance-card:hover{box-shadow:0 4px 0 rgba(0,0,0,.45);}
+.glance-card h4{margin:0 0 .3rem;font-size:.92rem;}
+.glance-card p{margin:0;font-size:.85rem;color:var(--ink-soft);}
+.glance-card a{color:var(--stamp-red);text-decoration:none;}
+.glance-card a:hover{text-decoration:underline;}
+
+details{background:var(--card);border:1.5px solid var(--ink);border-radius:8px;
+  box-shadow:var(--shadow);margin:0 0 .9rem;padding:0 1.3rem;overflow:hidden;}
+details[open]{padding-bottom:1.1rem;}
+details>summary{list-style:none;cursor:pointer;display:flex;align-items:baseline;gap:.6rem;
+  margin:0 -1.3rem;padding:.85rem 1.3rem;font-family:var(--mono);font-size:.85rem;font-weight:700;
+  letter-spacing:.04em;background:var(--paper-2);}
+details>summary::-webkit-details-marker{display:none}
+details>summary:hover{color:var(--stamp-red)}
+details>summary .chev{color:var(--stamp-red);font-size:.75rem;transition:transform .16s ease;flex:none;}
+details[open]>summary .chev{transform:rotate(90deg)}
+details>summary .pg{font-weight:400;font-size:.72rem;color:var(--ink-soft);letter-spacing:.02em;}
+details[open]>summary{margin-bottom:.9rem;border-bottom:1.5px solid var(--ink);}
+
+.toolbar{display:flex;gap:.5rem;margin:1rem 0;}
+.toolbar button{font-family:var(--mono);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;
+  background:transparent;color:var(--ink-soft);border:1.5px solid var(--line);border-radius:6px;
+  padding:.34rem .65rem;cursor:pointer;}
+.toolbar button:hover{border-color:var(--ink);color:var(--ink)}
+
+.fig{margin:1.1rem 0;background:var(--paper);border:1.5px solid var(--ink);border-radius:8px;
+  box-shadow:var(--shadow);padding:1rem;text-align:center;overflow-x:auto;}
+.fig svg{max-width:100%;height:auto;}
+.fig .caption{font-size:.82rem;color:var(--ink-soft);margin-top:.6rem;text-align:left;line-height:1.55;}
+
+.callout{background:var(--paper-2);border-left:4px solid var(--seal-green);border-radius:0 6px 6px 0;
+  padding:.75rem 1rem;font-size:.9rem;margin:.9rem 0;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:0 26px;}
+@media (max-width:640px){.two-col{grid-template-columns:1fr;}}
+.scroll-x{overflow-x:auto;}
+
+table{width:100%;border-collapse:collapse;font-size:.86rem;margin:.6rem 0;}
+th,td{text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--line);vertical-align:top;}
+th{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);}
+
+footer{margin-top:2.2rem;border-top:1.5px solid var(--ink);padding-top:1.1rem;}
+.refs p{padding-left:2.2rem;text-indent:-2.2rem;margin-bottom:.55rem;font-size:.9rem;}
+.cite{color:var(--ink-soft);font-size:.85rem;}
+.license{font-family:var(--mono);font-size:.72rem;letter-spacing:.04em;color:var(--ink-soft);margin-top:1rem;}
+
+svg text{font-family:var(--sans);}
+.sn{fill:var(--paper-2);stroke:var(--ink);stroke-width:1.5;}
+.sn2{fill:var(--card);stroke:var(--line);stroke-width:1.5;}
+.snp{fill:var(--paper);stroke:var(--line);stroke-width:1.5;}
+.shub{fill:var(--ink);}
+.stxt{fill:var(--ink);}
+.ssoft{fill:var(--ink-soft);}
+.spaper{fill:var(--paper);}
+.sline{stroke:var(--line);stroke-width:1.5;}
+.sarrow{stroke:var(--ink-soft);stroke-width:1.6;fill:none;}
+.sred{fill:#B23A2E;}
+.scream{fill:#F3EDDD;}
+
+@media print{
+  #theme-toggle,.toolbar{display:none}
+  details{display:block} details>summary{pointer-events:none}
+}
+</style>
+</head>
+<body>
+<button id="theme-toggle" aria-label="Toggle dark mode">🌙 Dark</button>
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">Overview &middot; 2026-07-12 &middot; <span style="text-transform:none">v0.42.0.1</span></p>
+  <h1>The Standard for Artificial Intelligence in Portfolio, Program, and Project Management</h1>
+  <p class="meta">
+    An overview for project and program managers.<br>
+    <strong>Source:</strong> Project Management Institute (PMI), 2026, first edition. Approved American National Standard ANSI/PMI 26-007-2028. Available from PMI at <a href="https://www.pmi.org/standards/artificial-intelligence" target="_blank" rel="noopener">pmi.org/standards/artificial-intelligence</a>.<br>
+    <strong>Overview prepared:</strong> 2026-07-12 &nbsp;&middot;&nbsp; All content in this document is drawn from the standard itself, with inline page citations in APA format.
+  </p>
+</header>
+
+<!-- ================= EXECUTIVE SUMMARY ================= -->
+<h2 id="exec">Executive Summary</h2>
+<p>
+The Standard for Artificial Intelligence in Portfolio, Program, and Project Management is PMI's first-edition, consensus-based standard for the ethical, efficient, and effective adoption, use, and integration of AI across portfolios, programs, and projects (PPPM). It is intentionally technology-agnostic: rather than prescribing specific tools, it emphasizes enduring principles and governance frameworks that support responsible, adaptive use over time, and it asks organizations to revisit the guidance periodically as regulations and technology evolve (Project Management Institute [PMI], 2026, p. 1).
+</p>
+<p>
+The standard is built around three structural pillars: eight guiding principles (Strategic Value, Risk, Governance and Compliance, People and Culture, Ethics and Professional Responsibility, Stakeholder Engagement, Optimization and Innovation, and Data Quality), five performance domains that translate the principles into interrelated activities, and a seven-phase AI life cycle that practitioners tailor and intersect with existing portfolio, program, and project life cycles (PMI, 2026, pp. 13-17, 45-47, 107-108). A single thread runs through all of it: the human-in-the-loop (HITL) approach, which keeps human judgment, oversight, and accountability embedded at every stage so that AI-driven decisions remain aligned with ethical standards and organizational goals (PMI, 2026, pp. 11-12).
+</p>
+<p>
+For practitioners, the standard distinguishes two roles AI can play: AI as a tool that automates, assists, and augments PPPM work, and AI as a deliverable produced by programs and projects. It provides concrete guidance for both, including business case elements, use-case selection, tool evaluation criteria, risk frameworks, ethics oversight structures, and legal considerations (PMI, 2026, pp. 7-10, 203-237).
+</p>
+<div class="tiles">
+  <div class="tile"><div class="num">8</div><div class="lbl">Guiding principles</div></div>
+  <div class="tile"><div class="num">5</div><div class="lbl">Performance domains</div></div>
+  <div class="tile"><div class="num">7</div><div class="lbl">AI life cycle phases</div></div>
+  <div class="tile"><div class="num">3</div><div class="lbl">PPPM levels addressed</div></div>
+</div>
+
+<!-- ================= KEY POINTS AT A GLANCE ================= -->
+<h2 id="glance">Key Points at a Glance</h2>
+<div class="glance-grid">
+  <div class="glance-card"><h4><a href="#s1">Purpose, scope, and core concepts</a></h4>
+    <p>A shared AI vocabulary, the distinction between AI as a tool and AI as a deliverable, and the human-in-the-loop concept that anchors the entire standard (PMI, 2026, pp. 1-12).</p></div>
+  <div class="glance-card"><h4><a href="#s2">Eight principles of AI in PPPM</a></h4>
+    <p>Unweighted, foundational principles from Strategic Value through Data Quality, all centered on human oversight (PMI, 2026, pp. 13-44).</p></div>
+  <div class="glance-card"><h4><a href="#s3">Five performance domains</a></h4>
+    <p>Interdependent activity areas: stakeholder expectations, scope, architecture quality, strategic goal execution, and risk, each with observable outcomes and result checks (PMI, 2026, pp. 45-104).</p></div>
+  <div class="glance-card"><h4><a href="#s4">Life cycle management and tailoring</a></h4>
+    <p>A seven-phase AI life cycle mapped against portfolio, program, and project life cycles, with predictive, adaptive, and hybrid tailoring guidance per phase (PMI, 2026, pp. 105-140).</p></div>
+  <div class="glance-card"><h4><a href="#s5a">AI in portfolio management</a></h4>
+    <p>AI applied to strategy, governance, capacity, stakeholders, value, and risk, plus a heat map for prioritizing use cases, KPIs, and ESG considerations (PMI, 2026, pp. 141-157).</p></div>
+  <div class="glance-card"><h4><a href="#s5b">AI in program management</a></h4>
+    <p>The program manager's role in AI adoption: strategy, planning, tool selection, implementation, risk and compliance, benefits realization, and change management (PMI, 2026, pp. 158-181).</p></div>
+  <div class="glance-card"><h4><a href="#s5c">AI in project management</a></h4>
+    <p>AI-centric project planning, goals and metrics, team roles, scope, risk measurement, change management, implementation factors, and a stakeholder evaluation model (PMI, 2026, pp. 181-202).</p></div>
+  <div class="glance-card"><h4><a href="#s6">Framework for using AI in PPPM</a></h4>
+    <p>Business case elements, the Seven Patterns of AI, HITL use cases, human factors, design thinking, and tool selection criteria (PMI, 2026, pp. 203-218).</p></div>
+  <div class="glance-card"><h4><a href="#s7">Ethical and legal considerations</a></h4>
+    <p>Ethical challenges, an AI ethics oversight committee model, and nine legal areas from data privacy to liability and intellectual property (PMI, 2026, pp. 219-237).</p></div>
+  <div class="glance-card"><h4><a href="#s8">Appendices: maturity models and regulations</a></h4>
+    <p>The AI Capability Maturity Model, the MITRE AI Maturity Model, and example laws and regulations that may impact AI in PPPM (PMI, 2026, pp. 241-244).</p></div>
+</div>
+
+<div class="toolbar">
+  <button type="button" onclick="document.querySelectorAll('details').forEach(d=>d.open=true)">Expand all sections</button>
+  <button type="button" onclick="document.querySelectorAll('details').forEach(d=>d.open=false)">Collapse all sections</button>
+</div>
+
+<!-- ================= SECTION 1 ================= -->
+<details id="s1">
+<summary><span class="chev">▶</span>1. Purpose, Scope, and Core AI Concepts <span class="pg">(pp. 1-12)</span></summary>
+
+<h3>Why the standard exists</h3>
+<p>
+PMI released this standard because AI is transforming PPPM at an unprecedented pace and practitioners can find the information landscape overwhelming. The standard provides clear guidance for applying AI effectively and ethically, and because AI evolves rapidly it deliberately avoids prescribing specific tools, emphasizing instead enduring principles and governance that organizations should revisit periodically (PMI, 2026, p. 1). Its scope is a comprehensive, human-centered framework for integrating AI into PPPM practices to enhance portfolio strategic alignment, program realization, project execution, and value delivery across industries (PMI, 2026, p. 1).
+</p>
+
+<h3>Who it is for</h3>
+<p>
+The primary audiences are organizational stakeholders (executives, sponsors, PMO leaders), portfolio and program managers, project managers, project teams including data scientists and technologists, and agile leaders and practitioners. The standard explicitly distinguishes two reader situations: those using AI as a tool within PPPM, and those managing projects that deliver AI systems (PMI, 2026, pp. 3-4).
+</p>
+
+<h3>A shared AI vocabulary</h3>
+<p>
+Because AI concepts overlap and evolve quickly, the standard urges practitioners and teams to build a shared, up-to-date language. It defines the core terms: artificial intelligence, AI system, data science and analytics, machine learning (ML), rule-based systems, natural language processing (NLP), deep learning, expert systems, generative AI (GenAI), foundation models, computer vision, robotics, generative adversarial networks (GANs), and large language models (LLMs) (PMI, 2026, pp. 4-7). Common practical applications in PPPM include AI-driven task automation, NLP for document analysis, GenAI for content such as meeting minutes and executive-level status reports, and explainable AI (XAI) to keep AI-driven decisions transparent and trustworthy (PMI, 2026, p. 7).
+</p>
+
+<h3>AI as a deliverable and AI as a tool</h3>
+<p>
+AI appears in PPPM in two roles. As a deliverable, programs and projects increasingly produce AI capabilities such as predictive maintenance systems, chatbot platforms, fraud detection systems, and digital twins (PMI, 2026, p. 8). As a tool, AI contributes value along a continuum from <strong>automating</strong> routine tasks (meeting notes, report generation), to <strong>assisting</strong> with complex analysis (risk analysis, cost and schedule estimation), to <strong>augmenting</strong> high-complexity human work (business case creation, project decision-making) (PMI, 2026, p. 9). Agentic AI extends this further: autonomous AI agents can act as virtual team members performing project activities, such as a project controller agent that validates expense reports automatically (PMI, 2026, pp. 9-10).
+</p>
+
+<h3>Ethics, law, and the human-in-the-loop</h3>
+<p>
+The introduction frames three governance realities. First, AI brings both ethical challenges (systemic dilemmas such as algorithmic bias and opaque data usage) and ethical risks (potential harms such as surveillance misuse and privacy breaches), with emerging concerns around labor rights, accessibility and inclusivity, and the psychological impact of AI on teams (PMI, 2026, pp. 10-11). Second, regulation is inconsistent across countries, creating uncertainty around copyright, bias, privacy, and explainability, with compliance responsibility often falling on the end user (PMI, 2026, p. 11). Third, the human-in-the-loop (HITL) approach integrates human oversight into AI-driven processes so critical decisions are never made by automation alone; humans contribute creativity, contextual awareness, and emotional intelligence that AI lacks, and organizations should define intervention triggers, escalation protocols, and feedback loops (PMI, 2026, pp. 11-12).
+</p>
+<div class="callout">
+<strong>Key idea for practitioners:</strong> HITL is not only a safeguard; it is a source of strategic value. Human oversight ensures outcomes reflect institutional knowledge, long-term vision, and context that is not encoded in training data (PMI, 2026, p. 12).
+</div>
+</details>
+
+<!-- ================= SECTION 2 ================= -->
+<details id="s2">
+<summary><span class="chev">▶</span>2. The Eight Principles of AI in PPPM <span class="pg">(pp. 13-44)</span></summary>
+
+<p>
+The principles are listed without weighting or order and serve as the foundation of the standard. Human expertise remains pivotal in how AI is integrated, and understanding and refining the HITL role is central to guiding initiatives based on these principles (PMI, 2026, pp. 13-14).
+</p>
+
+<div class="fig">
+<svg viewBox="0 0 900 470" role="img" aria-label="Diagram of the eight principles of AI in PPPM arranged around a central human-in-the-loop hub">
+  <title>Eight principles around a human-in-the-loop hub</title>
+  <!-- connectors -->
+  <g class="sline">
+    <line x1="450" y1="235" x2="450" y2="62"/>
+    <line x1="450" y1="235" x2="450" y2="408"/>
+    <line x1="450" y1="235" x2="160" y2="120"/>
+    <line x1="450" y1="235" x2="740" y2="120"/>
+    <line x1="450" y1="235" x2="120" y2="235"/>
+    <line x1="450" y1="235" x2="780" y2="235"/>
+    <line x1="450" y1="235" x2="160" y2="350"/>
+    <line x1="450" y1="235" x2="740" y2="350"/>
+  </g>
+  <!-- hub -->
+  <circle cx="450" cy="235" r="66" class="shub"/>
+  <text x="450" y="222" text-anchor="middle" class="spaper" font-size="13" font-weight="700">Human-</text>
+  <text x="450" y="238" text-anchor="middle" class="spaper" font-size="13" font-weight="700">in-the-Loop</text>
+  <text x="450" y="254" text-anchor="middle" class="spaper" font-size="13" font-weight="700">Approach</text>
+  <!-- principle nodes -->
+  <g font-size="12.5" font-weight="600">
+    <g><rect x="360" y="20" width="180" height="42" rx="8" class="sn"/>
+       <text x="450" y="46" text-anchor="middle" class="stxt">Data Quality</text></g>
+    <g><rect x="70" y="92" width="185" height="56" rx="8" class="sn"/>
+       <text x="162" y="115" text-anchor="middle" class="stxt">Optimization and</text>
+       <text x="162" y="132" text-anchor="middle" class="stxt">Innovation</text></g>
+    <g><rect x="648" y="92" width="185" height="56" rx="8" class="sn"/>
+       <text x="740" y="124" text-anchor="middle" class="stxt">Strategic Value</text></g>
+    <g><rect x="20" y="207" width="200" height="56" rx="8" class="sn"/>
+       <text x="120" y="230" text-anchor="middle" class="stxt">Stakeholder</text>
+       <text x="120" y="247" text-anchor="middle" class="stxt">Engagement</text></g>
+    <g><rect x="680" y="207" width="200" height="56" rx="8" class="sn"/>
+       <text x="780" y="239" text-anchor="middle" class="stxt">Risk</text></g>
+    <g><rect x="60" y="322" width="200" height="56" rx="8" class="sn"/>
+       <text x="160" y="345" text-anchor="middle" class="stxt">Ethics and Professional</text>
+       <text x="160" y="362" text-anchor="middle" class="stxt">Responsibility</text></g>
+    <g><rect x="640" y="322" width="200" height="56" rx="8" class="sn"/>
+       <text x="740" y="345" text-anchor="middle" class="stxt">Governance and</text>
+       <text x="740" y="362" text-anchor="middle" class="stxt">Compliance</text></g>
+    <g><rect x="355" y="388" width="190" height="42" rx="8" class="sn"/>
+       <text x="450" y="414" text-anchor="middle" class="stxt">People and Culture</text></g>
+  </g>
+</svg>
+<div class="caption">The eight principles of AI in PPPM, centered on the human-in-the-loop approach (adapted from Figure 2-1; PMI, 2026, p. 14).</div>
+</div>
+
+<div class="two-col">
+<div>
+<h4>Strategic Value (value-creation anchor)</h4>
+<p>Every AI initiative starts by questioning and evaluating expected value against organizational strategy and business goals. Practices include documenting expected value with key stakeholders, adapting as conditions change, delivering value early and frequently, and assessing value delivery through feedback and value realization reviews (PMI, 2026, pp. 17-18).</p>
+
+<h4>Risk (evolving risk adaptation)</h4>
+<p>AI introduces unique risks such as algorithmic bias, data privacy issues, and cybersecurity vulnerabilities. Manage them proactively with a HITL approach, technical controls (data masking, encryption, access control), early identification, continuous monitoring, and embedding AI risk management in existing governance. The principle rests on transparency, responsibility, and integrity (PMI, 2026, pp. 19-21).</p>
+
+<h4>Governance and Compliance (responsible AI management)</h4>
+<p>Two anchor questions: what governance and compliance measures ensure safe and ethical AI deployment, and how does responsible AI use align with strategic PPPM goals (PMI, 2026, p. 22). Governance supplies roles, policies, and decision rights, distinguishing authority from responsibility; compliance validates practices against laws, codes of practice, frameworks, industry standards, and organizational policies (PMI, 2026, p. 23). The principle also covers life cycle role definition, dual-track training (governance oversight plus operational AI use), policy integration, competency building, performance monitoring with OKRs and KPIs, SLA compliance, and stakeholder accountability structures (PMI, 2026, pp. 23-30).</p>
+
+<h4>People and Culture (innovation fosters empowerment)</h4>
+<p>People are the driving force behind AI success. Leaders should adopt situational styles (consumer-centric, risk taker, visionary, pace setter, strategist, people-focused, includer), while team members build judgment, problem-solving, creativity, critical thinking, accountability, bias awareness, and data skills. Organizations should invest in AI literacy training across all levels and provide transparency about how AI will change roles (PMI, 2026, pp. 30-33).</p>
+</div>
+<div>
+<h4>Ethics and Professional Responsibility (ethical AI stewardship)</h4>
+<p>Grounded in PMI's standards and Code of Ethics, this principle calls for responsible decision-making, fairness and nondiscrimination, transparency, explainability, traceability and accountability, privacy and data protection, data integrity, continuous learning, responsible data practices, boundaries on safe AI use, and establishing trust in AI systems (PMI, 2026, pp. 33-35).</p>
+
+<h4>Stakeholder Engagement (connect, align, and deliver)</h4>
+<p>Proactively and continuously engage stakeholders so AI use aligns with expectations and delivers the anticipated business value. Key attributes include strategic orientation, value realization, communication and collaboration, facilitation, transparency, synergy creation, commitment, adaptability, and integration of stakeholder feedback (PMI, 2026, pp. 35-37).</p>
+
+<h4>Optimization and Innovation (evolving through innovation)</h4>
+<p>Continuously enhance AI practices with performance metrics, feedback loops, and evaluation frameworks. Elements include human-to-AI interaction that builds synergy, value delivery aligned to strategy, flexibility and agility through iterative delivery and modular design, task automation for efficiency and accountability, data quality and security for trust, and continuous improvement including reinforcement learning (PMI, 2026, pp. 37-42).</p>
+
+<h4>Data Quality (input for impact)</h4>
+<p>AI reliability depends directly on input data quality. Six guiding dimensions: accuracy, completeness, consistency, timeliness, validity, and context (PMI, 2026, pp. 16-17). Supporting efforts include data quality management, stewardship roles, privacy and security, metadata management, lineage and traceability, access control, legal adherence, and monitoring and reporting (PMI, 2026, p. 44).</p>
+</div>
+</div>
+</details>
+
+<!-- ================= SECTION 3 ================= -->
+<details id="s3">
+<summary><span class="chev">▶</span>3. The Five Performance Domains <span class="pg">(pp. 45-104)</span></summary>
+
+<p>
+Performance domains are the interrelated activity areas critical to achieving AI initiatives' intended outcomes. They are interactive, interconnected, and interdependent, they run concurrently across PPPM levels, and each one closes with a "checking results" practice that measures outcomes with KPIs (PMI, 2026, pp. 45-46). Success requires aligning AI initiatives with organizational objectives, robust data governance, adaptive and hybrid approaches, continuous monitoring, and a culture of innovation and ethical AI use (PMI, 2026, p. 46).
+</p>
+
+<div class="fig">
+<svg viewBox="0 0 900 360" role="img" aria-label="Diagram of the five AI performance domains around a central node">
+  <title>Five performance domains of AI in PPPM</title>
+  <g class="sline">
+    <line x1="450" y1="180" x2="185" y2="80"/>
+    <line x1="450" y1="180" x2="715" y2="80"/>
+    <line x1="450" y1="180" x2="140" y2="230"/>
+    <line x1="450" y1="180" x2="760" y2="230"/>
+    <line x1="450" y1="180" x2="450" y2="308"/>
+  </g>
+  <rect x="345" y="128" width="210" height="104" rx="12" class="shub"/>
+  <text x="450" y="165" text-anchor="middle" class="spaper" font-size="13" font-weight="700">AI Performance Domains</text>
+  <text x="450" y="184" text-anchor="middle" class="spaper" font-size="13" font-weight="700">in Portfolio, Program,</text>
+  <text x="450" y="203" text-anchor="middle" class="spaper" font-size="13" font-weight="700">and Project Management</text>
+  <g font-size="12.5" font-weight="600">
+    <g><rect x="80" y="42" width="210" height="56" rx="8" class="sn"/>
+       <text x="185" y="66" text-anchor="middle" class="stxt">Executing Strategic</text>
+       <text x="185" y="83" text-anchor="middle" class="stxt">AI Goals</text></g>
+    <g><rect x="610" y="42" width="210" height="56" rx="8" class="sn"/>
+       <text x="715" y="66" text-anchor="middle" class="stxt">Managing AI Risks</text>
+       <text x="715" y="83" text-anchor="middle" class="stxt">and Uncertainties</text></g>
+    <g><rect x="35" y="202" width="210" height="56" rx="8" class="sn"/>
+       <text x="140" y="226" text-anchor="middle" class="stxt">Defining the Scope</text>
+       <text x="140" y="243" text-anchor="middle" class="stxt">for AI</text></g>
+    <g><rect x="655" y="202" width="215" height="56" rx="8" class="sn"/>
+       <text x="762" y="226" text-anchor="middle" class="stxt">Managing Stakeholder</text>
+       <text x="762" y="243" text-anchor="middle" class="stxt">Expectations About AI</text></g>
+    <g><rect x="315" y="290" width="270" height="56" rx="8" class="sn"/>
+       <text x="450" y="314" text-anchor="middle" class="stxt">Designing AI Architecture</text>
+       <text x="450" y="331" text-anchor="middle" class="stxt">With Quality and Reliability</text></g>
+  </g>
+</svg>
+<div class="caption">The five performance domains of AI in PPPM (adapted from Figure 3-1; PMI, 2026, p. 47).</div>
+</div>
+
+<h3>3.1 Managing Stakeholder Expectations About AI</h3>
+<p>
+This domain aligns stakeholder expectations and engagement with the effective use of AI, producing outcomes such as productive working relationships, stakeholder alignment, positive involvement even from AI skeptics, and transparent, ethical decision practices (PMI, 2026, p. 48). The standard extends the traditional engagement cycle to eight AI-enhanced steps: identify, understand personas, analyze, foster awareness, prioritize, engage and interface, monitor and produce feedback, and make collaborative decisions and adaptive improvements, with long-term retention and advocacy at the center (PMI, 2026, pp. 53-56). It also catalogs AI-specific stakeholders such as AI/data scientists, data and cybersecurity specialists, AI deployment teams, legal and compliance officers, and AI vendors (PMI, 2026, pp. 50-53). Results are checked with measures like a stakeholder collaboration index, consensus achievement rate, and inclusivity score (PMI, 2026, pp. 59-60).
+</p>
+
+<h3>3.2 Defining the Scope for AI</h3>
+<p>
+This domain ensures AI adds value for as many stakeholders as possible. Its key elements are a vision for AI, a mission for AI, AI value propositions describing benefits and pain reductions per stakeholder group, a sense of ownership, awareness of AI risks, change management, and periodic reviews and updates (PMI, 2026, pp. 61-63). Value should be viewed from multiple perspectives: scope of impact, stakeholder roles, application areas (predictive analytics, pattern recognition, conversational AI, and others), and vision and mission scope (PMI, 2026, pp. 63-64). A readiness checklist asks whether the vision and mission align with values, are understandable, are resourced, are embedded in culture, and have measurable KPIs and review mechanisms (PMI, 2026, pp. 65-66). Checking results uses SMART criteria, goal-question-metric alignment, leading and lagging indicators, quantified investments, workforce AI literacy, documented productivity gains, and change management capability (PMI, 2026, pp. 68-69).
+</p>
+
+<h3>3.3 Designing AI Architecture With Quality and Reliability</h3>
+<p>
+Quality is how well AI systems meet requirements and expectations; reliability is consistent operation over time and under varying conditions (PMI, 2026, p. 69). Trustworthy architecture integrates six core areas: high-quality data, AI model specification, requirements management, scalable architecture, standards and guidelines, and continuous monitoring with feedback loops (PMI, 2026, p. 71). System quality depends on four factor groups: infrastructure (scalable architecture, cloud, security, monitoring, backup), data (collection, cleaning, feature engineering, governance, privacy), AI/ML models (selection, training and testing, HITL integration, iterations, and quality metrics per problem domain such as classification, regression, clustering, and content generation), and human factors (PMI, 2026, pp. 74-79). Security, privacy, and risk measures include encryption, access control, audits, incident response, anonymization, and third-party risk management (PMI, 2026, pp. 79-80). Long-term reliability requires avoiding model drift, stress testing, sustainable and energy-efficient implementation, trust and fairness reviews, and adaptation to evolving regulation (PMI, 2026, pp. 81-82). Result checks cover requirement verification, model validation, bias detection, accuracy testing, and documentation (PMI, 2026, pp. 83-84).
+</p>
+
+<h3>3.4 Executing Strategic AI Goals</h3>
+<p>
+Effective execution requires coordinated effort across all three PPPM levels, aligning AI initiatives with business strategy, prioritizing by potential impact, allocating resources efficiently, and operating under robust governance (PMI, 2026, p. 85). Refining an AI vision and strategy involves defining purpose, setting SMART-aligned measurable outcomes, conducting needs assessments, developing a roadmap, and engaging stakeholders (PMI, 2026, pp. 85-87). At the portfolio level, this means data-driven prioritization (ROI, IRR, NPV, cost-benefit ranking), resource allocation with monitoring, and cross-functional governance including ethics audits and risk frameworks (PMI, 2026, pp. 87-89). At the program level, it means SMART objectives, detailed roadmaps, resource allocation, active stakeholder engagement, and KPI-driven monitoring (PMI, 2026, pp. 89-90). At the project level, it means comprehensive and flexible plans, adaptive approaches, and a data governance framework covering collection, access, testing, deployment, and monitoring (PMI, 2026, pp. 90-91). Common failure modes include lack of clear vision, poor data quality, skill gaps, ineffective change management, siloed collaboration, and insufficient risk and ethics management (PMI, 2026, p. 92).
+</p>
+
+<h3>3.5 Managing AI Risks and Uncertainties</h3>
+<p>
+AI introduces dynamic, complex risks that legacy approaches may not cover. The domain's components are identification of AI-specific threats and opportunities, prioritization and assessment, human oversight, continuous monitoring and adaptation, and navigating uncertainty while developing resilience (PMI, 2026, pp. 95-96). Named threats include algorithmic bias, data poisoning, unintended autonomous decisions, hallucinations, regulatory compliance failures, job displacement, overreliance on AI, model drift, cost overruns, stakeholder mistrust, interoperability issues, environmental impact, and malicious misuse (PMI, 2026, pp. 96-97). Opportunities include enhanced decision-making, predictive insights, operational efficiency, personalization, scalability, new business models, workforce augmentation, sustainability, and scenario modeling (PMI, 2026, pp. 97-98). Quantitative techniques (Monte Carlo simulation, probabilistic assessment), risk heat maps, and a risk register support prioritization (PMI, 2026, p. 99). Uncertainty stems from complexity, volatility, dependency, and ambiguity, and is countered with experimentation, iterative learning, and routine reassessment of AI strategies (PMI, 2026, p. 101).
+</p>
+</details>
+
+<!-- ================= SECTION 4 ================= -->
+<details id="s4">
+<summary><span class="chev">▶</span>4. Life Cycle Management and Tailoring <span class="pg">(pp. 105-140)</span></summary>
+
+<p>
+Every PPPM initiative should consider how AI is leveraged, from incidental use on non-AI projects to enterprise-wide AI programs. The standard proposes a baseline seven-phase AI life cycle that practitioners tailor to their local context and intersect with portfolio, program, and project life cycles (PMI, 2026, pp. 105-108). Desired outcomes include strategic alignment, enhanced decision-making, optimized resources, improved risk management, ethical compliance, HITL oversight, sustained value delivery, and continuous learning (PMI, 2026, p. 106).
+</p>
+
+<div class="fig">
+<svg viewBox="0 0 960 150" role="img" aria-label="Seven-phase AI life cycle pipeline with dominant approach tags: hybrid, hybrid, adaptive, hybrid, adaptive, adaptive, predictive">
+  <title>The envisioned AI life cycle: seven phases</title>
+  <g font-size="11" font-weight="600">
+    <!-- phase boxes -->
+    <g>
+      <rect x="8" y="20" width="122" height="62" rx="8" class="sn"/>
+      <text x="69" y="46" text-anchor="middle" class="stxt">Initiation and</text>
+      <text x="69" y="61" text-anchor="middle" class="stxt">Planning</text>
+      <rect x="26" y="94" width="86" height="22" rx="11" class="shub"/>
+      <text x="69" y="109" text-anchor="middle" class="spaper" font-weight="600" font-size="10.5">Hybrid</text>
+    </g>
+    <g>
+      <rect x="144" y="20" width="122" height="62" rx="8" class="sn"/>
+      <text x="205" y="41" text-anchor="middle" class="stxt">Data Collection</text>
+      <text x="205" y="56" text-anchor="middle" class="stxt">and</text>
+      <text x="205" y="71" text-anchor="middle" class="stxt">Preparation</text>
+      <rect x="162" y="94" width="86" height="22" rx="11" class="shub"/>
+      <text x="205" y="109" text-anchor="middle" class="spaper" font-weight="600" font-size="10.5">Hybrid</text>
+    </g>
+    <g>
+      <rect x="280" y="20" width="122" height="62" rx="8" class="sn"/>
+      <text x="341" y="46" text-anchor="middle" class="stxt">Model</text>
+      <text x="341" y="61" text-anchor="middle" class="stxt">Development</text>
+      <rect x="298" y="94" width="86" height="22" rx="11" class="sn"/>
+      <text x="341" y="109" text-anchor="middle" class="stxt" font-weight="600" font-size="10.5">Adaptive</text>
+    </g>
+    <g>
+      <rect x="416" y="20" width="122" height="62" rx="8" class="sn"/>
+      <text x="477" y="54" text-anchor="middle" class="stxt">Deployment</text>
+      <rect x="434" y="94" width="86" height="22" rx="11" class="shub"/>
+      <text x="477" y="109" text-anchor="middle" class="spaper" font-weight="600" font-size="10.5">Hybrid</text>
+    </g>
+    <g>
+      <rect x="552" y="20" width="122" height="62" rx="8" class="sn"/>
+      <text x="613" y="46" text-anchor="middle" class="stxt">Monitoring and</text>
+      <text x="613" y="61" text-anchor="middle" class="stxt">Evaluation</text>
+      <rect x="570" y="94" width="86" height="22" rx="11" class="sn"/>
+      <text x="613" y="109" text-anchor="middle" class="stxt" font-weight="600" font-size="10.5">Adaptive</text>
+    </g>
+    <g>
+      <rect x="688" y="20" width="122" height="62" rx="8" class="sn"/>
+      <text x="749" y="46" text-anchor="middle" class="stxt">Optimization</text>
+      <text x="749" y="61" text-anchor="middle" class="stxt">and Iteration</text>
+      <rect x="706" y="94" width="86" height="22" rx="11" class="sn"/>
+      <text x="749" y="109" text-anchor="middle" class="stxt" font-weight="600" font-size="10.5">Adaptive</text>
+    </g>
+    <g>
+      <rect x="824" y="20" width="128" height="62" rx="8" class="sn"/>
+      <text x="888" y="41" text-anchor="middle" class="stxt">End-of-Life and</text>
+      <text x="888" y="56" text-anchor="middle" class="stxt">Decommissioning</text>
+      <rect x="842" y="94" width="92" height="22" rx="11" class="sred"/>
+      <text x="888" y="109" text-anchor="middle" class="scream" font-weight="600" font-size="10.5">Predictive</text>
+    </g>
+    <!-- arrows -->
+    <g>
+      <path d="M131 51 l10 0 -4 -4 m4 4 -4 4" class="sarrow"/>
+      <path d="M267 51 l10 0 -4 -4 m4 4 -4 4" class="sarrow"/>
+      <path d="M403 51 l10 0 -4 -4 m4 4 -4 4" class="sarrow"/>
+      <path d="M539 51 l10 0 -4 -4 m4 4 -4 4" class="sarrow"/>
+      <path d="M675 51 l10 0 -4 -4 m4 4 -4 4" class="sarrow"/>
+      <path d="M811 51 l10 0 -4 -4 m4 4 -4 4" class="sarrow"/>
+    </g>
+  </g>
+</svg>
+<div class="caption">The envisioned seven-phase AI life cycle with the dominant tailoring approach the standard describes per phase (PMI, 2026, pp. 108-116).</div>
+</div>
+
+<h3>Predictive, adaptive, and hybrid ways of working</h3>
+<p>
+Adaptive approaches suit phases requiring flexibility, iteration, and rapid feedback, such as model development and optimization; predictive approaches suit phases with well-defined requirements and up-front planning, such as compliance setup and decommissioning. Consequential AI initiatives typically require both, blending short adaptive iterations with longer-term predictive milestones (PMI, 2026, p. 107). Phase-level guidance: Initiation and Planning mixes predictive objective-setting and feasibility with adaptive stakeholder and resource planning (pp. 109-110); Data Collection and Preparation is a hybrid balancing governance controls with iterative cleaning and exploration (pp. 110-111); Model Development is inherently adaptive with iterative tuning and HITL validation (p. 112); Deployment is hybrid, pairing rigorous prelaunch testing with monitoring tools and phased rollouts (p. 113); Monitoring and Evaluation and Optimization and Iteration are adaptive, tracking KPIs, drift, and bias while retraining models (pp. 114-116); End-of-Life and Decommissioning is largely predictive, with structured closure, archiving, compliance, and knowledge transfer (p. 116).
+</p>
+
+<h3>Intersections with PPPM life cycles</h3>
+<p>
+The standard maps where the AI phases intersect portfolio phases (Initiation, Planning, Execution, Optimization), program phases (Definition, Delivery, Closure), and the Project Management Focus Areas (Initiating, Planning, Executing, Monitoring and Controlling, Closing) (PMI, 2026, p. 108). It then details tailoring for each PPPM level, including a comparative overview of how definition, scope, change, planning, management, monitoring, and success differ across portfolios, programs, and projects when leveraging AI (PMI, 2026, pp. 118-120). A unified PPPM-and-AI life cycle approach emphasizes HITL considerations for oversight, ethics, and strategic value throughout (PMI, 2026, p. 140).
+</p>
+
+<h3>Selecting and tailoring the development approach</h3>
+<p>
+A Stacey-inspired uncertainty and complexity model places typical AI projects in the "complex" or "complicated" zones, where adaptive approaches work well, while low-uncertainty work suits linear approaches (PMI, 2026, pp. 133-134). Tailoring extends beyond life cycles to processes, stakeholder engagement, tools, and methods and artifacts, following four steps: select the initial development approach, tailor for the organization, tailor for the project, and implement ongoing improvement (PMI, 2026, pp. 136-137). Initial approach selection should weigh ethical considerations, the balance between AI and human intelligence, and HITL guardrails (PMI, 2026, pp. 137-138). Small and medium-sized organizations may apply selected tailoring approaches in simplified form (PMI, 2026, p. 132).
+</p>
+</details>
+
+<!-- ================= SECTION 5a ================= -->
+<details id="s5a">
+<summary><span class="chev">▶</span>5. AI in Portfolio Management <span class="pg">(pp. 141-157)</span></summary>
+
+<p>
+AI enhances the whole portfolio life cycle by automating repetitive activities, strengthening governance and decision-making, and reducing risk through predictive insights and dynamic optimization (PMI, 2026, p. 141). The standard maps AI applicability to six portfolio functions:
+</p>
+<ul>
+  <li><strong>Strategy:</strong> prioritization, scoring and ranking, detection of underperforming investments, and portfolio optimization through predictive modeling and scenario simulation (PMI, 2026, pp. 142-143).</li>
+  <li><strong>Governance:</strong> automated compliance checks, NLP review of documentation, and real-time governance dashboards (PMI, 2026, p. 143).</li>
+  <li><strong>Capacity and capability management:</strong> descriptive and predictive analytics for resource needs, skill-gap identification, and allocation recommendations (PMI, 2026, p. 143).</li>
+  <li><strong>Stakeholder engagement:</strong> sentiment analysis, personalized communication, chatbots, and condition-triggered reporting (PMI, 2026, pp. 143-144).</li>
+  <li><strong>Value management:</strong> tracking tangible and intangible benefits, predicting component value, and continuous value monitoring (PMI, 2026, p. 144).</li>
+  <li><strong>Risk management:</strong> enhanced identification, predictive analytics, real-time monitoring, automated assessment, and Monte Carlo scenario analysis (PMI, 2026, pp. 144-145).</li>
+</ul>
+
+<div class="fig">
+<svg viewBox="0 0 620 360" role="img" aria-label="Two-by-two heat map of AI use cases: potential versus complexity, with quick wins at low complexity and high potential">
+  <title>Heat map for prioritizing AI use cases in portfolios</title>
+  <!-- axes labels -->
+  <text x="330" y="350" text-anchor="middle" font-size="12.5" class="ssoft" font-weight="600">Complexity &#8594;</text>
+  <text x="18" y="180" text-anchor="middle" font-size="12.5" class="ssoft" font-weight="600" transform="rotate(-90 18 180)">Potential &#8594;</text>
+  <!-- quadrants -->
+  <g>
+    <rect x="46" y="24" width="278" height="146" rx="8" class="shub"/>
+    <text x="185" y="84" text-anchor="middle" class="spaper" font-size="15" font-weight="700">Quick Wins</text>
+    <text x="185" y="105" text-anchor="middle" class="spaper" opacity=".82" font-size="11.5">Low complexity, high potential</text>
+    <text x="185" y="122" text-anchor="middle" class="spaper" opacity=".82" font-size="11.5">Accelerate these first</text>
+
+    <rect x="334" y="24" width="278" height="146" rx="8" class="sn"/>
+    <text x="473" y="84" text-anchor="middle" class="stxt" font-size="15" font-weight="700">Strategic Pursuits</text>
+    <text x="473" y="105" text-anchor="middle" class="ssoft" font-size="11.5">High complexity, high potential</text>
+    <text x="473" y="122" text-anchor="middle" class="ssoft" font-size="11.5">Invest deliberately</text>
+
+    <rect x="46" y="180" width="278" height="146" rx="8" class="sn2"/>
+    <text x="185" y="240" text-anchor="middle" class="stxt" font-size="15" font-weight="700">Neutral Initiatives</text>
+    <text x="185" y="261" text-anchor="middle" class="ssoft" font-size="11.5">Low complexity, low potential</text>
+
+    <rect x="334" y="180" width="278" height="146" rx="8" class="snp"/>
+    <text x="473" y="240" text-anchor="middle" class="stxt" font-size="15" font-weight="700">Deferred Initiatives</text>
+    <text x="473" y="261" text-anchor="middle" class="ssoft" font-size="11.5">High complexity, low potential</text>
+  </g>
+</svg>
+<div class="caption">Heat map model for AI use in portfolios: focus on quick wins and strategic pursuits over neutral or deferred initiatives (adapted from Figure 5-2; PMI, 2026, p. 145).</div>
+</div>
+
+<h3>Evolving and scaling AI in the portfolio</h3>
+<p>
+Enterprise AI adoption follows a trajectory of experiment, perform, pilot, and industrialize, moving from proofs of concept and proofs of value to full-scale deployment with continuous feedback (PMI, 2026, pp. 145-146). A five-step evolution supports this: define desired results, build AI readiness, pilot AI opportunities, embrace AI enablement, and exploit AI evolution (PMI, 2026, p. 147). A three-phase ramp-up then scales successful pilots: assess and initiate a pilot, plan and execute early with governance and funding, and scale and optimize with continuous monitoring (PMI, 2026, pp. 150-151).
+</p>
+
+<h3>Use cases, KPIs, and success measures</h3>
+<p>
+Documented use cases include prioritization, planning and execution, stakeholder reporting, project scoring, routine-task automation, landing-position forecasting, resource optimization, decision support, NLP-based insights, pattern and anomaly detection, sentiment analysis, portfolio optimization, conversational interfaces, performance tracking, and scenario planning (PMI, 2026, pp. 148-150). Example KPIs cover prioritization accuracy, resource utilization, cycle time reduction, predictive risk accuracy, value optimization, forecasting accuracy, stakeholder satisfaction, decision-making speed, and alignment with business strategy (PMI, 2026, p. 155). Success measures span strategy alignment, governance gap analysis, capacity assessments, stakeholder reporting, benefits tracking, and risk response planning (PMI, 2026, pp. 153-154).
+</p>
+
+<h3>Challenges, ESG, and ethics at the portfolio level</h3>
+<p>
+Challenges include data quality and availability, interpretability and explainability, adoption and integration barriers, operational feasibility, and security and data protection risks (PMI, 2026, pp. 151-152). ESG considerations call out the environmental footprint of data centers, socioeconomic disparity, bias, misinformation, privacy, and labor impacts, with the portfolio leader responsible for a framework that prevents harm (PMI, 2026, pp. 154-156). AI ethics and governance measures include bias and fairness audits, regulatory compliance, content filtering, responsible use guides, and source attribution (PMI, 2026, pp. 156-157). AI maturity models help assess readiness and build improvement roadmaps (PMI, 2026, pp. 152-153).
+</p>
+</details>
+
+<!-- ================= SECTION 5b ================= -->
+<details id="s5b">
+<summary><span class="chev">▶</span>6. AI in Program Management <span class="pg">(pp. 158-181)</span></summary>
+
+<h3>What AI offers programs</h3>
+<p>
+Responsibly adopted AI boosts program effectiveness (resource allocation, task prioritization), minimizes risk (risk assessment, scenario analysis), enhances decision-making (decision support, predictive analytics), improves planning quality (cross-project interface management), automates data analysis (integration, real-time monitoring), forecasts results (simulation, trend analysis), and pinpoints challenges proactively (early warning systems, adverse scenario exploration) (PMI, 2026, pp. 158-159). Where no formal enterprise structure exists, program management also assumes responsibility for strategic alignment with AI policy, tool selection, organization-wide change management, ethical adoption, and broader risk management (PMI, 2026, p. 159).
+</p>
+
+<h3>The program manager's role in AI adoption</h3>
+<p>
+Program practitioners set strategy and ensure alignment: they collaborate with senior leadership on where AI creates advantage, develop a comprehensive adoption strategy with objectives, timelines, and resources, oversee pilots and feasibility testing, phase adoption to the organization's AI maturity, and continuously monitor progress against strategic goals (PMI, 2026, pp. 160-161). Planning for integration includes a detailed roadmap with scope, KPIs, timeline, and budget, stakeholder engagement across departments, risk management, defined success metrics, resource and infrastructure requirements, and security and confidentiality protocols (PMI, 2026, pp. 161-162). Tool selection weighs functional suitability, scalability, compliance, and fit with existing infrastructure and team skills, often via proof-of-concept programs (PMI, 2026, pp. 162-163). Recommended roles include program managers for AI integration, data scientists and AI specialists, compliance and ethics officers, and stakeholder engagement specialists, clarified with a RACI matrix (PMI, 2026, pp. 163-164).
+</p>
+
+<h3>Implementation, governance, and monitoring</h3>
+<p>
+Implementation draws on ML, NLP, predictive analytics, and automated dashboards (PMI, 2026, p. 165). A governance model defines guidelines for AI use, roles, and data policies, with designated personnel for compliance checks (PMI, 2026, p. 166). Continuous architecture monitoring includes real-time tools, logging and audits, model performance metrics, resource utilization tracking, anomaly detection, A/B testing and canary deployments, automated scaling, feedback loops, security monitoring, and CI/CD pipelines (PMI, 2026, pp. 166-167). Program-level implementation steps range from establishing guardrails and acquiring resources to defining KPIs, ensuring safety and compliance, delivering minimum-viable-product value, and staying current with AI trends and regulation (PMI, 2026, pp. 168-169).
+</p>
+
+<h3>Risk, compliance, and security</h3>
+<p>
+Key program risks are data quality, cybersecurity (including adversarial attacks), and ethics (privacy, transparency, bias) (PMI, 2026, p. 170). Mitigation includes data quality controls, AI-specific cybersecurity measures, and ethical review with bias detection (PMI, 2026, pp. 170-171). Security and compliance guidelines cover data protection, quality assurance, ethics and transparency standards, regular audits, and process documentation, supported by continuous monitoring with performance tracking, security surveillance, bias reassessment, automated updates, adaptive risk management, and configuration versioning and traceability (PMI, 2026, pp. 171-172).
+</p>
+
+<h3>Benefits realization and performance measurement</h3>
+<p>
+Success metrics include cost efficiency, time savings, accuracy and reliability, and risk reduction (PMI, 2026, pp. 172-173). ROI is calculated by identifying direct and indirect benefits, determining AI-specific costs, and applying ROI = (Total Benefits minus Total Costs) / Total Costs x 100 (PMI, 2026, p. 173). Reporting combines dashboards, a regular cadence, and in-depth analyses for decision-makers (PMI, 2026, pp. 173-174). A benefits realization framework tracks benefits over the life cycle, benchmarks against industry standards, and reassesses periodically (PMI, 2026, pp. 174-175).
+</p>
+
+<h3>Stakeholders, change, and continuous improvement</h3>
+<p>
+Stakeholder engagement relies on a communications management plan with regular updates, targeted messaging, and mixed channels (PMI, 2026, pp. 175-176). Change management uses training and workshops, designated AI champions, and a resource library, with readiness assessment, clear expectations, and continuous learning (PMI, 2026, pp. 176-177). Long-term evolution requires maintenance and updates, a dedicated support team, and user-support channels; skill development includes workshops, hackathons, low-code platforms, certifications, mentorship, and individualized learning paths (PMI, 2026, pp. 177-178). A structured improvement process combines performance monitoring, scheduled evaluations, feedback integration, benchmarking, agility, leadership support, and hands-on simulation training (PMI, 2026, pp. 178-179).
+</p>
+
+<h3>Common challenges and how to overcome them</h3>
+<p>
+Typical challenges include resistance to change, lack of strategic vision and planning, inadequate cost and resource allocation, weak business processes, data silos, legacy systems, data privacy and compliance gaps, AI skill shortages, trust deficits, and privacy, security, and ownership exposures (PMI, 2026, pp. 180-181). The standard pairs each with strategies: centralized data platforms and governance to break silos, middleware and phased upgrades for legacy systems, anonymization and privacy frameworks for compliance, targeted training and external expertise for skill gaps, and structured change management with change champions to overcome resistance (PMI, 2026, pp. 182-183).
+</p>
+</details>
+
+<!-- ================= SECTION 5c ================= -->
+<details id="s5c">
+<summary><span class="chev">▶</span>7. AI in Project Management <span class="pg">(pp. 181-202)</span></summary>
+
+<h3>Planning AI projects</h3>
+<p>
+AI project planning starts by defining SMART business objectives in a clear charter, then setting the foundation for data management and governance (quality, security, and compliance, especially where personally identifiable information is involved), effective resource planning across human, technological, and financial needs, a detailed schedule with milestones and budget, and stakeholder engagement and communication planning (PMI, 2026, pp. 183-184).
+</p>
+
+<h3>Goals, objectives, and metrics</h3>
+<p>
+AI projects usually use a hybrid approach, so the standard pairs OKRs (ambitious objectives with measurable key results) with KPIs for accountability (PMI, 2026, pp. 184-185). Predictive goals suit governance structures, long-term data management, regulatory compliance, high-stakes decision support, automation consistency, and predictable business outcomes (PMI, 2026, pp. 185-186). Adaptive goals suit continuous model improvement, market responsiveness, experimentation, real-time decision optimization, uncertainty management, customer interaction refinement, dynamic resource allocation, and collaboration in complex environments; adaptive work is measured with relative metrics such as story points (PMI, 2026, pp. 185-187).
+</p>
+
+<h3>Roles, accountability, and responsibility</h3>
+<p>
+Recommended AI project roles include sponsor, project manager, data scientist, data analysts, data architects, data steward, AI/ML data engineers, domain subject matter experts, legal compliance officers, ethics officers, UX/UI designers, DevSecOps engineers, portfolio-level roles (such as chief data or AI officers), and testers, with a RACI matrix mapping responsibility across a seven-step workflow from project definition through change management (PMI, 2026, pp. 187-189).
+</p>
+
+<h3>Scope, context, and risk measurement</h3>
+<p>
+AI's iterative nature demands flexible scope definitions, incremental deliverables, and continuous stakeholder engagement; scope planning must address data quality and availability, algorithm and tool selection, AI-specific risks, and ongoing model validation (PMI, 2026, pp. 188-190). Plan components adapt accordingly: the scope and requirements management plans, requirements traceability matrix, project scope statement, and WBS all incorporate AI tasks such as data acquisition, model training, and monitoring (PMI, 2026, p. 190). Risk measurement uses KPIs such as the number of identified AI-specific risks, percentage mitigated, frequency of occurrence, impact on outcomes, recovery speed, stakeholder satisfaction, and regulatory compliance, supported by automated monitoring tools, KPI review sessions, stakeholder feedback mechanisms, audits, and post-incident analysis (PMI, 2026, pp. 191-192).
+</p>
+
+<h3>Change management and implementation</h3>
+<p>
+Potential AI project changes include algorithm upgrades, data source modifications, infrastructure changes, regulatory adjustments, interface enhancements, feature additions, system integrations, and business model shifts; robust change control, impact analysis, and a change control board keep them managed (PMI, 2026, pp. 192-193). Adoption succeeds when end users are motivated, upskilled, and given hands-on experience (PMI, 2026, p. 193). Implementation success factors span data quality and governance, infrastructure requirements (platform selection, scalable architecture, security at every tier, efficient data processing), predictive and adaptive approaches including DevOps and MLOps, and continuous competency development (PMI, 2026, pp. 194-198).
+</p>
+
+<h3>Stakeholder evaluation</h3>
+<p>
+The standard classifies project stakeholders on two axes, support and expertise, and tailors every plan component (stakeholder, communications, risk, resource, change, training, and governance plans) to the resulting four groups (PMI, 2026, pp. 198-201).
+</p>
+
+<div class="fig">
+<svg viewBox="0 0 620 360" role="img" aria-label="Two-by-two stakeholder evaluation grid: advocates and champions at high support, skeptics and critics at low support; expertise increases left to right">
+  <title>Stakeholder evaluation quadrants for AI projects</title>
+  <text x="330" y="350" text-anchor="middle" font-size="12.5" class="ssoft" font-weight="600">Expertise &#8594;</text>
+  <text x="18" y="180" text-anchor="middle" font-size="12.5" class="ssoft" font-weight="600" transform="rotate(-90 18 180)">Support &#8594;</text>
+  <g>
+    <rect x="46" y="24" width="278" height="146" rx="8" class="sn"/>
+    <text x="185" y="78" text-anchor="middle" class="stxt" font-size="15" font-weight="700">Advocates</text>
+    <text x="185" y="99" text-anchor="middle" class="ssoft" font-size="11.5">Enthusiastic, limited technical depth.</text>
+    <text x="185" y="115" text-anchor="middle" class="ssoft" font-size="11.5">Use as promoters; educate on realities.</text>
+
+    <rect x="334" y="24" width="278" height="146" rx="8" class="shub"/>
+    <text x="473" y="78" text-anchor="middle" class="spaper" font-size="15" font-weight="700">Champions</text>
+    <text x="473" y="99" text-anchor="middle" class="spaper" opacity=".82" font-size="11.5">High support and high expertise.</text>
+    <text x="473" y="115" text-anchor="middle" class="spaper" opacity=".82" font-size="11.5">Involve in decisions; let them lead.</text>
+
+    <rect x="46" y="180" width="278" height="146" rx="8" class="snp"/>
+    <text x="185" y="234" text-anchor="middle" class="stxt" font-size="15" font-weight="700">Skeptics</text>
+    <text x="185" y="255" text-anchor="middle" class="ssoft" font-size="11.5">Low trust, low expertise.</text>
+    <text x="185" y="271" text-anchor="middle" class="ssoft" font-size="11.5">Educate, inform, keep involvement light.</text>
+
+    <rect x="334" y="180" width="278" height="146" rx="8" class="sn2"/>
+    <text x="473" y="234" text-anchor="middle" class="stxt" font-size="15" font-weight="700">Critics</text>
+    <text x="473" y="255" text-anchor="middle" class="ssoft" font-size="11.5">Expert but unsupportive.</text>
+    <text x="473" y="271" text-anchor="middle" class="ssoft" font-size="11.5">Engage in technical reviews; convert.</text>
+  </g>
+</svg>
+<div class="caption">Stakeholder evaluation by support and expertise (adapted from Figure 5-9; PMI, 2026, p. 199).</div>
+</div>
+
+<h3>Performance evaluation</h3>
+<p>
+Evaluate AI projects systematically: establish measurable metrics tied to success criteria (for example, response time and customer satisfaction for a chatbot), collect and analyze model performance data such as downtime and failure rates, and use real-time dashboards and monthly reports covering active users, engagement, and ROI to maintain transparency with stakeholders (PMI, 2026, p. 202).
+</p>
+</details>
+
+<!-- ================= SECTION 6 ================= -->
+<details id="s6">
+<summary><span class="chev">▶</span>8. Framework for Use of AI in PPPM <span class="pg">(pp. 203-218)</span></summary>
+
+<h3>Building the business case</h3>
+<p>
+A sound business case for AI in PPPM addresses seven elements: economic benefits and ROI (do benefits outweigh implementation, training, and data costs), decision-making improvement (predictive insights, resource optimization, real-time dashboards), risk management and uncertainty handling, competitive advantage and innovation potential, stakeholder engagement and change management readiness, ethics and regulatory requirements including an XAI strategy, and long-term scalability and sustainability with AI-tracked sustainability KPIs such as carbon emissions and energy usage (PMI, 2026, pp. 204-205).
+</p>
+
+<h3>Vision, solution fit, and use cases</h3>
+<p>
+The Seven Patterns of AI categorize problem domains so practitioners can match solutions to needs (PMI, 2026, pp. 205-206):
+</p>
+
+<div class="fig">
+<svg viewBox="0 0 900 430" role="img" aria-label="Ring diagram of the seven patterns of AI around a central label">
+  <title>The Seven Patterns of AI</title>
+  <g class="sline">
+    <line x1="450" y1="215" x2="450" y2="52"/>
+    <line x1="450" y1="215" x2="165" y2="115"/>
+    <line x1="450" y1="215" x2="735" y2="115"/>
+    <line x1="450" y1="215" x2="125" y2="255"/>
+    <line x1="450" y1="215" x2="775" y2="255"/>
+    <line x1="450" y1="215" x2="255" y2="378"/>
+    <line x1="450" y1="215" x2="645" y2="378"/>
+  </g>
+  <circle cx="450" cy="215" r="70" class="shub"/>
+  <text x="450" y="203" text-anchor="middle" class="spaper" font-size="13" font-weight="700">The Seven</text>
+  <text x="450" y="220" text-anchor="middle" class="spaper" font-size="13" font-weight="700">Patterns</text>
+  <text x="450" y="237" text-anchor="middle" class="spaper" font-size="13" font-weight="700">of AI</text>
+  <g font-size="12.5" font-weight="600">
+    <g><rect x="360" y="12" width="180" height="42" rx="8" class="sn"/>
+       <text x="450" y="38" text-anchor="middle" class="stxt">Recognition</text></g>
+    <g><rect x="70" y="86" width="190" height="56" rx="8" class="sn"/>
+       <text x="165" y="109" text-anchor="middle" class="stxt">Patterns and</text>
+       <text x="165" y="126" text-anchor="middle" class="stxt">Anomalies</text></g>
+    <g><rect x="640" y="86" width="190" height="56" rx="8" class="sn"/>
+       <text x="735" y="109" text-anchor="middle" class="stxt">Conversational and</text>
+       <text x="735" y="126" text-anchor="middle" class="stxt">Human Interaction</text></g>
+    <g><rect x="28" y="228" width="195" height="56" rx="8" class="sn"/>
+       <text x="125" y="251" text-anchor="middle" class="stxt">Autonomous</text>
+       <text x="125" y="268" text-anchor="middle" class="stxt">Systems</text></g>
+    <g><rect x="678" y="228" width="195" height="56" rx="8" class="sn"/>
+       <text x="775" y="251" text-anchor="middle" class="stxt">Hyper-</text>
+       <text x="775" y="268" text-anchor="middle" class="stxt">Personalization</text></g>
+    <g><rect x="150" y="352" width="210" height="56" rx="8" class="sn"/>
+       <text x="255" y="375" text-anchor="middle" class="stxt">Predictive Analytics and</text>
+       <text x="255" y="392" text-anchor="middle" class="stxt">Decision Support</text></g>
+    <g><rect x="545" y="352" width="200" height="56" rx="8" class="sn"/>
+       <text x="645" y="383" text-anchor="middle" class="stxt">Goal-Driven Systems</text></g>
+  </g>
+</svg>
+<div class="caption">The Seven Patterns of AI for categorizing problem domains (adapted from Figure 6-1; PMI, 2026, p. 206).</div>
+</div>
+
+<p>
+HITL implementation makes these patterns operational responsibly: AI evaluates and prioritizes projects while humans capture qualitative context; AI predicts delays and overruns while practitioners monitor and adjust models; AI optimizes resource allocation while managers weigh team dynamics and preferences; and AI automates routine reporting while practitioners oversee accuracy and compliance (PMI, 2026, p. 207). AI is a supplement that augments human capabilities rather than replacing them (PMI, 2026, p. 207).
+</p>
+
+<h3>Information flow and human factors</h3>
+<p>
+AI can generate status updates, tailored stakeholder messages, and searchable meeting notes, freeing managers for strategic work (PMI, 2026, p. 208). When acting on AI recommendations, managers must weigh team dynamics, individual preferences and strengths, workload balance to prevent burnout, and employee well-being (PMI, 2026, pp. 208-209).
+</p>
+
+<h3>Cultural fit and human-centered approaches</h3>
+<p>
+Organizational fit means leveraging early adopters, entrepreneurial teams, and a test-and-learn mindset, and motivating knowledge workers through autonomy, mastery, purpose, and relatedness (PMI, 2026, p. 209). AI supports planning, executing, and monitoring (dashboards, automated testing, real-time reports), documentation, expense monitoring, and data management with hybrid teams and translator roles bridging technical and business staff (PMI, 2026, pp. 210-211). Design thinking's five stages (empathize, define, ideate, prototype, test) keep AI implementations aligned with user needs and combine well with adaptive delivery (PMI, 2026, pp. 211-212).
+</p>
+
+<h3>Selecting tools and managing risk</h3>
+<p>
+Tool selection criteria: alignment with organizational goals, ease of integration with the existing stack, scalability and flexibility, end-user friendliness and learning curve, cost-benefit analysis of total ownership, and management of critical information and AI system data including regulatory disclosure obligations and model cards (PMI, 2026, pp. 212-214). The framework closes with risk management resources: KPIs and measurement methods for AI-related risk performance, plus tools and techniques for identification (risk frameworks, scenario analysis, expert panels), assessment and prioritization (quantitative analysis, heat maps, risk registers), mitigation (algorithm auditing, ethical guidelines, contingency planning), and monitoring and control (automated systems, control charts, incident response plans) (PMI, 2026, pp. 215-218).
+</p>
+</details>
+
+<!-- ================= SECTION 7 ================= -->
+<details id="s7">
+<summary><span class="chev">▶</span>9. Ethical and Legal Considerations <span class="pg">(pp. 219-237)</span></summary>
+
+<h3>Ethical challenges of AI systems</h3>
+<p>
+The standard catalogs the ethical challenges practitioners must manage: bias and misinformation (with social, regulatory, and legal consequences), discrimination in AI decision-making, diffuse accountability across the AI life cycle, "black box" transparency and explainability gaps, data security and integrity failures, AI hallucinations, privacy and consent violations, untraceable data sources, inadequate value assessments, weak stakeholder engagement, insufficient knowledge of AI capabilities, regulatory and legal exposure, violations of human rights and value systems, and intellectual property and copyright infringement (PMI, 2026, pp. 219-223).
+</p>
+
+<h3>The AI ethics oversight committee</h3>
+<p>
+Ethical and responsible AI is a shared responsibility governed through an AI ethics oversight committee with cross-functional membership, including technical, legal, HR, communications, and local leadership representation (PMI, 2026, p. 223). Establishing the committee involves defining scope and mission, assembling diverse expertise, defining roles and authority, and building governance, compliance, risk, and audit processes (PMI, 2026, p. 224). Its responsibilities include:
+</p>
+<ul>
+  <li>Understanding the ethical and regulatory landscape, including regional laws and culture, and preventing copyright misuse (PMI, 2026, pp. 224-225).</li>
+  <li>Defining an AI ethics framework: responsible data practices, boundaries on safe data use, human oversight and accountability, clear roles across the AI life cycle, and regular audits (PMI, 2026, p. 225).</li>
+  <li>Providing ethical guidance throughout adoption: readiness assessment, impact evaluation, pilot programs, bias testing with diverse testers, and ESG integration (PMI, 2026, pp. 225-226).</li>
+  <li>Protecting data integrity: security policies, auditable and explainable systems, algorithm audits, bias-detection tooling, and high-quality data (PMI, 2026, pp. 226-227).</li>
+  <li>Managing vendors so external tools meet ethical standards, avoiding prohibited AI such as manipulative techniques (PMI, 2026, p. 227).</li>
+  <li>Engaging stakeholders with shared values, ethics training, incentives, confidential reporting channels, and community involvement (PMI, 2026, pp. 227-228).</li>
+  <li>Engaging senior leadership as champions of responsible adoption (PMI, 2026, p. 228).</li>
+  <li>Monitoring and measuring AI system success, including HITL checks against hallucinations (PMI, 2026, pp. 228-229).</li>
+  <li>Resolving ethics issues through a structured, transparent, documented process (PMI, 2026, p. 229).</li>
+</ul>
+
+<h3>Legal considerations: nine areas</h3>
+<p>
+The legal landscape is complex, evolving, and best navigated with legal counsel and governance, risk, and compliance (GRC) teams (PMI, 2026, p. 230). The nine areas:
+</p>
+<div class="scroll-x">
+<table>
+  <tr><th>Area</th><th>What practitioners should address</th></tr>
+  <tr><td>Laws and regulations</td><td>Consent for data processing, data portability, sector rules (healthcare privacy, financial regulation, facial recognition limits, automated decision transparency) (PMI, 2026, pp. 230-231).</td></tr>
+  <tr><td>Governance and policy</td><td>AI governance frameworks covering data policy, model version management, transparency, human oversight, and bias detection (PMI, 2026, p. 231).</td></tr>
+  <tr><td>Legal discovery</td><td>Version-controlled documentation, decision logging, compliance audits, data-retention policies, and AI-specific dispute-resolution protocols (PMI, 2026, pp. 231-232).</td></tr>
+  <tr><td>Contractual obligations</td><td>Defined AI scope and responsibilities, performance benchmarks, data ownership, liability allocation, termination clauses, indemnification, confidentiality, and vendor integration duties (PMI, 2026, pp. 232-233).</td></tr>
+  <tr><td>Accountability and liability</td><td>Clear responsibility for AI decisions, liability for errors, product liability, HITL oversight, dispute mechanisms, ethical use clauses, and IP rights for AI solutions (PMI, 2026, pp. 233-234).</td></tr>
+  <tr><td>Audits and compliance</td><td>Layered audit frameworks with continuous manual and automated testing, HITL reviews, domain expert participation, and adaptive monitoring (PMI, 2026, pp. 234-235).</td></tr>
+  <tr><td>Data management</td><td>Data governance, information security (confidentiality, integrity, availability), and data privacy and protection (PMI, 2026, pp. 235-236).</td></tr>
+  <tr><td>Intellectual property</td><td>Patentability of AI inventions, training data ownership, trade secret protection, licensing terms, and open-source considerations (PMI, 2026, p. 236).</td></tr>
+  <tr><td>Accuracy and decision-making</td><td>Liability for inaccurate or biased outputs, transparency obligations, training-data quality, algorithm design, and indispensable human oversight (PMI, 2026, pp. 236-237).</td></tr>
+</table>
+</div>
+</details>
+
+<!-- ================= SECTION 8 (appendices) ================= -->
+<details id="s8">
+<summary><span class="chev">▶</span>10. Appendices in Brief: Maturity Models and Regulations <span class="pg">(pp. 241-244)</span></summary>
+
+<h3>AI maturity models (Appendix X1)</h3>
+<p>
+Two example models guide organizational readiness. The AI Capability Maturity Model (AI CMM), developed within the U.S. General Services Administration, evaluates operational maturity areas: PeopleOps, CloudOps, SecOps, DevOps, DataOps, MLOps, and AIOps, helping organizations build AI roadmaps and investment plans (PMI, 2026, p. 241). The MITRE AI Maturity Model provides a transformational approach built on six pillars: Ethical, Equitable, and Responsible Use; Strategy and Resources; Organization; Technology Enablers; Data; and Performance and Application (PMI, 2026, p. 242).
+</p>
+
+<h3>Laws and regulations that may impact AI in PPPM (Appendix X2)</h3>
+<p>
+The standard lists example legal frameworks practitioners should watch, including the GDPR (EU), CCPA and CPRA (California), HIPAA and the Dodd-Frank Act (U.S. healthcare and finance), SOX, FISMA, the NIST Cybersecurity Framework, COPPA, China's PIPL and DSL, Singapore's PDPA, Japan's APPI, South Korea's PIPA, the Saudi Data and AI Authority (SDAIA), the UAE Data Protection Law, India's DPDP Act, and the OECD's dashboard of AI-specific legislation (PMI, 2026, pp. 243-244).
+</p>
+</details>
+
+<!-- ================= TAKEAWAYS ================= -->
+<h2 id="takeaways">Takeaways for Project and Program Managers</h2>
+<ul>
+  <li><strong>Start with value, not technology.</strong> Every AI initiative begins by questioning the expected value against strategy and business goals, then delivers value early and often (PMI, 2026, pp. 17-18).</li>
+  <li><strong>Keep humans in the loop everywhere.</strong> Define intervention triggers, escalation protocols, and feedback loops so human judgment governs AI-driven decisions across the full life cycle (PMI, 2026, pp. 11-12, 128).</li>
+  <li><strong>Treat data quality as a project deliverable.</strong> Accuracy, completeness, consistency, timeliness, validity, and context determine whether AI outputs can be trusted at all (PMI, 2026, pp. 16-17).</li>
+  <li><strong>Tailor the life cycle deliberately.</strong> Use adaptive methods for model development and optimization, predictive methods for compliance and decommissioning, and hybrid approaches for most consequential AI work (PMI, 2026, pp. 107, 136).</li>
+  <li><strong>Prioritize with the heat map.</strong> Pursue low-complexity, high-potential quick wins first, then invest in strategic pursuits; defer high-complexity, low-potential work (PMI, 2026, p. 145).</li>
+  <li><strong>Segment your stakeholders.</strong> Manage skeptics, critics, advocates, and champions differently across every plan component, and put champions in decision-making roles (PMI, 2026, pp. 198-201).</li>
+  <li><strong>Build governance and ethics in from day one.</strong> Establish an ethics oversight committee, engage legal and GRC early, and maintain auditable, explainable, documented AI processes (PMI, 2026, pp. 223-224, 233).</li>
+  <li><strong>Measure and improve continuously.</strong> Define KPIs at the outset, monitor for model drift and bias, retrain and adapt, and report results transparently to stakeholders (PMI, 2026, pp. 114-115, 178-179, 202).</li>
+</ul>
+
+<!-- ================= REFERENCES ================= -->
+<footer>
+<h2 id="references" style="margin-top:0">References</h2>
+<div class="refs">
+<p>Project Management Institute. (2026). <em>The standard for artificial intelligence in portfolio, program, and project management</em>. Project Management Institute. (Approved American National Standard ANSI/PMI 26-007-2028; ISBN 978-1-62825-891-2)</p>
+</div>
+<p class="cite">
+Note: This overview summarizes and cites only the standard listed above. Figures in this document are original recreations adapted from the standard's Figures 2-1, 3-1, 5-2, 5-9, and 6-1 and from the life cycle described in its Section 4, cited inline at each figure. The source copy is a PMI member benefit licensed to the reader; this overview is for personal reference and is not a substitute for the standard itself.
+</p>
+<p class="license">Released under the <a href="https://github.com/kasey6801/Infographics/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>.</p>
+</footer>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('theme-toggle');
+  function label(){btn.textContent=root.getAttribute('data-theme')==='dark'?'☀️ Light':'🌙 Dark';}
+  label();
+  btn.addEventListener('click',function(){
+    if(root.getAttribute('data-theme')==='dark'){root.removeAttribute('data-theme');try{localStorage.setItem('theme','light');}catch(e){}}
+    else{root.setAttribute('data-theme','dark');try{localStorage.setItem('theme','dark');}catch(e){}}
+    label();
+  });
+})();
+</script>
+</body>
+</html>
