@@ -201,7 +201,7 @@
       <h1>The Interaction <span class="accent">Log</span></h1>
       <p class="lede">A single self-contained HTML file at your workspace root that records every
       Claude working session. It groups activity by project folder, then by date, newest first,
-      and it stays current with one command.</p>
+      and it stays current with one slash command.</p>
     </header>
 
     <main>
@@ -269,7 +269,7 @@
 
       <section class="panel">
         <h2><span class="n">3</span> How to create it</h2>
-        <p>You do not edit the file by hand. Run the command and it does the rest:</p>
+        <p>You do not edit the file by hand. Run the skill's slash command and it does the rest:</p>
         <div class="cmd"><span class="tok">/Interaction-log</span> <span class="arg">[optional note]</span></div>
         <p>It reads the current session and updates <code>Interaction-Log.html</code> in five moves:</p>
         <ol class="steps">
@@ -284,8 +284,11 @@
           <li>Refresh the folder's date count, then report one line: folder, date, and how many prompts
           and changes were logged.</li>
         </ol>
-        <p style="margin-top:1rem">If <code>Interaction-Log.html</code> does not exist yet, the command
+        <p style="margin-top:1rem">If <code>Interaction-Log.html</code> does not exist yet, the skill
         first creates it from a built-in base template, so the very first run just works.</p>
+        <p style="margin-top:1rem">A generic version is published as the
+        <a href="https://github.com/kasey6801/claude-skills#interaction-log" target="_blank" rel="noopener">interaction-log skill</a>
+        in the claude-skills repo.</p>
       </section>
 
       <section class="panel">
@@ -297,7 +300,7 @@
           <li>No em dashes in the summary prose; use commas, colons, periods, or middots.</li>
           <li>Newest first, always: newest folder at the top of the log, newest date at the top of its folder.</li>
           <li>No external or network resources, ever. The page stays fully self-contained.</li>
-          <li>Do not commit or push. The command leaves version control to you, since the log may sit outside a git repository.</li>
+          <li>Do not commit or push. The skill leaves version control to you, since the log may sit outside a git repository.</li>
         </ul>
       </section>
 

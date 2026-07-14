@@ -180,28 +180,30 @@
       </ul>
       <p>It works across Claude Chat, Claude Cowork, and Claude Code, in English, French, and
       Spanish.</p>
-      <p><a class="cta" href="https://github.com/kasey6801/claude-skills/blob/main/commands/book-club.md" target="_blank" rel="noopener">Get the skill on GitHub →</a></p>
+      <p><a class="cta" href="https://github.com/kasey6801/claude-skills#book-club" target="_blank" rel="noopener">Get the skill on GitHub →</a></p>
 
       <h2>Install it</h2>
-      <p>The skill is one file — <code>commands/book-club.md</code>. How you add it depends on where
-      you use Claude:</p>
+      <p>The skill lives in the claude-skills repo as <code>skills/book-club/</code>, a folder
+      containing <code>SKILL.md</code>. How you add it depends on where you use Claude:</p>
       <div class="two">
         <div class="panel">
           <h3>Claude Chat / a Project</h3>
-          <p>Open the skill file, copy its full contents, and paste them into your Project's
+          <p>Open <code>SKILL.md</code>, copy its full contents, and paste them into your Project's
           <strong>custom instructions</strong> — or add the file to the Project's
           <strong>knowledge</strong>. Every chat in that Project then follows the book-club
           workflow.</p>
         </div>
         <div class="panel">
           <h3>Claude Code</h3>
-          <p>Place <code>book-club.md</code> in your commands directory and it installs as the
-          <code>/book-club</code> slash command.</p>
+          <p>Copy the <code>book-club</code> folder into <code>.claude/skills/</code> (or
+          <code>~/.claude/skills/</code> for every project) and it installs as the
+          <code>/book-club</code> slash command. It also triggers naturally on requests like
+          "what should I read".</p>
         </div>
       </div>
       <div class="note">
         <span class="k">Self-contained</span>
-        <p>Everything the skill needs is inside that one file — including the full build
+        <p>Everything the skill needs is inside one file, <code>SKILL.md</code>, including the full build
         specification for the Reading Log page. It never reaches out to GitHub or the web to fetch
         your log; the only sources are your memory and the page in the current conversation.</p>
       </div>

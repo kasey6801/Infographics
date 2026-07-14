@@ -52,8 +52,9 @@ The five panels:
 
 ## 3. How the log gets built (the command)
 
-The page describes the behaviour of `/Interaction-log`, defined as a slash command (for example, a
-`.claude/commands/Interaction-log.md` file in your workspace). On each run the command:
+The page describes the behaviour of `/Interaction-log`, defined as a skill (for example, a
+`.claude/skills/interaction-log/SKILL.md` folder in your workspace), run with the `/Interaction-log`
+slash command. On each run the skill:
 
 1. Captures today's date, checked live and never hardcoded, and the primary folder: the one that
    changed most this session, written as a path relative to your workspace root. If several folders
@@ -71,7 +72,7 @@ The page describes the behaviour of `/Interaction-log`, defined as a slash comma
 5. Updates the folder's `<span class="count">` to the current number of dated sections, then reports
    one line: folder, date, and how many prompts and changes were logged.
 
-If `Interaction-Log.html` does not exist yet, the command first creates it from a built-in base
+If `Interaction-Log.html` does not exist yet, the skill first creates it from a built-in base
 template (the same warm palette, a header, an empty `<main id="log">`, and expand and collapse
 controls), so the first run works with no setup.
 

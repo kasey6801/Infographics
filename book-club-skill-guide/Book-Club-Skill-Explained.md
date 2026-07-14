@@ -8,7 +8,7 @@ Two things were built and wired together:
 
 1. **The book-club skill** — a Claude skill that suggests books, leads discussions, and logs what
    you read. It lives at
-   [`commands/book-club.md`](https://github.com/kasey6801/claude-skills/blob/main/commands/book-club.md).
+   [`skills/book-club/SKILL.md`](https://github.com/kasey6801/claude-skills/blob/main/skills/book-club/SKILL.md).
 2. **The Reading Log page** — a single self-contained HTML page (`index.html`) that renders the
    reading history. The skill creates this page and keeps it in sync with memory.
 
@@ -242,7 +242,7 @@ file index.html (the root file GitHub Pages serves). Present the final file.
 The finished skill is published — the simplest path is to use it directly:
 
 > Install the book-club skill from
-> [`commands/book-club.md`](https://github.com/kasey6801/claude-skills/blob/main/commands/book-club.md).
+> [`skills/book-club/SKILL.md`](https://github.com/kasey6801/claude-skills/blob/main/skills/book-club/SKILL.md).
 > It already contains the build spec above, the entry schema, the controlled discipline list, the
 > link-resolution rules, and the "write to the log" workflow.
 
@@ -271,8 +271,8 @@ Keep it self-contained in one markdown file.
 
 1. **Make a Project** ("Book Club" or "Reading Log") for persistent, isolated memory.
 2. **Add the skill** — paste it into the Project's custom instructions or knowledge (Claude
-   Chat/Project), or drop it in your commands directory for the `/book-club` slash command (Claude
-   Code).
+   Chat/Project), or drop the folder in your `.claude/skills/` directory for the `/book-club` slash
+   command (Claude Code).
 3. **Create the log** — say "create my reading log" (or just start logging and it auto-creates).
 4. **Start logging** — "I finished [title]", "log some books", "summarize this article: <url>",
    "log our discussion." Entries flow to memory and into the page automatically.
