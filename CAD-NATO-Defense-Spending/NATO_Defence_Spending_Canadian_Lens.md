@@ -76,6 +76,31 @@ The point: the CPSP decision is the rare procurement event with a clear, dated, 
 
 ---
 
+## ⚡ Latest Developments: July 19, 2026
+
+Eleven days on from Ankara, the summit's commitments began converting into contracts, coalitions, and, in one case, a crisis.
+
+**🇨🇦 GDLS-Canada named first Strategic Partner (July 16).** Nearly C$2 billion over four years for 190 additional Armoured Combat Support Vehicles (fleet grows to 550), the first Strategic Partner designation under the Defence Industrial Strategy. Built in London, Ontario on the same line producing the 35 Ukraine-bound vehicles from the July 7 package.
+
+**🇨🇦 Saudi framework (July 9).** Carney's July 8-10 visit, the first by a Canadian PM in 26 years, closed with 13 agreements worth over $1 billion, an MOU toward a defence cooperation agreement, a resident Defence Attaché in Riyadh, and a maritime-assistance offer to the Multinational Military Maritime Mission.
+
+**🇨🇦 Division-level command (July 8).** Canada joined Denmark and Latvia as third co-Framework Nation for NATO Multinational Division North, one level above its brigade-framework role held since 2017.
+
+**🇨🇦 Reported, not confirmed: GCAP observer.** POLITICO (July 14) and Breaking Defense report Canada will join the UK-Italy-Japan sixth-generation fighter program as first observer, announcement expected July 21 at Farnborough; no purchase commitment, and Ottawa has not commented. Ministers are on record only in press remarks (McGuinty, June 24 in Tokyo: a "promising initiative", "We are interested in learning more about it"; Crosetto: "we are fully open" to Canada as observer); both official readouts of the June 24 Koizumi-McGuinty meeting (Japan MOD, DND) omit GCAP entirely. No F-35/Gripen decision in the window; reporting points to ~November 2026.
+
+**🇨🇦 Files with dates.** Telesat formalized the ESCP-P Mil-Ka selection (65-90°N) with a definitive contract expected "in the coming weeks." Türkiye confirmed DSRB founding membership July 13 (Reuters-sourced), keeping nine founders intact. First CPSP supplier ripples reported in Ottawa (Gastops digital twin, Kongsberg Geospatial); formal TKMS negotiations have not opened and are expected to take months. Also: a C$29.6M uncrewed-systems hub at Mirabel (July 14), a CAF global-operations rebalance toward Euro-Atlantic priorities (July 17), and Canada-Türkiye free-trade negotiations launched.
+
+**🇫🇷 Paris, July 13.** The Coalition of the Willing met at Les Invalides (~35-40 delegations; next meeting in Ukraine). Ukraine ordered 16 Rafale and four SAMP/T NG batteries via the EU loan; France reportedly licensed SCALP-EG, Aster 30, and AASM production to Ukraine; ten countries founded an anti-ballistic-missile coalition (reported name FREYJA) without Canada; Macron added €36 billion to French defence over five years.
+
+**🇩🇪🇪🇺 Execution.** Merz confirmed the Tomahawk buy July 9 (German-owned, US export approval committed for August); the Bundestag cleared ~€6.3 billion for four TKMS-built F128 frigates July 8, with Saab winning the SEK 8.7 billion combat-system package July 16, so TKMS now carries the F128 program and Canada's submarines simultaneously. SAFE money is physically flowing (Croatia's first €255 million July 10), and the first Canadian award is already on the board: Montréal-based Marconi Technologies, with Polish partner Enamor International, holds a >C$10M contract for made-in-Canada ORION X650 tactical radios for Polish Cyber Command, announced June 15 at the G7 (PMO: "the first contract awarded to a Canadian company under SAFE, with many more to come"); the watch item is follow-on Canadian awards at scale under the 80% ceiling. The Strait of Hormuz went from declaration language to crisis: IRGC closure declaration July 12, a floated and withdrawn 20% US toll July 13-14, tankers struck (press-reported).
+
+**🇰🇷 The pattern hardened.** Korean post-mortems detailed the declined Hanwha package (C$70B projected effects, 22,000 jobs/year, C$345M Algoma investment); Hanwha wound up its Hamilton training partnerships; Romania picked Rheinmetall's Lynx over Hanwha's better-localized offer (confirmed in Seoul July 10), a third European win over Korean bids in three weeks after Poland-Saab and Canada-TKMS. Korea-NATO procurement talks show no progress; no Korean DSRB decision.
+
+> ### 🔑 Key Finding: Post-Summit Fortnight
+> The "European Allies and Canada" formula is becoming operational fact: SAFE loans are disbursing with Canada holding a content ceiling no other non-EU country has, Canada took division-level command in Latvia, and three NATO capitals in three weeks chose European suppliers over richer Korean offers, the same alliance-preference logic behind the TKMS pick. The fortnight equally showed the clubs Canada is not yet in: the ten-nation missile-defence coalition formed in Paris without it, and the twelve-nation deep-strike initiative has no Canadian seat. The open files now carry dates: Telesat contract in weeks, TKMS talks over months, fighter review reported for ~November, GCAP observer reported for July 21.
+
+---
+
 ## ⚡ Latest Developments — July 8, 2026
 
 The Ankara Summit has concluded. Canada arrived on July 7 carrying three deliverables (the submarine selection, a Canada-led defence bank, and a seat in NATO's AWACS-replacement consortium) and left on July 8 having added several more. The 32 leaders issued the Ankara Summit Declaration, announced more than US$50 billion in new procurements, pledged €70 billion to Ukraine for 2026, and set the next summit for Albania.

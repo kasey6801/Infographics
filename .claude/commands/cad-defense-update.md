@@ -25,16 +25,45 @@ protocol exactly. The target report is: **$ARGUMENTS**
   agents**, one each for **Canada, Europe, Asia**.
 - **Time window:** developments NEWER than the current block's date (and any notable items it
   missed) — roughly the last 7–10 days.
+- **Backfill rule (mandatory):** every update also runs ONE search pass over the gap BEFORE the
+  window (from ~2 weeks before the previous block's date up to the window start), sweeping
+  official readout feeds specifically. Rationale: windows tile forward, so an item missed once is
+  missed forever; the Jun 15, 2026 Marconi/SAFE first-contract announcement sat in a PMO
+  *readout* during the G7 and went uncaught for a month until the user flagged it.
+- **Official-readout sweep, all 32 members (mandatory):** each research agent MUST scan,
+  headline-level, the official head-of-government newsroom AND the defence-ministry newsroom of
+  every NATO member in its assigned region (window + backfill gap; translate as needed), in
+  addition to query-based searches. For Canada that means ALL FOUR pm.gc.ca feeds: news
+  releases, statements, **readouts**, speeches (defence firsts have landed in readouts, not
+  releases). The Asia agent covers the IP4 partners (Japan MOD/MOFA, Korea MND, Australia
+  Defence, NZ Defence). Use the member feed roster in §1b.
 - **Relevance filter:** only items material to THIS report's themes and its alliance/procurement
   narrative. Pass each agent the existing items so it doesn't repeat them.
 - **Per finding, require:** one-line headline · 2–4 sentences with figures/names/dates · the exact
   date · source (publication + URL) · why it matters to the report. Prioritize items with
   confirmed dates; explicitly flag anything unconfirmed.
 
+### 1b. Member feed roster (official newsrooms; verify a deep link resolves before citing, else use the domain landing page)
+
+- 🇦🇱 kryeministria.al · mod.gov.al | 🇧🇪 premier.be · defence.belgium.be | 🇧🇬 gov.bg · mod.bg
+- 🇨🇦 pm.gc.ca (`/en/news/news-releases`, `/en/news/statements`, `/en/news/readouts`, `/en/news/speeches`) · canada.ca DND newsroom · Defence Investment Agency newsroom
+- 🇭🇷 vlada.gov.hr · morh.hr | 🇨🇿 vlada.gov.cz · army.cz | 🇩🇰 stm.dk · fmn.dk
+- 🇪🇪 valitsus.ee · kaitseministeerium.ee | 🇫🇮 valtioneuvosto.fi · defmin.fi | 🇫🇷 elysee.fr · defense.gouv.fr
+- 🇩🇪 bundesregierung.de · bmvg.de | 🇬🇷 primeminister.gr · mod.mil.gr | 🇭🇺 kormany.hu · honvedelem.hu
+- 🇮🇸 government.is | 🇮🇹 governo.it · difesa.it | 🇱🇻 mk.gov.lv · mod.gov.lv | 🇱🇹 lrv.lt · kam.lt
+- 🇱🇺 gouvernement.lu (defence section) | 🇲🇪 gov.me | 🇳🇱 government.nl · defensie.nl | 🇲🇰 vlada.mk · mod.gov.mk
+- 🇳🇴 regjeringen.no (incl. Forsvarsdepartementet) | 🇵🇱 gov.pl (premier · national-defence/MON · Agencja Uzbrojenia) | 🇵🇹 portugal.gov.pt
+- 🇷🇴 gov.ro · mapn.ro | 🇸🇰 vlada.gov.sk · mosr.sk | 🇸🇮 gov.si | 🇪🇸 lamoncloa.gob.es · defensa.gob.es
+- 🇸🇪 government.se · FMV | 🇹🇷 tccb.gov.tr · msb.gov.tr | 🇬🇧 gov.uk (No10 · MoD) | 🇺🇸 whitehouse.gov · defense.gov (+ state.gov readouts)
+- Alliance/EU: nato.int (news · official texts · **transcripts**) · consilium.europa.eu press · defence-industry-space.ec.europa.eu (DG DEFIS, incl. the SAFE page's disbursement log)
+- IP4: mod.go.jp/mofa.go.jp · mnd.go.kr · defence.gov.au/minister.defence.gov.au · nzdf.mil.nz
+
 ## 2. Source-link parameters (LINKS)
 - **Every entry gets ≥1 inline hyperlink**, **preferring an official government / NATO / EU
-  readout** where one exists: `pm.gc.ca`, `canada.ca`, `nato.int` (incl. press-conference
-  **transcripts**), `consilium.europa.eu`, `gov.uk`, national MoD sites, and official company
+  readout** where one exists: `pm.gc.ca` (all four feeds, incl. `/en/news/readouts`), `canada.ca`,
+  `nato.int` (incl. press-conference **transcripts**), `consilium.europa.eu`,
+  `defence-industry-space.ec.europa.eu` (DG DEFIS / SAFE), `gov.uk`, `gov.pl` (MND / Armament
+  Agency), other national MoD sites, and official company
   press releases for industry items. Fall back to reputable defence press (Reuters, Defense News,
   Naval News, Breaking Defense, Janes, Korea Times, **POLITICO / POLITICO Europe (`politico.eu`)**,
   etc.) only where no official readout exists.
@@ -68,6 +97,11 @@ protocol exactly. The target report is: **$ARGUMENTS**
 - State only what's **confirmed**. **Never assert an unconfirmed outcome** (e.g. no "X won the
   contract" before an official announcement); mark expected-but-unconfirmed items as such, with
   the date.
+- **Negative-claim rule:** never write "no X yet" / "first X still pending" / "X has not
+  happened" on the basis of a window-scoped sweep. A universal negative requires its own
+  targeted, **date-unrestricted** verification search before it goes in the report; absence of
+  evidence inside a 7–10 day window is not evidence of absence. (This is exactly how the
+  report briefly claimed Canada had "no SAFE awards yet" a month after the first one.)
 - Use the new block's framing to **correct now-outdated facts** in the prior block — don't rewrite
   history wholesale.
 - Keep figures precise and attributed (e.g. distinguish a broad trade-mission total from a
